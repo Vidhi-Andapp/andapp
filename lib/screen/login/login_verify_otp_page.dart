@@ -2,29 +2,32 @@ import 'package:andapp/common/app_theme.dart';
 import 'package:andapp/common/pink_border_button.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/screen/dashboard/document_page.dart';
+import 'package:andapp/screen/login/login_verify_otp_bloc.dart';
 import 'package:andapp/screen/login/timer_button.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:andapp/common/image_utils.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'custom_speed_dial.dart';
+import 'package:sms_autofill/sms_autofill.dart';
 
 class LoginVerifyOTP extends StatefulWidget {
   final String? enteredMobNo;
-  const LoginVerifyOTP({Key? key, @required this.enteredMobNo}) : super(key: key);
+  final int? otp;
+  const LoginVerifyOTP({Key? key, @required this.enteredMobNo, this.otp}) : super(key: key);
 
   @override
   State<LoginVerifyOTP> createState() => _LoginVerifyOTPState();
 }
 
 class _LoginVerifyOTPState extends State<LoginVerifyOTP> with TickerProviderStateMixin {
-  //final LoginSendOTPBloc _bloc = LoginSendOTPBloc();
+  final LoginVerifyOTPBloc bloc = LoginVerifyOTPBloc();
   bool isOpened = false;
   late AnimationController _animationController;
- /* late Animation<Color?> _animateColor;
-  late Animation<double> _animateIcon;*/
-  /*final Curve _curve = Curves.easeOut;*/
   final verifyOTPKey = GlobalKey<FormState>();
+  String signature = "{{ app signature }}";
+  String? appSignature;
 
   @override
   void initState() {
@@ -34,20 +37,15 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP> with TickerProviderStat
       ..addListener(() {
         setState(() {});
       });
-   /* _animateIcon =
-        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
-    _animateColor = ColorTween(
-      begin: Colors.pinkAccent,
-      end: Colors.pink,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Interval(
-        0.00,
-        1.00,
-        curve: _curve,
-      ),
-    ));
-    */
+    //getSignature();
+   // listenForCode();
+
+    SmsAutoFill().getAppSignature.then((signature) {
+      setState(() {
+        appSignature = signature;
+      });
+    });
+
     super.initState();
   }
 
@@ -60,6 +58,11 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP> with TickerProviderStat
     isOpened = !isOpened;
   }
 
+  void getSignature() async {
+    signature = await SmsAutoFill().getAppSignature;
+    setState(() {});
+  }
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -68,7 +71,8 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final _appTheme = AppTheme.of(context);
+    final appTheme = AppTheme.of(context);
+    bloc.otp.text = "${widget.otp}";
     return SafeArea(
       child: Scaffold(
         //appBar: AppBar(),
@@ -118,7 +122,7 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP> with TickerProviderStat
                                             TextSpan(
                                               text: " ${widget.enteredMobNo}",
                                               style: TextStyle(
-                                                  color: _appTheme.primaryColor,
+                                                  color: appTheme.primaryColor,
                                                   fontSize: 16),
                                             )
                                           ]),
@@ -128,9 +132,11 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP> with TickerProviderStat
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 8, horizontal: 32),
-                                      child: TextFormField(
+                                      child:
+                                      TextFormField(
+                                        controller: bloc.otp,
                                         decoration: InputDecoration(
-                                          labelText: "OTP",
+                                          labelText: StringUtils.otp,
                                           labelStyle: TextStyle(color: Theme
                                               .of(context)
                                               .textTheme
@@ -146,6 +152,9 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP> with TickerProviderStat
                                               .inputDecorationTheme
                                               .border,
                                         ),
+                                        inputFormatters: <TextInputFormatter>[
+                                          FilteringTextInputFormatter.allow(RegExp("[0-9]")),
+                                        ],
                                         validator: (val) {
                                           String pattern = r'^(?:[0-9])?[0-9]{3,5}$';
                                           RegExp regExp = RegExp(pattern);
@@ -169,17 +178,45 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP> with TickerProviderStat
                                           //color: Colors.white
                                         ),
                                       ),
+                                    /*  TextFieldPinAutoFill(
+                                          decoration: InputDecoration(
+                                            labelText: StringUtils.otp,
+                                            labelStyle: TextStyle(color: Theme
+                                                .of(context)
+                                                .textTheme
+                                                .bodyText2
+                                                ?.color),
+                                            fillColor: Colors.white,
+                                            enabledBorder: Theme
+                                                .of(context)
+                                                .inputDecorationTheme
+                                                .border,
+                                            focusedBorder: Theme
+                                                .of(context)
+                                                .inputDecorationTheme
+                                                .border,
+                                          ),
+                                          codeLength: 5,
+                                          currentCode: _code,
+                                          onCodeSubmitted: (code) {},
+                                          onCodeChanged: (code) {
+                                            if (code.length == 6) {
+                                              FocusScope.of(context).requestFocus(FocusNode());
+                                            }
+                                          },
+                                      ),
+*/
                                     ),
 
                                     TimerButton(
                                       label: "Resend OTP",
                                       timeOutInSeconds: 120,
                                       onPressed: () {},
-                                      disabledColor: _appTheme.dtBlackColor,
-                                      color: _appTheme.dtBlackColor,
+                                      disabledColor: appTheme.dtBlackColor,
+                                      color: appTheme.dtBlackColor,
                                       disabledTextStyle: TextStyle(
                                           fontSize: 16.0,
-                                          color: _appTheme.resendColor),
+                                          color: appTheme.resendColor),
                                       activeTextStyle: const TextStyle(
                                           fontSize: 16.0, color: Colors.white),
                                     ),
@@ -194,13 +231,16 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP> with TickerProviderStat
                                                   .currentState;
                                               if (form!.validate()) {
                                                 form.save();
-                                                Navigator.push(
+                                                //bloc.verifyOTP(context);
+                                                if(widget.otp != null && bloc.otp.text == widget.otp.toString()) {
+                                                  Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) {
                                                         return const DocumentPage();
                                                       }),
                                                 );
+                                                }
                                               }
                                             })
                                     ),
@@ -224,7 +264,7 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP> with TickerProviderStat
                                                 ?.color)),
                                     TextSpan(text: " Terms and conditions",
                                         style: TextStyle(
-                                            color: _appTheme.primaryColor),
+                                            color: appTheme.primaryColor),
                                         recognizer: TapGestureRecognizer()
                                           ..onTap = () {
                                             showModalBottomSheet(
@@ -261,20 +301,18 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP> with TickerProviderStat
                                                                         16.0),
                                                                   ),
                                                                 ),
-                                                                color: _appTheme
+                                                                color: appTheme
                                                                     .primaryColor),
                                                             alignment: Alignment
                                                                 .centerLeft,
                                                             child: Row(
                                                               children: [
-                                                                const Expanded(
-                                                                  child: Text(
-                                                                      'Terms and Conditions',
-                                                                      style: TextStyle(
-                                                                          fontSize: 14,
-                                                                          fontWeight: FontWeight
-                                                                              .bold)),
-                                                                ),
+                                                               const Text(
+                                                                    'Terms and Conditions',
+                                                                    style: TextStyle(
+                                                                        fontSize: 14,
+                                                                        fontWeight: FontWeight
+                                                                            .bold)),
 
                                                                 GestureDetector(
                                                                   onTap: () {
@@ -293,7 +331,7 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP> with TickerProviderStat
                                                               .all(16.0),
                                                           child: Text(
                                                             StringUtils
-                                                                .termsConditionsContent,
+                                                                .termsConditions,
                                                             /* style: TextStyle(
                                                             color: Theme.of(context).primaryColor,
                                                             fontSize: 12,

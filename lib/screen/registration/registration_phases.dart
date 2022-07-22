@@ -165,7 +165,7 @@ class RegistrationPhasesState extends State<RegistrationPhases>
                   setState(() { currIndex = 1; });
                 },
                   child: kycButton()),
-              SizedBox(width: 12,height: 2,
+              SizedBox(width: 10,height: 2,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                       color: _appTheme.separatorColor
@@ -176,7 +176,7 @@ class RegistrationPhasesState extends State<RegistrationPhases>
                     setState(() { currIndex = 2; });
                   },
                   child: accountButton()),
-              SizedBox(width: 12,height: 2,
+              SizedBox(width: 10,height: 2,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                       color: _appTheme.separatorColor
@@ -187,7 +187,7 @@ class RegistrationPhasesState extends State<RegistrationPhases>
                     setState(() { currIndex = 3; });
                   },
                   child: bankButton()),
-              SizedBox(width: 12,height: 2,
+              SizedBox(width: 10,height: 2,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                       color: _appTheme.separatorColor

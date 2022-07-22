@@ -48,5 +48,8 @@
       <string>https</string>
       <string>http</string>
     </array>
+    <key>NSAppTransportSecurity</key>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
 </dict>
 </plist>

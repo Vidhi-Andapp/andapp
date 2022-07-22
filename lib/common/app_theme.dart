@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:andapp/enum/font_type.dart';
 
@@ -37,7 +35,8 @@ class AppThemeState extends State<AppTheme> {
 
   //Color get primaryColor => const Color(0xffEF3B85);
 
-  Color get primaryColor => Platform.isAndroid ? const Color(0xffFF74B4) : const Color(0xffec407a);
+  //Color get primaryColor => Platform.isAndroid ? const Color(0xffFF74B4) : const Color(0xffec407a);
+  Color get primaryColor => const Color(0xffec407a);
   Color get dtBlackColor => const Color(0xff222222);
 
   Color get resendColor => const Color(0xff989191);

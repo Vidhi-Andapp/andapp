@@ -18,12 +18,10 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
     with SingleTickerProviderStateMixin {
   bool _isOpened = false;
   late AnimationController _animationController;
-  Animation<Color?>? _buttonColor;
   late Animation<double> _animateIcon;
   Animation<double>? _translateButton;
   final Curve _curve = Curves.easeOut;
   // this is needed to know how much to "translate"
-  final double _fabHeight = 36.0;
   // when the menu is closed, we remove elevation to prevent
   // stacking all elevations
   bool _shouldHaveElevation = false;
@@ -38,17 +36,6 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
       });
     _animateIcon =
         Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
-    _buttonColor = ColorTween(
-      begin: Colors.pinkAccent,
-      end: Colors.pink,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(
-        0.00,
-        1.00,
-        curve: Curves.linear,
-      ),
-    ));
 
     // this does the translation of menu items
     _translateButton = Tween<double>(
@@ -230,12 +217,12 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
             },
             // tooltip: '',
             heroTag: UniqueKey(),
-            child: Center(
-                child: SvgPicture.asset(SvgImages.iconRaiseTicket, height: 20,)),
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             backgroundColor: _appTheme.primaryColor,
             foregroundColor: Colors.white,
             elevation: _shouldHaveElevation ? 6.0 : 0,
+            child: Center(
+                child: SvgPicture.asset(SvgImages.iconRaiseTicket, height: 20,)),
           ),
         )
     );
@@ -262,12 +249,12 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
             },
             // tooltip: '',
             heroTag: UniqueKey(),
-            child: Center(
-                child: SvgPicture.asset(SvgImages.iconUserManual, height: 20,)),
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             backgroundColor: _appTheme.primaryColor,
             foregroundColor: Colors.white,
             elevation: _shouldHaveElevation ? 6.0 : 0,
+            child: Center(
+                child: SvgPicture.asset(SvgImages.iconUserManual, height: 20,)),
           ),
         )
     );
@@ -302,6 +289,10 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
         child: FloatingActionButton(
           onPressed: animate,
           backgroundColor: _appTheme.primaryColor,
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0),bottomLeft: Radius.circular(8.0))
+          ),
           child:
          /* AnimatedIcon(
             icon: AnimatedIcons.view_list,
@@ -317,10 +308,6 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
               color: Colors.white,
               //size: 20.0,
             )),
-          ),
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0),bottomLeft: Radius.circular(8.0))
           ),
         ),
       ),

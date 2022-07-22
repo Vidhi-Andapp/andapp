@@ -1,9 +1,7 @@
 import 'package:andapp/common/string_utils.dart';
-import 'package:andapp/enum/font_type.dart';
-import 'package:andapp/screen/login/login_verify_otp_page.dart';
+import 'package:andapp/screen/registration/bank_details.dart';
 import 'package:andapp/screen/registration/registration_phases.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:andapp/common/image_utils.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -381,6 +379,8 @@ class _AccountDetailsState extends State<AccountDetails> {
                                           ),
                                           _withGSTM ?
                                           Column(
+                                            crossAxisAlignment: CrossAxisAlignment
+                                                .start,
                                             children: [
                                               Padding(
                                                 padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -471,6 +471,8 @@ class _AccountDetailsState extends State<AccountDetails> {
                                           )
                                               :
                                           Column(
+                                            crossAxisAlignment: CrossAxisAlignment
+                                                .start,
                                             children: [
                                               Padding(
                                                 padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -547,13 +549,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                                         isEnabled: true,
                                         content: "Previous",
                                         onPressed: () {
-                                          /* Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) {
-                                                return const LoginVerifyOTP();
-                                              }),
-                                        );*/
+                                          Navigator.pop(context);
                                         },)
                                   ),
                                   Padding(
@@ -563,13 +559,13 @@ class _AccountDetailsState extends State<AccountDetails> {
                                         isEnabled: true,
                                         content: "Next",
                                         onPressed: () {
-                                          /* Navigator.push(
+                                           Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) {
-                                                return const LoginVerifyOTP();
+                                                return const BankDetails();
                                               }),
-                                        );*/
+                                        );
                                         },)
                                   ),
                                 ],

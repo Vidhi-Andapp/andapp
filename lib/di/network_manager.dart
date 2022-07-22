@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+
 
 ///
 /// This class checks if device has internet connectivity or not
@@ -51,7 +52,7 @@ class NetworkManager {
     return isInternet;
   }
 
-  Future<bool?> _updateConnectionStatus() async {
+  /*Future<bool?> _updateConnectionStatus() async {
     bool? isConnected;
     try {
       final List<InternetAddress> result =
@@ -64,7 +65,7 @@ class NetworkManager {
       return false;
     }
     return isConnected;
-  }
+  }*/
 
   disposeStream() {
     _onInternetConnected.close();

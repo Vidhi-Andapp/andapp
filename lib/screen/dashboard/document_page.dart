@@ -28,7 +28,7 @@ class _DocumentPageState extends State<DocumentPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _appTheme = AppTheme.of(context);
+    final appTheme = AppTheme.of(context);
     return SafeArea(
       child: Scaffold(
         //appBar: AppBar(),
@@ -91,18 +91,18 @@ class _DocumentPageState extends State<DocumentPage> {
                                             shape: CircleBorder(
                                                 side: BorderSide(
                                                     color: (_selectedTile == 1
-                                                        ? _appTheme
+                                                        ? appTheme
                                                         .primaryColor
                                                         : Colors.white))),
                                             color: (_selectedTile == 1
-                                                ? _appTheme.primaryColor
+                                                ? appTheme.primaryColor
                                                 : Colors.white)),
+                                        padding: const EdgeInsets.all(10),
                                         child: SvgPicture.asset(
                                           SvgImages.iconKYCDetails,
                                           color: _selectedTile == 1 ? Colors
-                                              .white : _appTheme
+                                              .white : appTheme
                                               .primaryColor,),
-                                        padding: const EdgeInsets.all(10),
                                       ),
                                       contentPadding: const EdgeInsets.all(
                                           10),
@@ -173,15 +173,15 @@ class _DocumentPageState extends State<DocumentPage> {
                                         decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             color: (_selectedTile == 2
-                                                ? _appTheme.primaryColor
+                                                ? appTheme.primaryColor
                                                 : Colors.white)),
+                                        padding: const EdgeInsets.all(10),
                                         //ShapeDecoration(shape: CircleBorder(side: BorderSide(color: (selectedTile == 1 ? _appTheme.primaryColor : Colors.white))),color: (selectedTile == 1 ? _appTheme.primaryColor : Colors.white)),
                                         child: SvgPicture.asset(
                                           SvgImages.iconAcDetails,
                                           color: _selectedTile == 2 ? Colors
-                                              .white : _appTheme
+                                              .white : appTheme
                                               .primaryColor,),
-                                        padding: const EdgeInsets.all(10),
                                       ),
                                       contentPadding: const EdgeInsets.all(
                                           10),
@@ -252,15 +252,15 @@ class _DocumentPageState extends State<DocumentPage> {
                                         decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             color: (_selectedTile == 3
-                                                ? _appTheme.primaryColor
+                                                ? appTheme.primaryColor
                                                 : Colors.white)),
+                                        padding: const EdgeInsets.all(10),
                                         //ShapeDecoration(shape: CircleBorder(side: BorderSide(color: (selectedTile == 1 ? _appTheme.primaryColor : Colors.white))),color: (selectedTile == 1 ? _appTheme.primaryColor : Colors.white)),
                                         child: SvgPicture.asset(
                                           SvgImages.iconBankDetails,
                                           color: _selectedTile == 3 ? Colors
-                                              .white : _appTheme
+                                              .white : appTheme
                                               .primaryColor,),
-                                        padding: const EdgeInsets.all(10),
                                       ),
                                       contentPadding: const EdgeInsets.all(
                                           10),
@@ -334,15 +334,15 @@ class _DocumentPageState extends State<DocumentPage> {
                                         decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             color: (_selectedTile == 4
-                                                ? _appTheme.primaryColor
+                                                ? appTheme.primaryColor
                                                 : Colors.white)),
+                                        padding: const EdgeInsets.all(10),
                                         //ShapeDecoration(shape: CircleBorder(side: BorderSide(color: (selectedTile == 1 ? _appTheme.primaryColor : Colors.white))),color: (selectedTile == 1 ? _appTheme.primaryColor : Colors.white)),
                                         child: SvgPicture.asset(
                                           SvgImages.iconAcademicDetails,
                                           color: _selectedTile == 4 ? Colors
-                                              .white : _appTheme
+                                              .white : appTheme
                                               .primaryColor,),
-                                        padding: const EdgeInsets.all(10),
                                       ),
                                       contentPadding: const EdgeInsets.all(
                                           10),
@@ -367,27 +367,6 @@ class _DocumentPageState extends State<DocumentPage> {
                                             alignment: Alignment.topRight,))
                                           : const SizedBox(width: 20,),
                                     ),
-
-                                    /*Row(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Padding(
-                                              padding: const EdgeInsets.all(16.0),
-                                              child: Column(
-                                                children: const [
-                                                  Padding(
-                                                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                                    child: Text("KYC Details",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w700),),
-                                                  ),
-                                                  Padding(
-                                                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                                    child: Text("Share your Aadhaar Details as address proof.",style: TextStyle(fontSize: 12,fontWeight: FontWeight.w400),),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            */
                                   ),
                                 ),
                               ],

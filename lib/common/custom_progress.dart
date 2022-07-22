@@ -7,10 +7,10 @@ class CustomProgressDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _appTheme = AppTheme.of(context);
+    final appTheme = AppTheme.of(context);
     return Container(
-      width: 64,
-      height: 64,
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.5),
           borderRadius: const BorderRadius.all(
@@ -21,7 +21,7 @@ class CustomProgressDialog extends StatelessWidget {
           width: 50,
           child: CircularProgressIndicator(
             strokeWidth: 4,
-            valueColor: AlwaysStoppedAnimation<Color>(_appTheme.primaryColor),
+            valueColor: AlwaysStoppedAnimation<Color>(appTheme.primaryColor),
           ),
         ),
       ),
