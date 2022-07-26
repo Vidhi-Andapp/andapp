@@ -54,7 +54,7 @@ class LoginSendOTPBloc extends BlocBase {
         .getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .registerDevice()
+        .registerDevice(mobileNo: mobNo.text)
         .then((commonData) {
       if (commonData != null &&
           commonData.resultflag == ApiClient.resultflagSuccess) {
@@ -66,7 +66,9 @@ class LoginSendOTPBloc extends BlocBase {
             .then((sendOTPData) {
           if (sendOTPData != null &&
               sendOTPData.resultflag == ApiClient.resultflagSuccess) {
-            print("OTP : ${sendOTPData.data?.oTP}");
+            if (kDebugMode) {
+              print("OTP : ${sendOTPData.data?.oTP}");
+            }
             Navigator.push(
               context,
               MaterialPageRoute(

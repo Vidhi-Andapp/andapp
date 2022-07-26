@@ -1,4 +1,8 @@
+import 'package:andapp/model/get_aadhar_data.dart';
 import 'package:andapp/model/common_data.dart';
+import 'package:andapp/model/get_bank_data.dart';
+import 'package:andapp/model/get_gst_data.dart';
+import 'package:andapp/model/get_pan_data.dart';
 import 'package:andapp/model/get_urls.dart';
 import 'package:andapp/model/send_otp.dart';
 import 'package:andapp/model/token.dart';
@@ -33,32 +37,33 @@ class ApiRepositoryIml extends ApiRepository {
 
   @override
   Future<SendOTP?> commonSendOTP({String? mobileNo, String? type, String? aadharNo, String? email}) {
-    return _apiServices.commonSendOTP(mobileNo ?? '', type ?? ApiClient.otpTypeSMS,"","");
+    return _apiServices.commonSendOTP(mobileNo ?? '', type ?? ApiClient.otpTypeSMS,aadharNo ?? "",email ?? "");
   }
+
+  @override
+  Future<GetAadhar?> getAadharData({String? aadharNo, String? otp}) {
+    return _apiServices.getAadharData(aadharNo ?? '', otp ?? "");
+  }
+
+  @override
+  Future<GetPan?> getPanData({String? panNo}) {
+    return _apiServices.getPanData(panNo ?? '');
+  }
+
+  @override
+  Future<GetGst?> getGstData({String? gstNo}) {
+    return _apiServices.getGSTData(gstNo ?? '');
+  }
+
+  @override
+  Future<GetBank?> getBankData({String? acNo, String? ifsc}) {
+    return _apiServices.getBankData(acNo ?? '', ifsc ?? "");
+  }
+
 /*  @override
   Future<Map<String, dynamic>> commonValidateOTP({String? mobileNo, String? type, String? otp, String? email}) {
     return _apiServices.commonSendOTP(mobileNo ?? '', ApiClient.otpTypeSMS,"","");
   }
-  @override
-  Future<Map<String, dynamic>> aadharValidateOTP({String? aadharNo, String? otp}) {
-    return _apiServices.commonSendOTP(aadharNo ?? '', ApiClient.otpTypeSMS,"","");
-  }
-
-  @override
-  Future<Map<String, dynamic>> panValidateOTP({String? panNo}) {
-    return _apiServices.commonSendOTP(panNo ?? '', ApiClient.otpTypeSMS,"","");
-  }
-
-  @override
-  Future<Map<String, dynamic>> gstValidateOTP({String? gstNo}) {
-    return _apiServices.commonSendOTP(gstNo ?? '', ApiClient.otpTypeSMS,"","");
-  }
-
-  @override
-  Future<Map<String, dynamic>> bankValidateOTP({String? acNo, String? ifsc}) {
-    return _apiServices.commonSendOTP(acNo ?? '', ApiClient.otpTypeSMS,"","");
-  }
-
   @override
   Future<Map<String, dynamic>> registerPosp({String? acNo, String? ifsc}) {
     // TODO: implement registerPosp
@@ -79,11 +84,11 @@ abstract class ApiRepository {
   Future<CommonData?> registerDevice({String? mobileNo, String? deviceId});
   Future<CommonData?> updateMobile({String? mobileNo, String? deviceId});
   Future<SendOTP?> commonSendOTP({String? mobileNo, String? type, String? aadharNo, String? email});
+  Future<GetAadhar?> getAadharData({String? aadharNo, String? otp});
+  Future<GetPan?> getPanData({String? panNo});
+  Future<GetGst?> getGstData({String? gstNo});
+  Future<GetBank?> getBankData({String? acNo, String? ifsc});
   /*Future<Map<String, dynamic>> commonValidateOTP({String? mobileNo, String? type, String? otp, String? email});
-  Future<Map<String, dynamic>> aadharValidateOTP({String? aadharNo, String? otp});
-  Future<Map<String, dynamic>> panValidateOTP({String? panNo});
-  Future<Map<String, dynamic>> gstValidateOTP({String? gstNo});
-  Future<Map<String, dynamic>> bankValidateOTP({String? acNo, String? ifsc});
   Future<Map<String, dynamic>> registerPosp({String? acNo, String? ifsc});
   Future<Map<String, dynamic>> getDashboard();*/
 }

@@ -1,6 +1,10 @@
 import 'dart:convert';
 
+import 'package:andapp/model/get_aadhar_data.dart';
 import 'package:andapp/model/common_data.dart';
+import 'package:andapp/model/get_bank_data.dart';
+import 'package:andapp/model/get_gst_data.dart';
+import 'package:andapp/model/get_pan_data.dart';
 import 'package:andapp/model/get_urls.dart';
 import 'package:andapp/model/send_otp.dart';
 import 'package:andapp/model/token.dart';
@@ -76,6 +80,60 @@ class ApiServices extends ApiClient {
     var response = await posts(ApiClient.sendOTP,body: jsonString,headers: getJsonHeader(),encoding: Encoding.getByName('utf-8'), isBackground: true);
     if(response != null) {
       var data = SendOTP.fromJson(json.decode(response));
+      return data;
+    }
+    return null;
+  }
+
+  Future<GetAadhar?> getAadharData(String aadharNo,String otp) async {
+    Map body = {
+      "Aadhar_no" : aadharNo,
+      "OTP" : otp,
+    };
+    String jsonString = json.encode(body);
+    var response = await posts(ApiClient.getAadharData,body: jsonString,headers: getJsonHeader(),encoding: Encoding.getByName('utf-8'), isBackground: true);
+    if(response != null) {
+      var data = GetAadhar.fromJson(json.decode(response));
+      return data;
+    }
+    return null;
+  }
+
+  Future<GetPan?> getPanData(String panNo) async {
+    Map body = {
+      "Pan_no" : panNo,
+    };
+    String jsonString = json.encode(body);
+    var response = await posts(ApiClient.getPanData,body: jsonString,headers: getJsonHeader(),encoding: Encoding.getByName('utf-8'), isBackground: true);
+    if(response != null) {
+      var data = GetPan.fromJson(json.decode(response));
+      return data;
+    }
+    return null;
+  }
+
+  Future<GetGst?> getGSTData(String gstNo) async {
+    Map body = {
+      "GST_no" : gstNo,
+    };
+    String jsonString = json.encode(body);
+    var response = await posts(ApiClient.getGstData,body: jsonString,headers: getJsonHeader(),encoding: Encoding.getByName('utf-8'), isBackground: true);
+    if(response != null) {
+      var data = GetGst.fromJson(json.decode(response));
+      return data;
+    }
+    return null;
+  }
+
+  Future<GetBank?> getBankData(String acNo,String ifsc) async {
+    Map body = {
+      "Account_no" : acNo,
+      "IFSC" : ifsc,
+    };
+    String jsonString = json.encode(body);
+    var response = await posts(ApiClient.getBankData,body: jsonString,headers: getJsonHeader(),encoding: Encoding.getByName('utf-8'), isBackground: true);
+    if(response != null) {
+      var data = GetBank.fromJson(json.decode(response));
       return data;
     }
     return null;

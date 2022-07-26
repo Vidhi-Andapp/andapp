@@ -1,5 +1,6 @@
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/screen/registration/account_details.dart';
+import 'package:andapp/screen/registration/posp_registration_bloc.dart';
 import 'package:andapp/screen/registration/registration_phases.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,7 +18,15 @@ class PoSPRegistration extends StatefulWidget {
 }
 
 class _PoSPRegistrationState extends State<PoSPRegistration> {
-  //final LoginSendOTPBloc _bloc = LoginSendOTPBloc();
+  final PospRegistrationBloc bloc = PospRegistrationBloc();
+  final sendAadharOTPKey = GlobalKey<FormState>(),
+      validateAadharOTPKey = GlobalKey<FormState>();
+
+  @override
+  initState() {
+    bloc.aadharNumber.text = "247117777477";
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -217,16 +226,18 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                   ),
 
                   SizedBox(
-                    height: 500,
+                    height: 536,
                     child: TabBarView(
                       children: [
-                        Container(
-                          child: Column(
-                            children: [
-                              Padding(
+                        Column(
+                          children: [
+                            Form(
+                              key: sendAadharOTPKey,
+                              child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 8, horizontal: 32),
                                 child: TextFormField(
+                                  controller: bloc.aadharNumber,
                                   decoration: InputDecoration(
                                       labelText: StringUtils.aadharNumber,
                                       labelStyle: TextStyle(color: Theme
@@ -240,7 +251,14 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                         child: PinkBorderButton(
                                           isEnabled: true,
                                           content: StringUtils.otp,
-                                          onPressed: () {},),
+                                          onPressed: () {
+                                            final form = sendAadharOTPKey
+                                                .currentState;
+                                            if (form?.validate() ?? false) {
+                                              form?.save();
+                                              bloc.sendAadharOTP(context);
+                                            }
+                                          },),
                                       ),
                                       /*  fillColor: Colors.white,
                                           filled: true,*/
@@ -256,23 +274,27 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                   validator: (val) {
                                     // ignore: prefer_is_empty
                                     if (val?.length == 0 &&
-                                        val?.length != 10) {
-                                      return "Please enter valid mobile number";
+                                        val?.length != 14) {
+                                      return "Please enter valid aadhar number";
                                     }
                                     else {
                                       return null;
                                     }
                                   },
-                                  keyboardType: TextInputType.emailAddress,
+                                  maxLength: 14,
+                                  keyboardType: TextInputType.number,
                                   style: TextStyle(
                                       color: appTheme.speedDialLabelBgDT
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 32),
+                            ),
+                            Form(
+                              key: validateAadharOTPKey,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(32,8,32,0),
                                 child: TextFormField(
+                                  controller: bloc.otp,
                                   decoration: InputDecoration(
                                       labelText: StringUtils.otp,
                                       labelStyle: TextStyle(color: Theme
@@ -286,7 +308,16 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                         child: PinkBorderButton(
                                           isEnabled: true,
                                           content: StringUtils.validate,
-                                          onPressed: () {},),
+                                          onPressed: () async{
+                                            final form = validateAadharOTPKey
+                                                .currentState;
+                                            if (form?.validate() ?? false) {
+                                              form?.save();
+                                              await bloc.getAadharData(context).then((value) => {
+
+                                              });
+                                            }
+                                          },),
                                       ),
                                       /*  fillColor: Colors.white,
                                       filled: true,*/
@@ -302,764 +333,440 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                   validator: (val) {
                                     // ignore: prefer_is_empty
                                     if (val?.length == 0 &&
-                                        val?.length != 5) {
+                                        val?.length != 6) {
                                       return "Please enter valid otp";
                                     }
                                     else {
                                       return null;
                                     }
                                   },
+                                  maxLength: 6,
                                   keyboardType: TextInputType.number,
                                   style: TextStyle(
                                       color: appTheme.speedDialLabelBgDT
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                    0.0, 0, 0, 12),
-                                child: Text(
-                                  StringUtils
-                                      .regOtpContent,
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                      color: appTheme.separatorColor,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.normal),),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: Text(
+                                StringUtils
+                                    .regOtpContent,
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                    color: appTheme.separatorColor,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.normal),),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 32),
+                              child: TextFormField(
+                                controller: bloc.aadharAName,
+                                decoration: InputDecoration(
+                                  labelText: StringUtils.name,
+                                  labelStyle: TextStyle(color: Theme
+                                      .of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      ?.color),
+                                  border: Theme
+                                      .of(context)
+                                      .inputDecorationTheme
+                                      .border,
+                                  enabled:
+                                  false,
+                                  fillColor: appTheme.speedDialLabelBgDT,
+                                  filled: true,
+                                ),
+                                style: const TextStyle(
+                                  fontFamily: "Poppins",
+                                  //color: Colors.white
+                                ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 32),
-                                child: TextFormField(
-                                  decoration: InputDecoration(
-                                    labelText: StringUtils.name,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 32),
+                              child: TextFormField(
+                                controller: bloc.aadharAGender,
+                                decoration: InputDecoration(
+                                  labelText: StringUtils.gender,
+                                  labelStyle: TextStyle(color: Theme
+                                      .of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      ?.color),
+                                  border: Theme
+                                      .of(context)
+                                      .inputDecorationTheme
+                                      .border,
+                                  enabled:
+                                  false,
+                                  fillColor: appTheme.speedDialLabelBgDT,
+                                  filled: true,
+                                ),
+                                style: const TextStyle(
+                                  fontFamily: "Poppins",
+                                  //color: Colors.white
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 32),
+                              child: TextFormField(
+                                controller: bloc.aadharABirthDate,
+                                decoration: InputDecoration(
+                                  labelText: StringUtils.birthdate,
+                                  labelStyle: TextStyle(color: Theme
+                                      .of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      ?.color),
+                                  border: Theme
+                                      .of(context)
+                                      .inputDecorationTheme
+                                      .border,
+                                  enabled:
+                                  false,
+                                  fillColor: appTheme.speedDialLabelBgDT,
+                                  filled: true,
+                                ),
+                                style: const TextStyle(
+                                  fontFamily: "Poppins",
+                                  //color: Colors.white
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 32),
+                              child: TextFormField(
+                                controller: bloc.aadharAAddress,
+                                decoration: InputDecoration(
+                                  labelText: StringUtils.address,
+                                  labelStyle: TextStyle(color: Theme
+                                      .of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      ?.color),
+                                  border: Theme
+                                      .of(context)
+                                      .inputDecorationTheme
+                                      .border,
+                                  enabled:
+                                  false,
+                                  fillColor: appTheme.speedDialLabelBgDT,
+                                  filled: true,
+                                ),
+                                style: const TextStyle(
+                                  fontFamily: "Poppins",
+                                  //color: Colors.white
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 32),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                    labelText: StringUtils.salutation,
                                     labelStyle: TextStyle(color: Theme
                                         .of(context)
                                         .textTheme
                                         .bodyText2
                                         ?.color),
-                                    border: Theme
+                                    fillColor: Colors.white,
+                                    enabledBorder: Theme
                                         .of(context)
                                         .inputDecorationTheme
                                         .border,
-                                    enabled:
-                                    false,
-                                    fillColor: appTheme.speedDialLabelBgDT,
-                                    filled: true,
-                                  ),
-                                  validator: (val) {
-                                    // ignore: prefer_is_empty
-                                    if (val?.length == 0 &&
-                                        val?.length != 10) {
-                                      return "Please enter valid mobile number";
-                                    }
-                                    else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.name,
-                                  style: const TextStyle(
-                                    fontFamily: "Popp"
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        ""
-                                        "ins",
-                                    //color: Colors.white
-                                  ),
+                                    focusedBorder: Theme
+                                        .of(context)
+                                        .inputDecorationTheme
+                                        .border
+                                ),
+                                validator: (val) {
+                                  // ignore: prefer_is_empty
+                                  if (val?.length == 0 &&
+                                      val?.length != 10) {
+                                    return "Please enter valid mobile number";
+                                  }
+                                  else {
+                                    return null;
+                                  }
+                                },
+                                keyboardType: TextInputType.phone,
+                                style: const TextStyle(
+                                  fontFamily: "Poppins",
+                                  //color: Colors.white
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 32),
-                                child: TextFormField(
-                                  decoration: InputDecoration(
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 32),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                    labelText: StringUtils.firstName,
+                                    labelStyle: TextStyle(color: Theme
+                                        .of(context)
+                                        .textTheme
+                                        .bodyText2
+                                        ?.color),
+                                    fillColor: Colors.white,
+                                    enabledBorder: Theme
+                                        .of(context)
+                                        .inputDecorationTheme
+                                        .border,
+                                    focusedBorder: Theme
+                                        .of(context)
+                                        .inputDecorationTheme
+                                        .border
+                                ),
+                                validator: (val) {
+                                  // ignore: prefer_is_empty
+                                  if (val?.length == 0 &&
+                                      val?.length != 10) {
+                                    return "Please enter valid mobile number";
+                                  }
+                                  else {
+                                    return null;
+                                  }
+                                },
+                                keyboardType: TextInputType.phone,
+                                style: const TextStyle(
+                                  fontFamily: "Poppins",
+                                  //color: Colors.white
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 32),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                    labelText: StringUtils.middleName,
+                                    labelStyle: TextStyle(color: Theme
+                                        .of(context)
+                                        .textTheme
+                                        .bodyText2
+                                        ?.color),
+                                    fillColor: Colors.white,
+                                    enabledBorder: Theme
+                                        .of(context)
+                                        .inputDecorationTheme
+                                        .border,
+                                    focusedBorder: Theme
+                                        .of(context)
+                                        .inputDecorationTheme
+                                        .border
+                                ),
+                                validator: (val) {
+                                  // ignore: prefer_is_empty
+                                  if (val?.length == 0 &&
+                                      val?.length != 10) {
+                                    return "Please enter valid mobile number";
+                                  }
+                                  else {
+                                    return null;
+                                  }
+                                },
+                                keyboardType: TextInputType.phone,
+                                style: const TextStyle(
+                                  fontFamily: "Poppins",
+                                  //color: Colors.white
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 32),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                    labelText: StringUtils.lastName,
+                                    labelStyle: TextStyle(color: Theme
+                                        .of(context)
+                                        .textTheme
+                                        .bodyText2
+                                        ?.color),
+                                    fillColor: Colors.white,
+                                    enabledBorder: Theme
+                                        .of(context)
+                                        .inputDecorationTheme
+                                        .border,
+                                    focusedBorder: Theme
+                                        .of(context)
+                                        .inputDecorationTheme
+                                        .border
+                                ),
+                                validator: (val) {
+                                  // ignore: prefer_is_empty
+                                  if (val?.length == 0 &&
+                                      val?.length != 10) {
+                                    return "Please enter valid mobile number";
+                                  }
+                                  else {
+                                    return null;
+                                  }
+                                },
+                                keyboardType: TextInputType.phone,
+                                style: const TextStyle(
+                                  fontFamily: "Poppins",
+                                  //color: Colors.white
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 32),
+                              child: TextFormField(
+                                decoration: InputDecoration(
                                     labelText: StringUtils.gender,
                                     labelStyle: TextStyle(color: Theme
                                         .of(context)
                                         .textTheme
                                         .bodyText2
                                         ?.color),
-                                    border: Theme
+                                    fillColor: Colors.white,
+                                    enabledBorder: Theme
                                         .of(context)
                                         .inputDecorationTheme
                                         .border,
-                                    enabled:
-                                    false,
-                                    fillColor: appTheme.speedDialLabelBgDT,
-                                    filled: true,
-                                  ),
-                                  validator: (val) {
-                                    // ignore: prefer_is_empty
-                                    if (val?.length == 0 &&
-                                        val?.length != 10) {
-                                      return "Please enter valid mobile number";
-                                    }
-                                    else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.name,
-                                  style: const TextStyle(
-                                    fontFamily: "Poppins",
-                                    //color: Colors.white
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 32),
-                                child: TextFormField(
-                                  decoration: InputDecoration(
-                                    labelText: StringUtils.birthdate,
-                                    labelStyle: TextStyle(color: Theme
-                                        .of(context)
-                                        .textTheme
-                                        .bodyText2
-                                        ?.color),
-                                    border: Theme
+                                    focusedBorder: Theme
                                         .of(context)
                                         .inputDecorationTheme
-                                        .border,
-                                    enabled:
-                                    false,
-                                    fillColor: appTheme.speedDialLabelBgDT,
-                                    filled: true,
-                                  ),
-                                  validator: (val) {
-                                    // ignore: prefer_is_empty
-                                    if (val?.length == 0 &&
-                                        val?.length != 10) {
-                                      return "Please enter valid mobile number";
-                                    }
-                                    else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.name,
-                                  style: const TextStyle(
-                                    fontFamily: "Poppins",
-                                    //color: Colors.white
-                                  ),
+                                        .border
+                                ),
+                                validator: (val) {
+                                  // ignore: prefer_is_empty
+                                  if (val?.length == 0 &&
+                                      val?.length != 10) {
+                                    return "Please enter valid mobile number";
+                                  }
+                                  else {
+                                    return null;
+                                  }
+                                },
+                                keyboardType: TextInputType.phone,
+                                style: const TextStyle(
+                                  fontFamily: "Poppins",
+                                  //color: Colors.white
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 32),
-                                child: TextFormField(
-                                  decoration: InputDecoration(
-                                    labelText: StringUtils.address,
-                                    labelStyle: TextStyle(color: Theme
-                                        .of(context)
-                                        .textTheme
-                                        .bodyText2
-                                        ?.color),
-                                    border: Theme
-                                        .of(context)
-                                        .inputDecorationTheme
-                                        .border,
-                                    enabled:
-                                    false,
-                                    fillColor: appTheme.speedDialLabelBgDT,
-                                    filled: true,
-                                  ),
-                                  validator: (val) {
-                                    // ignore: prefer_is_empty
-                                    if (val?.length == 0 &&
-                                        val?.length != 10) {
-                                      return "Please enter valid mobile number";
-                                    }
-                                    else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.name,
-                                  style: const TextStyle(
-                                    fontFamily: "Poppins",
-                                    //color: Colors.white
-                                  ),
-                                ),
-                              ),
+                            ),
 
-                            ],
-                          ),
-                        ),
-                        Container(
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 32),
-                                child: TextFormField(
-                                  decoration: InputDecoration(
-                                      labelText: StringUtils.salutation,
-                                      labelStyle: TextStyle(color: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodyText2
-                                          ?.color),
-                                      fillColor: Colors.white,
-                                      enabledBorder: Theme
-                                          .of(context)
-                                          .inputDecorationTheme
-                                          .border,
-                                      focusedBorder: Theme
-                                          .of(context)
-                                          .inputDecorationTheme
-                                          .border
-                                  ),
-                                  validator: (val) {
-                                    // ignore: prefer_is_empty
-                                    if (val?.length == 0 &&
-                                        val?.length != 10) {
-                                      return "Please enter valid mobile number";
-                                    }
-                                    else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.phone,
-                                  style: const TextStyle(
-                                    fontFamily: "Poppins",
-                                    //color: Colors.white
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 32),
-                                child: TextFormField(
-                                  decoration: InputDecoration(
-                                      labelText: StringUtils.firstName,
-                                      labelStyle: TextStyle(color: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodyText2
-                                          ?.color),
-                                      fillColor: Colors.white,
-                                      enabledBorder: Theme
-                                          .of(context)
-                                          .inputDecorationTheme
-                                          .border,
-                                      focusedBorder: Theme
-                                          .of(context)
-                                          .inputDecorationTheme
-                                          .border
-                                  ),
-                                  validator: (val) {
-                                    // ignore: prefer_is_empty
-                                    if (val?.length == 0 &&
-                                        val?.length != 10) {
-                                      return "Please enter valid mobile number";
-                                    }
-                                    else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.phone,
-                                  style: const TextStyle(
-                                    fontFamily: "Poppins",
-                                    //color: Colors.white
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 32),
-                                child: TextFormField(
-                                  decoration: InputDecoration(
-                                      labelText: StringUtils.middleName,
-                                      labelStyle: TextStyle(color: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodyText2
-                                          ?.color),
-                                      fillColor: Colors.white,
-                                      enabledBorder: Theme
-                                          .of(context)
-                                          .inputDecorationTheme
-                                          .border,
-                                      focusedBorder: Theme
-                                          .of(context)
-                                          .inputDecorationTheme
-                                          .border
-                                  ),
-                                  validator: (val) {
-                                    // ignore: prefer_is_empty
-                                    if (val?.length == 0 &&
-                                        val?.length != 10) {
-                                      return "Please enter valid mobile number";
-                                    }
-                                    else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.phone,
-                                  style: const TextStyle(
-                                    fontFamily: "Poppins",
-                                    //color: Colors.white
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 32),
-                                child: TextFormField(
-                                  decoration: InputDecoration(
-                                      labelText: StringUtils.lastName,
-                                      labelStyle: TextStyle(color: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodyText2
-                                          ?.color),
-                                      fillColor: Colors.white,
-                                      enabledBorder: Theme
-                                          .of(context)
-                                          .inputDecorationTheme
-                                          .border,
-                                      focusedBorder: Theme
-                                          .of(context)
-                                          .inputDecorationTheme
-                                          .border
-                                  ),
-                                  validator: (val) {
-                                    // ignore: prefer_is_empty
-                                    if (val?.length == 0 &&
-                                        val?.length != 10) {
-                                      return "Please enter valid mobile number";
-                                    }
-                                    else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.phone,
-                                  style: const TextStyle(
-                                    fontFamily: "Poppins",
-                                    //color: Colors.white
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 32),
-                                child: TextFormField(
-                                  decoration: InputDecoration(
-                                      labelText: StringUtils.gender,
-                                      labelStyle: TextStyle(color: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodyText2
-                                          ?.color),
-                                      fillColor: Colors.white,
-                                      enabledBorder: Theme
-                                          .of(context)
-                                          .inputDecorationTheme
-                                          .border,
-                                      focusedBorder: Theme
-                                          .of(context)
-                                          .inputDecorationTheme
-                                          .border
-                                  ),
-                                  validator: (val) {
-                                    // ignore: prefer_is_empty
-                                    if (val?.length == 0 &&
-                                        val?.length != 10) {
-                                      return "Please enter valid mobile number";
-                                    }
-                                    else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.phone,
-                                  style: const TextStyle(
-                                    fontFamily: "Poppins",
-                                    //color: Colors.white
-                                  ),
-                                ),
-                              ),
-
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 32),
-                                child: Row(
-                                  children: [
-                                    Flexible(
-                                      flex: 1,
-                                      child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 8, horizontal: 16),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                width: 1,
-                                                color: Colors.white,
-                                              ),
-                                              borderRadius: const BorderRadius
-                                                  .all(Radius.circular(8))
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment
-                                                .spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment
-                                                .center,
-                                            children: [
-                                              Container(
-                                                width: (MediaQuery
-                                                    .of(context)
-                                                    .size
-                                                    .width / 2) - 108,
-                                                child: const Text(
-                                                  StringUtils.front,
-                                                  maxLines: 2,
-                                                  overflow: TextOverflow
-                                                      .ellipsis,
-                                                  textAlign: TextAlign.start,),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 8.0, bottom: 8.0),
-                                                child: SvgPicture.asset(
-                                                    SvgImages.iconAttachment,
-                                                    height: 20, width: 20),
-                                              ),
-                                            ],
-                                          )
-                                      ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 32),
+                              child: Row(
+                                children: [
+                                  Flexible(
+                                    flex: 1,
+                                    child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8, horizontal: 16),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                              width: 1,
+                                              color: Colors.white,
+                                            ),
+                                            borderRadius: const BorderRadius
+                                                .all(Radius.circular(8))
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment
+                                              .spaceBetween,
+                                          crossAxisAlignment: CrossAxisAlignment
+                                              .center,
+                                          children: [
+                                            Container(
+                                              width: (MediaQuery
+                                                  .of(context)
+                                                  .size
+                                                  .width / 2) - 108,
+                                              child: const Text(
+                                                StringUtils.front,
+                                                maxLines: 2,
+                                                overflow: TextOverflow
+                                                    .ellipsis,
+                                                textAlign: TextAlign.start,),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 8.0, bottom: 8.0),
+                                              child: SvgPicture.asset(
+                                                  SvgImages.iconAttachment,
+                                                  height: 20, width: 20),
+                                            ),
+                                          ],
+                                        )
                                     ),
-                                    const SizedBox(width: 16,),
-                                    Flexible(
-                                      flex: 1,
-                                      child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 8, horizontal: 16),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                width: 1,
-                                                color: Colors.white,
-                                              ),
-                                              borderRadius: const BorderRadius
-                                                  .all(Radius.circular(8))
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment
-                                                .spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment
-                                                .center,
-                                            children: [
-                                              Container(
-                                                width: (MediaQuery
-                                                    .of(context)
-                                                    .size
-                                                    .width / 2) - 108,
-                                                child: const Text(
-                                                  StringUtils.back, maxLines: 2,
-                                                  overflow: TextOverflow
-                                                      .ellipsis,
-                                                  textAlign: TextAlign.start,),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 8.0, bottom: 8.0),
-                                                child: SvgPicture.asset(
-                                                    SvgImages.iconAttachment,
-                                                    height: 20, width: 20),
-                                              ),
-                                            ],
-                                          )
-                                      ),
+                                  ),
+                                  const SizedBox(width: 16,),
+                                  Flexible(
+                                    flex: 1,
+                                    child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8, horizontal: 16),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                              width: 1,
+                                              color: Colors.white,
+                                            ),
+                                            borderRadius: const BorderRadius
+                                                .all(Radius.circular(8))
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment
+                                              .spaceBetween,
+                                          crossAxisAlignment: CrossAxisAlignment
+                                              .center,
+                                          children: [
+                                            Container(
+                                              width: (MediaQuery
+                                                  .of(context)
+                                                  .size
+                                                  .width / 2) - 108,
+                                              child: const Text(
+                                                StringUtils.back, maxLines: 2,
+                                                overflow: TextOverflow
+                                                    .ellipsis,
+                                                textAlign: TextAlign.start,),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 8.0, bottom: 8.0),
+                                              child: SvgPicture.asset(
+                                                  SvgImages.iconAttachment,
+                                                  height: 20, width: 20),
+                                            ),
+                                          ],
+                                        )
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                    0.0, 0, 0, 12),
-                                child: Text(
-                                  StringUtils
-                                      .uploadContent,
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                      color: appTheme.separatorColor,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.normal),),
-                              ),
-                            ],
-                          ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  0.0, 0, 0, 12),
+                              child: Text(
+                                StringUtils
+                                    .uploadContent,
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                    color: appTheme.separatorColor,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.normal),),
+                            ),
+                          ],
                         ),
                       ],
                     ),

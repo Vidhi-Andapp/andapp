@@ -30,7 +30,12 @@ class ApiClient {
   static String getUrls = "$baseUrl/api/mobileApi/GetUrl";
   static String requestACallBack = "$baseUrl/api/mobileApi/RequestcallBack";
   static String registerDevice = "$baseUrl/api/mobileApi/RegisterDevice";
+  static String updateMobile = "$baseUrl/api/mobileApi/Updatemobile";
   static String sendOTP = "$baseUrl/api/mobileApi/SendOTP";
+  static String getAadharData = "$baseUrl/api/mobileApi/GetAadhardata";
+  static String getPanData = "$baseUrl/api/mobileApi/GetPandata";
+  static String getGstData = "$baseUrl/api/mobileApi/GetGSTdata";
+  static String getBankData = "$baseUrl/api/mobileApi/GetBankdata";
 
   Map<String, String> getJsonHeader() {
     var header = <String, String>{};

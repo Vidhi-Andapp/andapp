@@ -1,5 +1,6 @@
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/screen/registration/bank_details.dart';
+import 'package:andapp/screen/registration/posp_registration_bloc.dart';
 import 'package:andapp/screen/registration/registration_phases.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,12 +17,15 @@ class AccountDetails extends StatefulWidget {
 }
 
 class _AccountDetailsState extends State<AccountDetails> {
-  //final LoginSendOTPBloc _bloc = LoginSendOTPBloc();
+  final PospRegistrationBloc bloc = PospRegistrationBloc();
+  final panValidateKey = GlobalKey<FormState>(),
+      validateAadharOTPKey = GlobalKey<FormState>();
+
   bool _withGSTA = false,_withGSTM = false;
 
   @override
   Widget build(BuildContext context) {
-    final _appTheme = AppTheme.of(context);
+    final appTheme = AppTheme.of(context);
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -51,11 +55,6 @@ class _AccountDetailsState extends State<AccountDetails> {
                         .backButtonTooltip,
                   );
                 },)),
-          /*
-          const Icon(
-            Icons.arrow_back,
-            color: Colors.white
-          ),),*/
           backgroundColor: Theme
               .of(context)
               .scaffoldBackgroundColor, //const Color(0xff222222),
@@ -79,8 +78,8 @@ class _AccountDetailsState extends State<AccountDetails> {
                                 SizedBox(
                                     height: 50,
                                     child: TabBar(
-                                      indicatorColor: _appTheme.primaryColor,
-                                      labelColor: _appTheme.primaryColor,
+                                      indicatorColor: appTheme.primaryColor,
+                                      labelColor: appTheme.primaryColor,
                                       indicatorPadding: const EdgeInsets.symmetric(
                                           horizontal: 16),
                                       isScrollable: true,
@@ -100,168 +99,170 @@ class _AccountDetailsState extends State<AccountDetails> {
                                 height: 300,
                                 child: TabBarView(
                                   children: [
-                                    Container(
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8, horizontal: 16),
-                                            child: MergeSemantics(
-                                              child: ListTile(
-                                                title: const Text(
-                                                    StringUtils.personalWithGST),
-                                                trailing: CupertinoSwitch(
-                                                  activeColor: _appTheme.primaryColor,
-                                                  trackColor : _appTheme.speedDialLabelBgDT,
-                                                  value: _withGSTA,
-                                                  onChanged: (bool value) {
-                                                    setState(() {
-                                                      _withGSTA = value;
-                                                    });
-                                                  },
-                                                ),
-                                                onTap: () {
+                                    Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 8, horizontal: 16),
+                                          child: MergeSemantics(
+                                            child: ListTile(
+                                              title: const Text(
+                                                  StringUtils.personalWithGST),
+                                              trailing: CupertinoSwitch(
+                                                activeColor: appTheme.primaryColor,
+                                                trackColor : appTheme.speedDialLabelBgDT,
+                                                value: _withGSTA,
+                                                onChanged: (bool value) {
                                                   setState(() {
-                                                    _withGSTA = !_withGSTA;
+                                                    _withGSTA = value;
                                                   });
                                                 },
                                               ),
+                                              onTap: () {
+                                                setState(() {
+                                                  _withGSTA = !_withGSTA;
+                                                });
+                                              },
                                             ),
                                           ),
-                                          _withGSTA ?
-                                          Column(
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(
-                                                    vertical: 0, horizontal: 32),
-                                                child: TextFormField(
-                                                  decoration: InputDecoration(
-                                                      labelText: StringUtils.gstNumber,
-                                                      labelStyle: TextStyle(color: Theme
-                                                          .of(context)
-                                                          .textTheme
-                                                          .bodyText2
-                                                          ?.color),
-                                                      suffixIcon: Padding(
-                                                        padding: const EdgeInsets.symmetric(
-                                                            vertical: 8.0,
-                                                            horizontal: 12.0),
-                                                        child: PinkBorderButton(
-                                                          isEnabled: true,
-                                                          content: StringUtils.validate,
-                                                          onPressed: () {},),
-                                                      ),
-                                                      /*  fillColor: Colors.white,
-                                                      filled: true,*/
-                                                      enabledBorder: Theme
-                                                          .of(context)
-                                                          .inputDecorationTheme
-                                                          .border,
-                                                      focusedBorder: Theme
-                                                          .of(context)
-                                                          .inputDecorationTheme
-                                                          .border
-                                                  ),
-                                                  validator: (val) {
-                                                    // ignore: prefer_is_empty
-                                                    if (val?.length == 0 &&
-                                                        val?.length != 10) {
-                                                      return "Please enter valid mobile number";
-                                                    }
-                                                    else {
-                                                      return null;
-                                                    }
-                                                  },
-                                                  keyboardType: TextInputType.text,
-                                                  style: TextStyle(
-                                                      color: _appTheme.speedDialLabelBgDT
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(height: 8,),
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(
-                                                    vertical: 8, horizontal: 32),
-                                                child: TextFormField(
-                                                  decoration: InputDecoration(
-                                                    labelText: StringUtils.name,
+                                        ),
+                                        _withGSTA ?
+                                        Column(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  vertical: 0, horizontal: 32),
+                                              child: TextFormField(
+                                                decoration: InputDecoration(
+                                                    labelText: StringUtils.gstNumber,
                                                     labelStyle: TextStyle(color: Theme
                                                         .of(context)
                                                         .textTheme
                                                         .bodyText2
                                                         ?.color),
-                                                    border: Theme
+                                                    suffixIcon: Padding(
+                                                      padding: const EdgeInsets.symmetric(
+                                                          vertical: 8.0,
+                                                          horizontal: 12.0),
+                                                      child: PinkBorderButton(
+                                                        isEnabled: true,
+                                                        content: StringUtils.validate,
+                                                        onPressed: () {},),
+                                                    ),
+                                                    /*  fillColor: Colors.white,
+                                                    filled: true,*/
+                                                    enabledBorder: Theme
                                                         .of(context)
                                                         .inputDecorationTheme
                                                         .border,
-                                                    enabled:
-                                                    false,
-                                                    fillColor: _appTheme.speedDialLabelBgDT,
-                                                    filled: true,
-                                                  ),
-                                                  validator: (val) {
-                                                    // ignore: prefer_is_empty
-                                                    if (val?.length == 0 &&
-                                                        val?.length != 10) {
-                                                      return "Please enter valid mobile number";
-                                                    }
-                                                    else {
-                                                      return null;
-                                                    }
-                                                  },
-                                                  keyboardType: TextInputType.name,
-                                                  style: const TextStyle(
-                                                    fontFamily: "Poppins",
-                                                    //color: Colors.white
-                                                  ),
+                                                    focusedBorder: Theme
+                                                        .of(context)
+                                                        .inputDecorationTheme
+                                                        .border
+                                                ),
+                                                validator: (val) {
+                                                  // ignore: prefer_is_empty
+                                                  if (val?.length == 0 &&
+                                                      val?.length != 10) {
+                                                    return "Please enter valid mobile number";
+                                                  }
+                                                  else {
+                                                    return null;
+                                                  }
+                                                },
+                                                keyboardType: TextInputType.text,
+                                                style: TextStyle(
+                                                    color: appTheme.speedDialLabelBgDT
                                                 ),
                                               ),
+                                            ),
+                                            const SizedBox(height: 8,),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  vertical: 8, horizontal: 32),
+                                              child: TextFormField(
+                                                decoration: InputDecoration(
+                                                  labelText: StringUtils.name,
+                                                  labelStyle: TextStyle(color: Theme
+                                                      .of(context)
+                                                      .textTheme
+                                                      .bodyText2
+                                                      ?.color),
+                                                  border: Theme
+                                                      .of(context)
+                                                      .inputDecorationTheme
+                                                      .border,
+                                                  enabled:
+                                                  false,
+                                                  fillColor: appTheme.speedDialLabelBgDT,
+                                                  filled: true,
+                                                ),
+                                                validator: (val) {
+                                                  // ignore: prefer_is_empty
+                                                  if (val?.length == 0 &&
+                                                      val?.length != 10) {
+                                                    return "Please enter valid mobile number";
+                                                  }
+                                                  else {
+                                                    return null;
+                                                  }
+                                                },
+                                                keyboardType: TextInputType.name,
+                                                style: const TextStyle(
+                                                  fontFamily: "Poppins",
+                                                  //color: Colors.white
+                                                ),
+                                              ),
+                                            ),
 
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(
-                                                    vertical: 8, horizontal: 32),
-                                                child: TextFormField(
-                                                  decoration: InputDecoration(
-                                                    labelText: StringUtils.panNumber,
-                                                    labelStyle: TextStyle(color: Theme
-                                                        .of(context)
-                                                        .textTheme
-                                                        .bodyText2
-                                                        ?.color),
-                                                    border: Theme
-                                                        .of(context)
-                                                        .inputDecorationTheme
-                                                        .border,
-                                                    enabled:
-                                                    false,
-                                                    fillColor: _appTheme.speedDialLabelBgDT,
-                                                    filled: true,
-                                                  ),
-                                                  validator: (val) {
-                                                    // ignore: prefer_is_empty
-                                                    if (val?.length == 0 &&
-                                                        val?.length != 10) {
-                                                      return "Please enter valid mobile number";
-                                                    }
-                                                    else {
-                                                      return null;
-                                                    }
-                                                  },
-                                                  keyboardType: TextInputType.name,
-                                                  style: const TextStyle(
-                                                    fontFamily: "Poppins",
-                                                    //color: Colors.white
-                                                  ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  vertical: 8, horizontal: 32),
+                                              child: TextFormField(
+                                                decoration: InputDecoration(
+                                                  labelText: StringUtils.panNumber,
+                                                  labelStyle: TextStyle(color: Theme
+                                                      .of(context)
+                                                      .textTheme
+                                                      .bodyText2
+                                                      ?.color),
+                                                  border: Theme
+                                                      .of(context)
+                                                      .inputDecorationTheme
+                                                      .border,
+                                                  enabled:
+                                                  false,
+                                                  fillColor: appTheme.speedDialLabelBgDT,
+                                                  filled: true,
+                                                ),
+                                                validator: (val) {
+                                                  // ignore: prefer_is_empty
+                                                  if (val?.length == 0 &&
+                                                      val?.length != 10) {
+                                                    return "Please enter valid mobile number";
+                                                  }
+                                                  else {
+                                                    return null;
+                                                  }
+                                                },
+                                                keyboardType: TextInputType.name,
+                                                style: const TextStyle(
+                                                  fontFamily: "Poppins",
+                                                  //color: Colors.white
                                                 ),
                                               ),
-                                            ],
-                                          )
-                                              :
-                                          Column(
-                                            children: [
-                                              Padding(
+                                            ),
+                                          ],
+                                        )
+                                            :
+                                        Column(
+                                          children: [
+                                            Form(
+                                              key: panValidateKey,
+                                              child: Padding(
                                                 padding: const EdgeInsets.symmetric(horizontal: 32),
                                                 child: TextFormField(
+                                                  controller: bloc.panNo,
                                                   decoration: InputDecoration(
                                                       labelText: StringUtils.panNumber,
                                                       labelStyle: TextStyle(color: Theme
@@ -276,7 +277,14 @@ class _AccountDetailsState extends State<AccountDetails> {
                                                         child: PinkBorderButton(
                                                           isEnabled: true,
                                                           content: StringUtils.validate,
-                                                          onPressed: () {},),
+                                                          onPressed: () {
+                                                            final form = panValidateKey
+                                                                .currentState;
+                                                            if (form?.validate() ?? false) {
+                                                              form?.save();
+                                                              bloc.sendAadharOTP(context);
+                                                            }
+                                                          },),
                                                       ),
                                                       /*  fillColor: Colors.white,
                                                       filled: true,*/
@@ -301,231 +309,229 @@ class _AccountDetailsState extends State<AccountDetails> {
                                                   },
                                                   keyboardType: TextInputType.text,
                                                   style: TextStyle(
-                                                      color: _appTheme.speedDialLabelBgDT
+                                                      color: appTheme.speedDialLabelBgDT
                                                   ),
                                                 ),
                                               ),
-                                              const SizedBox(height: 8,),
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(
-                                                    vertical: 8, horizontal: 32),
-                                                child: TextFormField(
-                                                  decoration: InputDecoration(
-                                                    labelText: StringUtils.name,
-                                                    labelStyle: TextStyle(color: Theme
-                                                        .of(context)
-                                                        .textTheme
-                                                        .bodyText2
-                                                        ?.color),
-                                                    border: Theme
-                                                        .of(context)
-                                                        .inputDecorationTheme
-                                                        .border,
-                                                    enabled:
-                                                    false,
-                                                    fillColor: _appTheme.speedDialLabelBgDT,
-                                                    filled: true,
-                                                  ),
-                                                  validator: (val) {
-                                                    // ignore: prefer_is_empty
-                                                    if (val?.length == 0 &&
-                                                        val?.length != 10) {
-                                                      return "Please enter valid mobile number";
-                                                    }
-                                                    else {
-                                                      return null;
-                                                    }
-                                                  },
-                                                  keyboardType: TextInputType.name,
-                                                  style: const TextStyle(
-                                                    fontFamily: "Poppins",
-                                                    //color: Colors.white
-                                                  ),
+                                            ),
+                                            const SizedBox(height: 8,),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  vertical: 8, horizontal: 32),
+                                              child: TextFormField(
+                                                decoration: InputDecoration(
+                                                  labelText: StringUtils.name,
+                                                  labelStyle: TextStyle(color: Theme
+                                                      .of(context)
+                                                      .textTheme
+                                                      .bodyText2
+                                                      ?.color),
+                                                  border: Theme
+                                                      .of(context)
+                                                      .inputDecorationTheme
+                                                      .border,
+                                                  enabled:
+                                                  false,
+                                                  fillColor: appTheme.speedDialLabelBgDT,
+                                                  filled: true,
+                                                ),
+                                                validator: (val) {
+                                                  // ignore: prefer_is_empty
+                                                  if (val?.length == 0 &&
+                                                      val?.length != 10) {
+                                                    return "Please enter valid mobile number";
+                                                  }
+                                                  else {
+                                                    return null;
+                                                  }
+                                                },
+                                                keyboardType: TextInputType.name,
+                                                style: const TextStyle(
+                                                  fontFamily: "Poppins",
+                                                  //color: Colors.white
                                                 ),
                                               ),
-                                            ],
-                                          )
-                                        ],
-                                      ),
+                                            ),
+                                          ],
+                                        )
+                                      ],
                                     ),
-                                    Container(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8, horizontal: 16),
-                                            child: MergeSemantics(
-                                              child: ListTile(
-                                                title: const Text(
-                                                    StringUtils.personalWithGST),
-                                                trailing: CupertinoSwitch(
-                                                  activeColor: _appTheme.primaryColor,
-                                                  trackColor : _appTheme.speedDialLabelBgDT,
-                                                  value: _withGSTM,
-                                                  onChanged: (bool value) {
-                                                    setState(() {
-                                                      _withGSTM = value;
-                                                    });
-                                                  },
-                                                ),
-                                                onTap: () {
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 8, horizontal: 16),
+                                          child: MergeSemantics(
+                                            child: ListTile(
+                                              title: const Text(
+                                                  StringUtils.personalWithGST),
+                                              trailing: CupertinoSwitch(
+                                                activeColor: appTheme.primaryColor,
+                                                trackColor : appTheme.speedDialLabelBgDT,
+                                                value: _withGSTM,
+                                                onChanged: (bool value) {
                                                   setState(() {
-                                                    _withGSTM = !_withGSTM;
+                                                    _withGSTM = value;
                                                   });
                                                 },
                                               ),
+                                              onTap: () {
+                                                setState(() {
+                                                  _withGSTM = !_withGSTM;
+                                                });
+                                              },
                                             ),
                                           ),
-                                          _withGSTM ?
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment
-                                                .start,
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 32),
-                                                child: Container(
-                                                    padding: const EdgeInsets.symmetric(
-                                                        vertical: 8, horizontal: 16),
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                          width: 1,
-                                                          color: Colors.white,
-                                                        ),
-                                                        borderRadius: const BorderRadius
-                                                            .all(Radius.circular(8))
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment
-                                                          .spaceBetween,
-                                                      crossAxisAlignment: CrossAxisAlignment
-                                                          .center,
-                                                      children: [
-                                                        const Text(
-                                                          StringUtils.gstCertification,
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          textAlign: TextAlign.start,),
-                                                        Padding(
-                                                          padding: const EdgeInsets.only(
-                                                              top: 8.0, bottom: 8.0),
-                                                          child: SvgPicture.asset(
-                                                              SvgImages.iconAttachment,
-                                                              height: 20, width: 20),
-                                                        ),
-                                                      ],
-                                                    )
-                                                ),
+                                        ),
+                                        _withGSTM ?
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment
+                                              .start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 32),
+                                              child: Container(
+                                                  padding: const EdgeInsets.symmetric(
+                                                      vertical: 8, horizontal: 16),
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                        width: 1,
+                                                        color: Colors.white,
+                                                      ),
+                                                      borderRadius: const BorderRadius
+                                                          .all(Radius.circular(8))
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment
+                                                        .spaceBetween,
+                                                    crossAxisAlignment: CrossAxisAlignment
+                                                        .center,
+                                                    children: [
+                                                      const Text(
+                                                        StringUtils.gstCertification,
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        textAlign: TextAlign.start,),
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(
+                                                            top: 8.0, bottom: 8.0),
+                                                        child: SvgPicture.asset(
+                                                            SvgImages.iconAttachment,
+                                                            height: 20, width: 20),
+                                                      ),
+                                                    ],
+                                                  )
                                               ),
-                                              const SizedBox(height: 8,),
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 32),
-                                                child: Container(
-                                                    padding: const EdgeInsets.symmetric(
-                                                        vertical: 8, horizontal: 16),
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                          width: 1,
-                                                          color: Colors.white,
-                                                        ),
-                                                        borderRadius: const BorderRadius
-                                                            .all(Radius.circular(8))
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment
-                                                          .spaceBetween,
-                                                      crossAxisAlignment: CrossAxisAlignment
-                                                          .center,
-                                                      children: [
-                                                        const Text(
-                                                          StringUtils.panCard,
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          textAlign: TextAlign.start,),
-                                                        Padding(
-                                                          padding: const EdgeInsets.only(
-                                                              top: 8.0, bottom: 8.0),
-                                                          child: SvgPicture.asset(
-                                                              SvgImages.iconAttachment,
-                                                              height: 20, width: 20),
-                                                        ),
-                                                      ],
-                                                    )
-                                                ),
+                                            ),
+                                            const SizedBox(height: 8,),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 32),
+                                              child: Container(
+                                                  padding: const EdgeInsets.symmetric(
+                                                      vertical: 8, horizontal: 16),
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                        width: 1,
+                                                        color: Colors.white,
+                                                      ),
+                                                      borderRadius: const BorderRadius
+                                                          .all(Radius.circular(8))
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment
+                                                        .spaceBetween,
+                                                    crossAxisAlignment: CrossAxisAlignment
+                                                        .center,
+                                                    children: [
+                                                      const Text(
+                                                        StringUtils.panCard,
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        textAlign: TextAlign.start,),
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(
+                                                            top: 8.0, bottom: 8.0),
+                                                        child: SvgPicture.asset(
+                                                            SvgImages.iconAttachment,
+                                                            height: 20, width: 20),
+                                                      ),
+                                                    ],
+                                                  )
                                               ),
-                                              Padding(
-                                                padding: const EdgeInsets.fromLTRB(
-                                                    32, 8, 32, 12),
-                                                child: Text(
-                                                  StringUtils
-                                                      .uploadContent,
-                                                  textAlign: TextAlign.start,
-                                                  style: TextStyle(
-                                                      color: _appTheme.separatorColor,
-                                                      fontSize: 12,
-                                                      fontWeight: FontWeight.normal),),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.fromLTRB(
+                                                  32, 8, 32, 12),
+                                              child: Text(
+                                                StringUtils
+                                                    .uploadContent,
+                                                textAlign: TextAlign.start,
+                                                style: TextStyle(
+                                                    color: appTheme.separatorColor,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.normal),),
+                                            ),
+                                          ],
+                                        )
+                                            :
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment
+                                              .start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 32),
+                                              child: Container(
+                                                  padding: const EdgeInsets.symmetric(
+                                                      vertical: 8, horizontal: 16),
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                        width: 1,
+                                                        color: Colors.white,
+                                                      ),
+                                                      borderRadius: const BorderRadius
+                                                          .all(Radius.circular(8))
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment
+                                                        .spaceBetween,
+                                                    crossAxisAlignment: CrossAxisAlignment
+                                                        .center,
+                                                    children: [
+                                                      const Text(
+                                                        StringUtils.panCard,
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        textAlign: TextAlign.start,),
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(
+                                                            top: 8.0, bottom: 8.0),
+                                                        child: SvgPicture.asset(
+                                                            SvgImages.iconAttachment,
+                                                            height: 20, width: 20),
+                                                      ),
+                                                    ],
+                                                  )
                                               ),
-                                            ],
-                                          )
-                                              :
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment
-                                                .start,
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 32),
-                                                child: Container(
-                                                    padding: const EdgeInsets.symmetric(
-                                                        vertical: 8, horizontal: 16),
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                          width: 1,
-                                                          color: Colors.white,
-                                                        ),
-                                                        borderRadius: const BorderRadius
-                                                            .all(Radius.circular(8))
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment
-                                                          .spaceBetween,
-                                                      crossAxisAlignment: CrossAxisAlignment
-                                                          .center,
-                                                      children: [
-                                                        const Text(
-                                                          StringUtils.panCard,
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          textAlign: TextAlign.start,),
-                                                        Padding(
-                                                          padding: const EdgeInsets.only(
-                                                              top: 8.0, bottom: 8.0),
-                                                          child: SvgPicture.asset(
-                                                              SvgImages.iconAttachment,
-                                                              height: 20, width: 20),
-                                                        ),
-                                                      ],
-                                                    )
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.fromLTRB(
-                                                    32, 8, 32, 12),
-                                                child: Text(
-                                                  StringUtils
-                                                      .uploadContent,
-                                                  textAlign: TextAlign.start,
-                                                  style: TextStyle(
-                                                      color: _appTheme.separatorColor,
-                                                      fontSize: 12,
-                                                      fontWeight: FontWeight.normal),),
-                                              ),
-                                            ],
-                                          )
-                                        ],
-                                      ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.fromLTRB(
+                                                  32, 8, 32, 12),
+                                              child: Text(
+                                                StringUtils
+                                                    .uploadContent,
+                                                textAlign: TextAlign.start,
+                                                style: TextStyle(
+                                                    color: appTheme.separatorColor,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.normal),),
+                                            ),
+                                          ],
+                                        )
+                                      ],
                                     ),
                                   ],
                                 ),
