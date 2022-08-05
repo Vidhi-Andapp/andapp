@@ -43,12 +43,17 @@ dependencies:
   timer_button: ^2.0.0
   url_launcher: ^6.1.5
   email_validator: ^2.0.1
-  govt_documents_validator: ^0.0.1
   flutter_widget_from_html: ^0.8.5
   cupertino_stepper: ^0.2.1
   enhance_stepper: ^0.1.1
   sms_autofill: ^2.2.0
   dropdown_button2: ^1.6.3
+  file_picker: ^5.0.0
+  #syncfusion_flutter_gauges: ^18.2.44
+  percent_indicator: ^4.2.2
+  scrollable_positioned_list: ^0.2.0-nullsafety.0
+  expandable_page_view: ^1.0.17
+  encrypt: ^5.0.1
 
 dev_dependencies:
   flutter_test:

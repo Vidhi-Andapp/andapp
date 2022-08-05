@@ -3,8 +3,10 @@ import 'package:andapp/model/common_data.dart';
 import 'package:andapp/model/get_bank_data.dart';
 import 'package:andapp/model/get_gst_data.dart';
 import 'package:andapp/model/get_pan_data.dart';
+import 'package:andapp/model/get_question_answer_list.dart';
 import 'package:andapp/model/get_urls.dart';
 import 'package:andapp/model/send_otp.dart';
+import 'package:andapp/model/submit_answer.dart';
 import 'package:andapp/model/token.dart';
 import 'package:andapp/services/api_client.dart';
 import 'package:andapp/services/api_services.dart';
@@ -60,9 +62,13 @@ class ApiRepositoryIml extends ApiRepository {
     return _apiServices.getBankData(acNo ?? '', ifsc ?? "");
   }
 
-/*  @override
-  Future<Map<String, dynamic>> commonValidateOTP({String? mobileNo, String? type, String? otp, String? email}) {
-    return _apiServices.commonSendOTP(mobileNo ?? '', ApiClient.otpTypeSMS,"","");
+  @override
+  Future<GetQuestionList?> getQuestions({String? trainingType}){
+    return _apiServices.getQuestions(trainingType ?? '');
+  }
+  @override
+  Future<SubmitAnswer?> submitAnswers({String? trainingType,required List<AnswerList> ansList}){
+    return _apiServices.submitAnswers(trainingType ?? '',ansList: ansList);
   }
   @override
   Future<Map<String, dynamic>> registerPosp({String? acNo, String? ifsc}) {
@@ -74,7 +80,7 @@ class ApiRepositoryIml extends ApiRepository {
   Future<Map<String, dynamic>> getDashboard() {
     // TODO: implement getDashboard
     throw UnimplementedError();
-  }*/
+  }
 }
 
 abstract class ApiRepository {
@@ -88,7 +94,9 @@ abstract class ApiRepository {
   Future<GetPan?> getPanData({String? panNo});
   Future<GetGst?> getGstData({String? gstNo});
   Future<GetBank?> getBankData({String? acNo, String? ifsc});
-  /*Future<Map<String, dynamic>> commonValidateOTP({String? mobileNo, String? type, String? otp, String? email});
+  Future<GetQuestionList?> getQuestions({String? trainingType});
+  Future<SubmitAnswer?> submitAnswers({String? trainingType,required List<AnswerList> ansList});
   Future<Map<String, dynamic>> registerPosp({String? acNo, String? ifsc});
-  Future<Map<String, dynamic>> getDashboard();*/
+  Future<Map<String, dynamic>> getDashboard();
+  /*Future<Map<String, dynamic>> commonValidateOTP({String? mobileNo, String? type, String? otp, String? email});*/
 }

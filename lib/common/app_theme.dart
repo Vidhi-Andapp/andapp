@@ -37,7 +37,24 @@ class AppThemeState extends State<AppTheme> {
 
   //Color get primaryColor => Platform.isAndroid ? const Color(0xffFF74B4) : const Color(0xffec407a);
   Color get primaryColor => const Color(0xffec407a);
+
   Color get dtBlackColor => const Color(0xff222222);
+
+  Color get trainingCardBgColor => const Color(0xff404040);
+
+  Color get trainingCardBorderColor => const Color(0xffBEBEBE);
+
+  Color get trainingCardShadowColor => const Color(0xff6B6B6B);
+
+  Color get trainingResultTextColor => const Color(0xff15B412);
+
+  Color get trainingResultFailTextColor => const Color(0xffC60A0A);
+
+  Color get trainingResultQueBgColor => const Color(0xff3e3e3e);
+
+  Color get trainingResultQueBorderColor => const Color(0xff8c8c8c);
+
+  Color get trainingResultAnsBgColor => const Color(0xff343434);
 
   Color get resendColor => const Color(0xff989191);
 

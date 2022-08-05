@@ -1,11 +1,6 @@
 import 'package:andapp/common/app_theme.dart';
 import 'package:andapp/common/string_utils.dart';
-import 'package:andapp/common/tooltip.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'dart:math' as math;
-import '../../common/image_utils.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class RegistrationPhases extends StatefulWidget {
   final int? index;
@@ -17,8 +12,8 @@ class RegistrationPhases extends StatefulWidget {
 
 class RegistrationPhasesState extends State<RegistrationPhases>
     with SingleTickerProviderStateMixin {
+  int? currIndex = 1;
 
-  int? currIndex = 1; 
   @override
   initState() {
     // a bit faster animation, which looks better: 300

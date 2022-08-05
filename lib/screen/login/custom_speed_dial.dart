@@ -1,6 +1,7 @@
 import 'package:andapp/common/app_theme.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/common/tooltip.dart';
+import 'package:andapp/services/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:math' as math;
@@ -89,13 +90,13 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
               _makePhoneCall();
             },
             heroTag: UniqueKey(),
-            // tooltip: '',
-            child: Center(
-                child: SvgPicture.asset(SvgImages.iconCall, height: 20,)),
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             backgroundColor: _appTheme.primaryColor,
             foregroundColor: Colors.white,
             elevation: _shouldHaveElevation ? 6.0 : 0,
+            // tooltip: '',
+            child: Center(
+                child: SvgPicture.asset(SvgImages.iconCall, height: 20,)),
           ),
         )
     );
@@ -110,9 +111,10 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
   }
   /*final Uri toLaunch =
   Uri(host: StringUtils.userManualLink, path: 'headers/');*/
-  Future<void> _launchInBrowser(String url,String path) async {
-    final Uri toLaunch =
-    Uri.https(url, path);
+  Future<void> _launchInBrowser(String url) async {
+    final Uri toLaunch = Uri.parse(url);
+   /* final Uri toLaunch =
+    Uri.https(url, path);*/
     if (!await launchUrl(
       toLaunch,
       mode: LaunchMode.externalApplication,
@@ -153,12 +155,12 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
             onPressed: () {},
             // tooltip: '',
             heroTag: UniqueKey(),
-            child: Center(
-                child: SvgPicture.asset(SvgImages.iconCallBack, height: 20,)),
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             backgroundColor: _appTheme.primaryColor,
             foregroundColor: Colors.white,
             elevation: _shouldHaveElevation ? 6.0 : 0,
+            child: Center(
+                child: SvgPicture.asset(SvgImages.iconCallBack, height: 20,)),
           ),
         )
     );
@@ -185,12 +187,12 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
             },
             // tooltip: '',
             heroTag: UniqueKey(),
-            child: Center(
-                child: SvgPicture.asset(SvgImages.iconEmail, height: 20,)),
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             backgroundColor: _appTheme.primaryColor,
             foregroundColor: Colors.white,
             elevation: _shouldHaveElevation ? 6.0 : 0,
+            child: Center(
+                child: SvgPicture.asset(SvgImages.iconEmail, height: 20,)),
           ),
         )
     );
@@ -213,7 +215,7 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
           width: 36,
           child: FloatingActionButton(
             onPressed: () {
-              _launchInBrowser(StringUtils.raiseTicketLink,StringUtils.raiseTicketLinkPath);
+              _launchInBrowser(ApiClient.freshDeskUrl);
             },
             // tooltip: '',
             heroTag: UniqueKey(),
@@ -245,7 +247,7 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
           width: 36,
           child: FloatingActionButton(
             onPressed: () {
-              _launchInBrowser(StringUtils.userManualLink,StringUtils.userManualLinkPath);
+              _launchInBrowser(ApiClient.userManualUrl);
             },
             // tooltip: '',
             heroTag: UniqueKey(),
@@ -294,12 +296,6 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
               borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0),bottomLeft: Radius.circular(8.0))
           ),
           child:
-         /* AnimatedIcon(
-            icon: AnimatedIcons.view_list,
-            size: 20,
-            progress: _animateIcon,
-          ),*/
-
           Transform.rotate(
             origin: Offset(_animateIcon.value , 0),
             angle: (1 - _animateIcon.value ) * math.pi / 15,

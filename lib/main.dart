@@ -1,9 +1,9 @@
+import 'package:andapp/screen/login/login_send_otp_page.dart';
 import 'package:flutter/material.dart';
 import 'package:andapp/common/app_theme.dart';
 import 'package:andapp/common/custom_progress.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/di/app_component_base.dart';
-import 'package:andapp/screen/login/login_send_otp_page.dart';
 import 'package:flutter/services.dart';
 
 void main() {
@@ -37,14 +37,15 @@ class MyAppState extends State<MyApp> {
     final ThemeData base = ThemeData.dark();
     return base.copyWith(
       visualDensity: VisualDensity.adaptivePlatformDensity,
-      colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.grey)
+      brightness: Brightness.light,
+      colorScheme: const ColorScheme.dark(primary: Colors.grey)
           .copyWith(
-          secondary: Colors.grey, brightness: Brightness.dark),
+          secondary: Colors.grey),
       appBarTheme: Theme
           .of(context)
           .appBarTheme
           .copyWith(systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarIconBrightness: Brightness.dark,),
+          statusBarIconBrightness: Brightness.light,),
           titleTextStyle: const TextStyle(
           fontSize: 22,
           color: Colors.white,
@@ -55,6 +56,7 @@ class MyAppState extends State<MyApp> {
           .of(context)
           .appBarTheme.iconTheme?.copyWith(color: Colors.white)),
       primaryColor: Colors.black,
+      unselectedWidgetColor : Colors.white,
       scaffoldBackgroundColor: _appTheme.dtBlackColor,
       primaryTextTheme: Typography(platform: TargetPlatform.iOS).white,
       textTheme: const TextTheme().copyWith(
@@ -93,9 +95,10 @@ class MyAppState extends State<MyApp> {
   }
 
   ThemeData? lightThemeData(BuildContext context) {
-    final ThemeData base = ThemeData.dark();
+    final ThemeData base = ThemeData.light();
     return base.copyWith(
       visualDensity: VisualDensity.adaptivePlatformDensity,
+      brightness: Brightness.light,
       colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.grey)
           .copyWith(
           secondary: Colors.grey, brightness: Brightness.dark),
@@ -103,8 +106,9 @@ class MyAppState extends State<MyApp> {
           .of(context)
           .appBarTheme
           .copyWith(systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarIconBrightness: Brightness.light)),
+          statusBarIconBrightness: Brightness.dark)),
       primaryColor: Colors.white,
+      unselectedWidgetColor : Colors.white,
       scaffoldBackgroundColor: Colors.white,
       primaryTextTheme: Typography(platform: TargetPlatform.iOS).white,
       textTheme: const TextTheme().copyWith(
@@ -160,7 +164,7 @@ class MyAppState extends State<MyApp> {
                         return IgnorePointer(
                             ignoring: snapshot.data ?? false,
                             child: NotificationListener<
-                                    OverscrollIndicatorNotification>(
+                                OverscrollIndicatorNotification>(
                                 onNotification: (overscroll) {
                                   overscroll.disallowIndicator();
                                   return true;

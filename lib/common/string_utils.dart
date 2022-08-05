@@ -41,9 +41,9 @@ class StringUtils {
   static const String firstName = "First Name";
   static const String middleName = "Middle Name";
   static const String lastName = "Last Name";
-  static const String aadhar = "Aadhar";
-  static const String front = "Aadhar Front";
-  static const String back = "Aadhar Back";
+  //static const String aadhar = "Aadhar";
+  static const String aadharFront = "Aadhar Front";
+  static const String aadharBack = "Aadhar Back";
   static const String panNumber = "PAN Number";
   static const String gstNumber = "GST Number";
   static const String personalWithGST = "Personal with GST";
@@ -62,7 +62,9 @@ class StringUtils {
   static const String postGraduation = "Post Graduation";
   static const String phd = "Phd";
   static const String other = "Other";
-
+  static const String previous = "Previous";
+  static const String next = "Next";
+  static const String submit = "Submit";
   static const String accCreated = "Account Created";
   static const String pospReg = "PoSP Registration";
   static const String training = "Training";
@@ -81,9 +83,19 @@ class StringUtils {
   static const String menuCopy = "Copy";
   static const String menuLogout = "Logout";
 
-
-
+  static const String ansA = "a";
+  static const String ansB = "b";
+  static const String ansC = "c";
+  static const String ansD = "d";
 
   static const String updateMobSuccess = "Your Mobile Number has been updated successfully with Andapp";
-
+  static const String trainingSuccessTitle = "Congratulations...!";
+  static const String trainingSuccessMessage = "You have done an Incredible work. Welcome on board as iAND Insurance Advisor.";
+  static const String trainingFailTitle = "Oops ...!!";
+  static const String trainingFailMessage = "You have not achieved 40% of the score... We request you to retake the exam.....";
+  static const String downloadCertificate = "Download Certificate";
+  static const String reExam = "Re-Exam";
+  static const String pass = "pass"; // In any language,It has to "pass" only.
+  static const String totalQue = "Total Questions";
+  static const String totalAns = "Total Correct Answers";
 }

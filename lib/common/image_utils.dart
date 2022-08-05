@@ -23,6 +23,9 @@ class SvgImages{
   static String iconBankDetails = 'lib/assets/bankdetails.svg';
   static String iconAcademicDetails = 'lib/assets/academicdetails.svg';
   static String iconAttachment = 'lib/assets/attachment.svg';
+  static String iconClock = 'lib/assets/clock.svg';
+  static String iconVideo = 'lib/assets/play.svg';
+  static String iconBar = 'lib/assets/bar.svg';
   static String dropdown = 'lib/assets/dropdown.svg';
   static String dashboardCompleted = 'lib/assets/right.svg';
   static String dashboardPending = 'lib/assets/dashboardPending.svg';
@@ -32,4 +35,8 @@ class SvgImages{
   static String menuReferral = 'lib/assets/referral.svg';
   static String menuTraining = 'lib/assets/certification.svg';
   static String menuLogout = 'lib/assets/logout.svg';
+  static String trainingResult = 'lib/assets/training_result.svg';
+  static String radioSelected = 'lib/assets/radio_selected.svg';
+  static String radioUnSelected = 'lib/assets/radio_unselected.svg';
+
 }

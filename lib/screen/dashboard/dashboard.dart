@@ -4,6 +4,7 @@ import 'package:andapp/common/pink_border_button.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/enum/font_type.dart';
 import 'package:andapp/screen/nav_bar.dart';
+import 'package:andapp/screen/training/training_dashboard_gi.dart';
 import 'package:enhance_stepper/enhance_stepper.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
@@ -19,7 +20,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   //final LoginSendOTPBloc _bloc = LoginSendOTPBloc();
   int groupValue = 0;
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final StepperType _type = StepperType.vertical;
 
   List<Tuple3> tuples = const [
@@ -130,11 +131,12 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   Widget training(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+           /* Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -164,9 +166,24 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                 const SizedBox(width: 10,),
                 const Text(StringUtils.day2),
               ],
-            ),
+            ),*/
             const SizedBox(height: 10,),
-            Row(
+            Padding(
+              padding: const EdgeInsets.only(left: 16, top: 4.0, bottom: 8),
+              child: PinkBorderButton(
+                isEnabled: true,
+                content: "Start Day 1",
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) {
+                          return const TrainingDashboardGI();
+                        }),
+                  );
+                },),
+            ),
+       /*     Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -183,7 +200,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                 isEnabled: true,
                 content: "Start Exam",
                 onPressed: () {
-                    /* final form = sendOTPKey
+                    *//* final form = sendOTPKey
                             .currentState;
                    if (form?.validate() ?? false) {
                           form?.save();
@@ -196,9 +213,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                         .text,);
                                 }),
                           );
-                        }*/
+                        }*//*
                 },),
-            ),
+            ),*/
           ],
         ),
         Column(

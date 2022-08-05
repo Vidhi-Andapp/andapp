@@ -1,3 +1,5 @@
+import 'package:andapp/common/app_theme.dart';
+import 'package:andapp/common/pink_border_button.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/screen/registration/bank_details.dart';
 import 'package:andapp/screen/registration/posp_registration_bloc.dart';
@@ -6,8 +8,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:andapp/common/image_utils.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../common/app_theme.dart';
-import '../../common/pink_border_button.dart';
 
 class AccountDetails extends StatefulWidget {
   const AccountDetails({Key? key}) : super(key: key);
@@ -30,7 +30,7 @@ class _AccountDetailsState extends State<AccountDetails> {
       length: 2,
       child: Scaffold(
           appBar: AppBar(
-              title: Text("PoSP Registration", textAlign: TextAlign.left
+              title: Text(StringUtils.pospReg, textAlign: TextAlign.left
                 , style: Theme
                     .of(context)
                     .appBarTheme
@@ -262,7 +262,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                                               child: Padding(
                                                 padding: const EdgeInsets.symmetric(horizontal: 32),
                                                 child: TextFormField(
-                                                  controller: bloc.panNo,
+                                                  controller: bloc.panNumber,
                                                   decoration: InputDecoration(
                                                       labelText: StringUtils.panNumber,
                                                       labelStyle: TextStyle(color: Theme

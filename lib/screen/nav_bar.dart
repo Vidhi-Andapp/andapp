@@ -1,7 +1,10 @@
 import 'package:andapp/common/app_theme.dart';
+import 'package:andapp/common/custom_expansion.dart';
 import 'package:andapp/common/custom_user_account_drawer_header.dart';
 import 'package:andapp/common/image_utils.dart';
 import 'package:andapp/common/string_utils.dart';
+import 'package:andapp/screen/training/training_dashboard_gi.dart';
+import 'package:andapp/screen/training/training_dashboard_li.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -13,8 +16,7 @@ class NavBar extends StatefulWidget {
 }
 
 class _NavBarState extends State<NavBar> {
-
-  get _menu => addItems();
+  List<Item>? _menu;
 
   List<Item> addItems() {
     List<Item> data = [];
@@ -33,7 +35,7 @@ class _NavBarState extends State<NavBar> {
         leadingIcon: SvgImages.menuReferral,
         trailingIcon: const Icon(Icons.keyboard_arrow_down_outlined, size: 30,),
         expandedValue: [StringUtils.menuMail, StringUtils.menuCopy],
-        isExpanded: true
+        isExpanded: false
     ));
     data.add(Item(
         headerValue: StringUtils.training,
@@ -43,7 +45,7 @@ class _NavBarState extends State<NavBar> {
           StringUtils.generalInsurance,
           StringUtils.lifeInsurance
         ],
-        isExpanded: true
+        isExpanded: false
     ));
     data.add(Item(
       headerValue: StringUtils.menuLogout,
@@ -54,50 +56,87 @@ class _NavBarState extends State<NavBar> {
   }
 
   Widget _buildPanel() {
-    return ExpansionPanelList(
-      expandedHeaderPadding: const EdgeInsets.all(2),
+    return CustomExpansionPanelList(
+      elevation: 0,
+      key: const ValueKey<int>(1),
+      expandedHeaderPadding: EdgeInsets.zero,
       dividerColor : Colors.transparent,
       expansionCallback: (int index, bool isExpanded) {
-        /*for (int i = 0; i < _menu.length; i++) {
-          if (i == index) {
-            _menu[index].isExpanded = !isExpanded;
-          } else {
-            _menu[index].isExpanded = false;
-          }
-        }
-        setState(() {});*/
-        bool newValue = !_menu[index].isExpanded;
-        _menu[index].isExpanded = newValue;
         setState(() {
+          for (int i = 0; i < _menu!.length; i++) {
+            if (i != index) {
+              _menu![i].isExpanded = false;
+            }
+          }
+          bool newValue = !_menu![index].isExpanded;
+          _menu![index].isExpanded = newValue;
           isExpanded = newValue;
         });
       },
-      children: _menu.map<ExpansionPanel>((Item item) {
-        return ExpansionPanel(
+      children: _menu!.map<CustomExpansionPanel>((Item item) {
+        return CustomExpansionPanel(
           canTapOnHeader: true,
           backgroundColor: Theme
               .of(context)
               .scaffoldBackgroundColor,
           headerBuilder: (BuildContext context, bool isExpanded) {
             return ListTile(
-              /* tileColor : Theme
-                          .of(context)
-                          .scaffoldBackgroundColor,*/
               leading: SvgPicture.asset(
                 item.leadingIcon, height: 22, width: 22,color: Colors.white,),
               title: Text(item.headerValue ?? "",style: const TextStyle(fontWeight: FontWeight.w500,fontSize: 14,fontFamily: "Poppins"),),
-              //trailing: item.trailingIcon,
-              selected: isExpanded,
               dense: true,
             );
           },
+          hasIcon: item.trailingIcon == null ? false : true,
           body: (item.expandedValue != null)?
           ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.all(0),
               shrinkWrap: true,
               itemBuilder: (context, index) =>
                   ListTile(
-                    onTap: (){},
+                    onTap: () {
+                      if (item.expandedValue![index] ==
+                          StringUtils.generalInsurance) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) {
+                                return const TrainingDashboardGI();
+                              }),
+                        );
+                      }
+                      else if (item.expandedValue![index] ==
+                          StringUtils.lifeInsurance) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) {
+                                return const TrainingDashboardLI();
+                              }),
+                        );
+                      }
+                      else if (item.expandedValue![index] ==
+                          StringUtils.menuMail) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) {
+                                return const TrainingDashboardLI();
+                              }),
+                        );
+                      }
+                      else if (item.expandedValue![index] ==
+                          StringUtils.menuCopy) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) {
+                                return const TrainingDashboardLI();
+                              }),
+                        );
+                      }
+                    },
                     tileColor: const Color(0x20DADADA),
                     leading: SvgPicture.asset(
                       item.leadingIcon, height: 22, width: 22,color: Colors.transparent,),
@@ -117,6 +156,7 @@ class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
     final appTheme = AppTheme.of(context);
+    _menu ??= addItems();
     return Drawer(
       width: 300,
       backgroundColor: Theme

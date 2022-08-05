@@ -28,7 +28,8 @@ class LoginSendOTPBloc extends BlocBase {
         ?.getApiInterface()
         .getApiRepository()
         .token()
-        .then((tokenValue) {
+        .
+    then((tokenValue) {
       if (tokenValue != null && tokenValue.accessToken != null) {
         if (tokenValue.accessToken!.isNotEmpty) {
           ApiClient.bearerToken = tokenValue.accessToken!;
