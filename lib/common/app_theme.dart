@@ -66,6 +66,8 @@ class AppThemeState extends State<AppTheme> {
 
   Color get separatorColor => const Color(0xffDADADA);
 
+  Color get dropdownSeparatorColor => const Color(0xffC2C2C2);
+
   Color get greyBorderColor => const Color(0xffA4A4A4);
 
   Color get greyBgColor => const Color(0xffe9e9e9);

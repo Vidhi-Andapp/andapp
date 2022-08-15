@@ -1,13 +1,14 @@
 import 'dart:convert';
-import 'dart:io';
-import 'package:flutter/foundation.dart';
+
 import 'package:andapp/common/common_toast.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/di/app_component_base.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ApiClient {
-  static String baseUrl = 'http://ec2-3-7-188-163.ap-south-1.compute.amazonaws.com:8088';
+  static String baseUrl =
+      'http://ec2-3-7-188-163.ap-south-1.compute.amazonaws.com:8088';
   static String freshDeskUrl = '';
   static String userManualUrl = '';
   static String version = "";
@@ -19,16 +20,18 @@ class ApiClient {
   final String urlEncodedHeaderValue = 'application/x-www-form-urlencoded';
   final String formHeaderValue =
       'multipart/form-data; boundary=<calculated when request is sent>';
-  var successResponse = [200,400,422];
+  var successResponse = [200, 400, 422];
   static String otpTypeSMS = "sms";
   static String otpTypeEmail = "email";
+
   //static String otpTypeUpdateMob = "updatemobile";
   static String otpTypeAadhar = "aadharcard";
   static String trainingTypeGI = "gi";
   static String trainingTypeLI = "li";
 
   static String token = "$baseUrl/token";
-  static String bearerToken = "R8mUS4Xb9oIwQSYNaL5IxE6upH8nT9cf0R8Z7dkvemA2EOzOm3p3A_iix4Dqzr1aWAh2h26Jl8EvACyrD3Two6aaSFbWDnebY6vunlBr3kIDgJmBo4nDpKyBUwZstuBGyltsOaxL1aGxYpHqn9pFAtB_ZFiV5bS-Je9nqyheIWFi-y5wd81J7Wz_QfaLqLs_9Vyj0nrAxdG58AOeomMvWkFdaX65Gxgr39FbK6h_nGcwHIppS9wPIP5sC1uI9YEffUkcYWohlOjRA3XQG2ZtwGM_CIrEqPUGSduEscGWtHXspP3Hn9vci6G2kDkTsTnLYlHnqEwlW01kvCgKRoi_Cw";
+  static String bearerToken =
+      "s8hftw7L_JY4YTG3D6X3kGkXxmNsVTeB4P3-8HCkjpyESUtGOa_gOuE8ickcTYB8Ds_oSII4_DDMdFoL8PTwN4W7qEfpSCYcFpAAmyE-9Slk1R2aQIpr2DI1Bq4QcYvZlLS5AuMbTcgc-anF9OuKG_V-BPr79kKF-Q0j10yKYLwERYViSqizta_FSPLci5BGKMK71x7ferYMa28NipniUb3ontH8wRm27mnyOS_nxlcrFLovBzcsaoVW9uaBRQlV7x7OQrGYNrWZlLuG8Z9e9OHIPS3bHVQ1y4DMJjLwjgfc6mD1SD_IFiwBTqD9B5Pl_YbAIP3nomdA-Nos4lAUOg";
   static String getUrls = "$baseUrl/api/mobileApi/GetUrl";
   static String requestACallBack = "$baseUrl/api/mobileApi/RequestcallBack";
   static String registerDevice = "$baseUrl/api/mobileApi/RegisterDevice";
@@ -38,8 +41,13 @@ class ApiClient {
   static String getPanData = "$baseUrl/api/mobileApi/GetPandata";
   static String getGstData = "$baseUrl/api/mobileApi/GetGSTdata";
   static String getBankData = "$baseUrl/api/mobileApi/GetBankdata";
-  static String getQuestionAnswerList = "$baseUrl/api/mobileApi/GetQuestionList";
+  static String registerPosp = "$baseUrl/api/mobileApi/PUTPospData";
+  static String getDashboard = "$baseUrl/api/mobileApi/GetDashboard";
+  static String getQuestionAnswerList =
+      "$baseUrl/api/mobileApi/GetQuestionList";
   static String submitAnswers = "$baseUrl/api/mobileApi/SubmitAnswer";
+  static String downloadCerti = "$baseUrl/api/mobileApi/GetCertificate";
+  static final RegExp nameRegExp = RegExp('[a-zA-Z]');
 
   Map<String, String> getJsonHeader() {
     var header = <String, String>{};
@@ -47,12 +55,12 @@ class ApiClient {
     header[headerAuthorization] = 'Bearer $bearerToken';
     return header;
   }
+
   Map<String, String> getUrlEncodedHeader() {
     var header = <String, String>{};
     header[jsonHeaderName] = urlEncodedHeaderValue;
     return header;
   }
-
 
   Map<String, String> getFormHeader() {
     var header = <String, String>{};
@@ -75,8 +83,8 @@ class ApiClient {
       AppComponentBase.getInstance()?.disableWidget(true);
       try {
         var response = await http.get(Uri.parse(url), headers: headers);
-        if(successResponse.contains(response.statusCode)) {
-           if (isProgressBar) {
+        if (successResponse.contains(response.statusCode)) {
+          if (isProgressBar) {
             AppComponentBase.getInstance()?.showProgressDialog(false);
           }
           AppComponentBase.getInstance()?.disableWidget(false);
@@ -95,9 +103,8 @@ class ApiClient {
         }
         AppComponentBase.getInstance()?.disableWidget(false);
 
-        var e = exception is String
-            ? exception
-            : StringUtils.someThingWentWrong;
+        var e =
+            exception is String ? exception : StringUtils.someThingWentWrong;
         if (!isBackground) {
           CommonToast.getInstance()?.displayToast(message: e);
         }
@@ -129,12 +136,12 @@ class ApiClient {
       if (isProgressBar) {
         AppComponentBase.getInstance()?.showProgressDialog(true);
       }
-    //  AppComponentBase.getInstance()?.disableWidget(true);
+      //  AppComponentBase.getInstance()?.disableWidget(true);
       try {
         http.Response response = await http.post(Uri.parse(url),
             headers: headers, body: body, encoding: encoding);
-        if(successResponse.contains(response.statusCode)) {
-          //logPrint(requestData: body, response: response);
+        if (successResponse.contains(response.statusCode)) {
+          logPrint(requestData: body, response: response);
 
           if (isProgressBar) {
             AppComponentBase.getInstance()?.showProgressDialog(false);
@@ -157,9 +164,8 @@ class ApiClient {
           AppComponentBase.getInstance()?.showProgressDialog(false);
         }
         AppComponentBase.getInstance()?.disableWidget(false);
-        var e = exception is String
-            ? exception
-            : StringUtils.someThingWentWrong;
+        var e =
+            exception is String ? exception : StringUtils.someThingWentWrong;
         if (!isBackground) {
           CommonToast.getInstance()?.displayToast(message: e);
         }
@@ -229,48 +235,47 @@ class ApiClient {
 
   postsBase64(String url,
       {Map<String, String>? headers,
-        dynamic body,
-        Encoding? encoding,
-        bool isProgressBar = true,
-        bool isBackground = false}) async {
+      dynamic body,
+      Encoding? encoding,
+      bool isProgressBar = true,
+      bool isBackground = false}) async {
     headers ??= getJsonHeader();
     if (await AppComponentBase.getInstance()
-    ?.getNetworkManager()
-        .isConnected() ??
-    false) {
-    if (isProgressBar) {
-    AppComponentBase.getInstance()?.showProgressDialog(true);
-    }
-    AppComponentBase.getInstance()?.disableWidget(true);
-    try {
-    http.Response response = await http.post(Uri.parse(url),
-    headers: headers, body: body, encoding: encoding);
-    logPrint(requestData: body, response: response);
+            ?.getNetworkManager()
+            .isConnected() ??
+        false) {
+      if (isProgressBar) {
+        AppComponentBase.getInstance()?.showProgressDialog(true);
+      }
+      AppComponentBase.getInstance()?.disableWidget(true);
+      try {
+        http.Response response = await http.post(Uri.parse(url),
+            headers: headers, body: body, encoding: encoding);
+        logPrint(requestData: body, response: response);
 
-    //var data = json.decode(response.body);
+        //var data = json.decode(response.body);
 
-    return response.body;
-    } catch (exception) {
-    if (isProgressBar) {
-    AppComponentBase.getInstance()?.showProgressDialog(false);
-    }
-    AppComponentBase.getInstance()?.disableWidget(false);
-    var e = exception is String
-    ? exception
-        : StringUtils.someThingWentWrong;
-    if (!isBackground) {
-    CommonToast.getInstance()?.displayToast(message: e);
-    }
-    }
-    if (isProgressBar) {
-    AppComponentBase.getInstance()?.showProgressDialog(false);
-    }
+        return response.body;
+      } catch (exception) {
+        if (isProgressBar) {
+          AppComponentBase.getInstance()?.showProgressDialog(false);
+        }
+        AppComponentBase.getInstance()?.disableWidget(false);
+        var e =
+            exception is String ? exception : StringUtils.someThingWentWrong;
+        if (!isBackground) {
+          CommonToast.getInstance()?.displayToast(message: e);
+        }
+      }
+      if (isProgressBar) {
+        AppComponentBase.getInstance()?.showProgressDialog(false);
+      }
     } else {
-    if (!isBackground) {
-    CommonToast.getInstance()
-        ?.displayToast(message: StringUtils.noInternetConnection);
-    }
-    throw StringUtils.noInternetConnection;
+      if (!isBackground) {
+        CommonToast.getInstance()
+            ?.displayToast(message: StringUtils.noInternetConnection);
+      }
+      throw StringUtils.noInternetConnection;
     }
   }
 

@@ -5,26 +5,32 @@ class StringUtils {
       'Please check your Internet connection';
   static const String someThingWentWrong = 'SomeThing Went Wrong';
   static const String termsConditions = "Terms and Conditions";
-  static const String updateMobileTitle = "You can update your registered mobile number with AndApp if your current mobile number is not working.";
-  static const String updateMobileContent = "OTP will be sent to the registered Email ID";
-  static const String regOtpContent ="OTP will be sent to aadhar registered mobile number.";
-  static const String uploadContent = "Upload image (.jpg, .png, jpeg) or pdf file upto 4 MB only.";
+  static const String updateMobileTitle =
+      "You can update your registered mobile number with AndApp if your current mobile number is not working.";
+  static const String updateMobileContent =
+      "OTP will be sent to the registered Email ID";
+  static const String regOtpContent =
+      "OTP will be sent to aadhar registered mobile number.";
+  static const String uploadContent =
+      "Upload image (.jpg, .png, jpeg) or pdf file upto 4 MB only.";
   static const String getReady = "Get Ready";
   static const String withDoc = "With Your Documents";
-
-  static const String userManualLink = "andapp.in";
-  static const String userManualLinkPath = "website/docs/User%20manual%20(English%20&%20Hindi)%20(1).pdf";
-  static const String raiseTicketLink = "andapp.freshdesk.com";
-  static const String raiseTicketLinkPath = "support/tickets/new";
+  static const String welcome = "Welcome!";
+  static const String dashboardTitle =
+      "Complete the following steps to become a PoSP advisor with AndApp";
 
   static const String kycDetails = "KYC Details";
   static const String acDetails = "Account Details";
   static const String bankDetails = "Bank Details";
   static const String academicDetails = "Academic Details";
-  static const String kycDetailsDes = "Share your Aadhar Details as address proof.";
-  static const String acDetailsDes = "Share  your PAN card details as identity proof";
-  static const String bankDetailsDes = "Share your Bank A/C details where your commission will be credited";
-  static const String academicDetailsDes = "Share your educational Certificates";
+  static const String kycDetailsDes =
+      "Share your Aadhar Details as address proof.";
+  static const String acDetailsDes =
+      "Share  your PAN card details as identity proof";
+  static const String bankDetailsDes =
+      "Share your Bank A/C details where your commission will be credited";
+  static const String academicDetailsDes =
+      "Share your educational Certificates";
 
   static const String mobileNumber = "Mobile Number ";
   static const String otp = "OTP";
@@ -41,6 +47,7 @@ class StringUtils {
   static const String firstName = "First Name";
   static const String middleName = "Middle Name";
   static const String lastName = "Last Name";
+
   //static const String aadhar = "Aadhar";
   static const String aadharFront = "Aadhar Front";
   static const String aadharBack = "Aadhar Back";
@@ -88,14 +95,23 @@ class StringUtils {
   static const String ansC = "c";
   static const String ansD = "d";
 
-  static const String updateMobSuccess = "Your Mobile Number has been updated successfully with Andapp";
+  static const String updateMobSuccess =
+      "Your Mobile Number has been updated successfully with Andapp";
   static const String trainingSuccessTitle = "Congratulations...!";
-  static const String trainingSuccessMessage = "You have done an Incredible work. Welcome on board as iAND Insurance Advisor.";
+  static const String trainingSuccessMessage =
+      "You have done an Incredible work. Welcome on board as iAND Insurance Advisor.";
   static const String trainingFailTitle = "Oops ...!!";
-  static const String trainingFailMessage = "You have not achieved 40% of the score... We request you to retake the exam.....";
+  static const String trainingFailMessage =
+      "You have not achieved 40% of the score... We request you to retake the exam.....";
   static const String downloadCertificate = "Download Certificate";
   static const String reExam = "Re-Exam";
   static const String pass = "pass"; // In any language,It has to "pass" only.
   static const String totalQue = "Total Questions";
   static const String totalAns = "Total Correct Answers";
+
+  static const String valEmptyAadharDetails = "Please validate aadhar otp";
+
+  //static const String valValidAadharDetails = "Please validate aadhar otp";
+  static const String valUploadAadharDetails = "Please upload aadhar images";
+  static const String trainingDayMsg = "Please come tomorrow for training";
 }

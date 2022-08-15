@@ -27,6 +27,14 @@ class SvgImages{
   static String iconVideo = 'lib/assets/play.svg';
   static String iconBar = 'lib/assets/bar.svg';
   static String dropdown = 'lib/assets/dropdown.svg';
+  static String kycSelected = 'lib/assets/kyc_selected.svg';
+  static String kycUnSelected = 'lib/assets/kyc_unSelected.svg';
+  static String accountSelected = 'lib/assets/account_selected.svg';
+  static String accountUnSelected = 'lib/assets/account_unSelected.svg';
+  static String bankSelected = 'lib/assets/bank_selected.svg';
+  static String bankUnSelected = 'lib/assets/bank_unSelected.svg';
+  static String academicSelected = 'lib/assets/academic_selected.svg';
+  static String academicUnSelected = 'lib/assets/academic_unSelected.svg';
   static String dashboardCompleted = 'lib/assets/right.svg';
   static String dashboardPending = 'lib/assets/dashboardPending.svg';
   static String dashboardBullet = 'lib/assets/disc.svg';

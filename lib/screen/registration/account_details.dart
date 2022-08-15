@@ -70,7 +70,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                         children: [
                           Column(
                             children: [
-                              const RegistrationPhases(index: 2),
+                              //const RegistrationPhases(index: 2),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 8, horizontal: 32),
@@ -277,12 +277,12 @@ class _AccountDetailsState extends State<AccountDetails> {
                                                         child: PinkBorderButton(
                                                           isEnabled: true,
                                                           content: StringUtils.validate,
-                                                          onPressed: () {
+                                                          onPressed: () async{
                                                             final form = panValidateKey
                                                                 .currentState;
                                                             if (form?.validate() ?? false) {
                                                               form?.save();
-                                                              bloc.sendAadharOTP(context);
+                                                              await bloc.getPanData(context);
                                                             }
                                                           },),
                                                       ),

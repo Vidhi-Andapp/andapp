@@ -4,12 +4,30 @@ import 'package:andapp/common/bloc_provider.dart';
 import 'package:andapp/di/app_component_base.dart';
 import 'package:andapp/screen/dashboard/document_page.dart';
 import 'package:andapp/services/api_client.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class LoginVerifyOTPBloc extends BlocBase {
   StreamController mainStreamController = StreamController.broadcast();
   Stream get mainStream => mainStreamController.stream;
   TextEditingController otp = TextEditingController();
+
+  void reSendOTP(BuildContext context,String mobNo) {
+    AppComponentBase
+        .getInstance()
+        ?.getApiInterface()
+        .getApiRepository()
+        .commonSendOTP(mobileNo: mobNo)
+        .then((sendOTPData) {
+      if (sendOTPData != null &&
+          sendOTPData.resultflag == ApiClient.resultflagSuccess) {
+        if (kDebugMode) {
+          print("OTP : ${sendOTPData.data?.oTP}");
+          otp.text = "${sendOTPData.data?.oTP}";
+        }
+      }
+    });
+  }
 
   void verifyOTP(BuildContext context) {
     AppComponentBase

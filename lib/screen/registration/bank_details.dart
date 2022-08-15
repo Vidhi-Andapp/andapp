@@ -67,7 +67,7 @@ class _BankDetailsState extends State<BankDetails> {
                           children: [
                             Column(
                               children: [
-                                const RegistrationPhases(index: 3),
+                                //const RegistrationPhases(index: 3),
                                 const SizedBox(height: 8,),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(

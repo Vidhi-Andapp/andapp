@@ -1,10 +1,15 @@
 import 'package:andapp/common/app_theme.dart';
-import 'package:andapp/common/string_utils.dart';
+import 'package:andapp/common/image_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class RegistrationPhases extends StatefulWidget {
   final int? index;
-  const RegistrationPhases({Key? key,@required this.index}) : super(key: key);
+  final Function refresh;
+
+  const RegistrationPhases(
+      {Key? key, @required this.index, required this.refresh})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => RegistrationPhasesState();
@@ -21,8 +26,23 @@ class RegistrationPhasesState extends State<RegistrationPhases>
     super.initState();
   }
 
+  methodInChild(int index) {
+    currIndex = index;
+    // setState(() {});
+  }
+
+  void _itemTapped(int index) {
+    /*  currIndex = index;
+    widget.refresh(index);
+    setState(() {});*/
+  }
+
   Widget kycButton() {
-    return Card(
+    return SvgPicture.asset(
+        currIndex == 1 ? SvgImages.kycSelected : SvgImages.kycUnSelected,
+        height: (MediaQuery.of(context).size.width - 100) / 4,
+        width: (MediaQuery.of(context).size.width - 100) / 4);
+    /*return Card(
         margin: const EdgeInsets.all(0),
         elevation: 2,
         color: currIndex == 1 ? _appTheme.primaryColor : Theme
@@ -36,8 +56,8 @@ class RegistrationPhasesState extends State<RegistrationPhases>
     //Wrap with IntrinsicHeight
     child:
     SizedBox(
-    width: (MediaQuery.of(context).size.width - 80) / 4,
-    height: ((MediaQuery.of(context).size.width - 80) / 4) - 8,
+    width: (MediaQuery.of(context).size.width - 100) / 4,
+    height: ((MediaQuery.of(context).size.width - 100) / 4) - 8,
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child:  Center(
@@ -48,11 +68,16 @@ class RegistrationPhasesState extends State<RegistrationPhases>
       ),
     ),
     )
-    );
+    );*/
   }
 
   Widget accountButton() {
-    return Card(
+    return SvgPicture.asset(
+      currIndex == 2 ? SvgImages.accountSelected : SvgImages.accountUnSelected,
+      height: (MediaQuery.of(context).size.width - 100) / 4,
+      width: (MediaQuery.of(context).size.width - 100) / 4,
+    );
+    /*return Card(
         margin: const EdgeInsets.all(0),
         elevation: 2,
         color: currIndex == 2 ? _appTheme.primaryColor : Theme
@@ -66,8 +91,8 @@ class RegistrationPhasesState extends State<RegistrationPhases>
         //Wrap with IntrinsicHeight
         child:
         SizedBox(
-          width: (MediaQuery.of(context).size.width - 80) / 4,
-          height: ((MediaQuery.of(context).size.width - 80) / 4) - 8,
+          width: (MediaQuery.of(context).size.width - 100) / 4,
+          height: ((MediaQuery.of(context).size.width - 100) / 4) - 8,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child:  Center(
@@ -78,11 +103,15 @@ class RegistrationPhasesState extends State<RegistrationPhases>
             ),
           ),
         )
-    );
+    );*/
   }
 
   Widget bankButton() {
-    return Card(
+    return SvgPicture.asset(
+        currIndex == 3 ? SvgImages.bankSelected : SvgImages.bankUnSelected,
+        height: (MediaQuery.of(context).size.width - 100) / 4,
+        width: (MediaQuery.of(context).size.width - 100) / 4);
+    /*return Card(
         margin: const EdgeInsets.all(0),
         elevation: 2,
         color: currIndex == 3 ? _appTheme.primaryColor : Theme
@@ -96,8 +125,8 @@ class RegistrationPhasesState extends State<RegistrationPhases>
         //Wrap with IntrinsicHeight
         child:
         SizedBox(
-          width: (MediaQuery.of(context).size.width - 80) / 4,
-          height: ((MediaQuery.of(context).size.width - 80) / 4) - 8,
+          width: (MediaQuery.of(context).size.width - 100) / 4,
+          height: ((MediaQuery.of(context).size.width - 100) / 4) - 8,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child:  Center(
@@ -108,11 +137,17 @@ class RegistrationPhasesState extends State<RegistrationPhases>
             ),
           ),
         )
-    );
+    );*/
   }
 
   Widget academicButton() {
-    return Card(
+    return SvgPicture.asset(
+        currIndex == 4
+            ? SvgImages.academicSelected
+            : SvgImages.academicUnSelected,
+        height: (MediaQuery.of(context).size.width - 100) / 4,
+        width: (MediaQuery.of(context).size.width - 100) / 4);
+    /* Card(
         margin: const EdgeInsets.all(0),
         elevation: 2,
         color: currIndex == 4 ? _appTheme.primaryColor : Theme
@@ -126,8 +161,8 @@ class RegistrationPhasesState extends State<RegistrationPhases>
         //Wrap with IntrinsicHeight
         child:
         SizedBox(
-          width: (MediaQuery.of(context).size.width - 80) / 4,
-          height: ((MediaQuery.of(context).size.width - 80) / 4) - 8,
+          width: (MediaQuery.of(context).size.width - 100) / 4,
+          height: ((MediaQuery.of(context).size.width - 100) / 4) - 8,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Center(
@@ -138,10 +173,11 @@ class RegistrationPhasesState extends State<RegistrationPhases>
             ),
           ),
         )
-    );
+    );*/
   }
 
   final AppThemeState _appTheme = AppThemeState();
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -149,48 +185,50 @@ class RegistrationPhasesState extends State<RegistrationPhases>
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(
-              vertical: 8, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               GestureDetector(
-                onTap : (){
-                  setState(() { currIndex = 1; });
-                },
+                  onTap: () {
+                    _itemTapped(1);
+                  },
                   child: kycButton()),
-              SizedBox(width: 10,height: 2,
+              SizedBox(
+                width: 10,
+                height: 2,
                 child: DecoratedBox(
-                  decoration: BoxDecoration(
-                      color: _appTheme.separatorColor
-                  ),
-                ),),
+                  decoration: BoxDecoration(color: _appTheme.separatorColor),
+                ),
+              ),
               GestureDetector(
-                  onTap : (){
-                    setState(() { currIndex = 2; });
+                  onTap: () {
+                    _itemTapped(2);
                   },
                   child: accountButton()),
-              SizedBox(width: 10,height: 2,
+              SizedBox(
+                width: 10,
+                height: 2,
                 child: DecoratedBox(
-                  decoration: BoxDecoration(
-                      color: _appTheme.separatorColor
-                  ),
-                ),),
+                  decoration: BoxDecoration(color: _appTheme.separatorColor),
+                ),
+              ),
               GestureDetector(
-                  onTap : (){
-                    setState(() { currIndex = 3; });
+                  onTap: () {
+                    _itemTapped(3);
                   },
                   child: bankButton()),
-              SizedBox(width: 10,height: 2,
+              SizedBox(
+                width: 10,
+                height: 2,
                 child: DecoratedBox(
-                  decoration: BoxDecoration(
-                      color: _appTheme.separatorColor
-                  ),
-                ),),
+                  decoration: BoxDecoration(color: _appTheme.separatorColor),
+                ),
+              ),
               GestureDetector(
-                  onTap : (){
-                    setState(() { currIndex = 4; });
+                  onTap: () {
+                    _itemTapped(4);
                   },
                   child: academicButton()),
             ],

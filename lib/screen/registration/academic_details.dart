@@ -123,7 +123,7 @@ class _AcademicDetailsState extends State<AcademicDetails> {
                               crossAxisAlignment: CrossAxisAlignment
                                   .start,
                               children: [
-                                const RegistrationPhases(index: 4),
+                                //const RegistrationPhases(index: 4),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(vertical:16, horizontal: 32),
                                   child: DropdownButtonHideUnderline(

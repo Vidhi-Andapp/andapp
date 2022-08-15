@@ -1,14 +1,21 @@
 import 'package:andapp/common/app_theme.dart';
+import 'package:andapp/common/common_toast.dart';
 import 'package:andapp/common/image_utils.dart';
 import 'package:andapp/common/pink_border_button.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/enum/font_type.dart';
+import 'package:andapp/model/get_dashboard.dart';
+import 'package:andapp/screen/dashboard/dashboard_bloc.dart';
 import 'package:andapp/screen/nav_bar.dart';
 import 'package:andapp/screen/training/training_dashboard_gi.dart';
+import 'package:andapp/screen/training/training_dashboard_li.dart';
+import 'package:andapp/screen/training/training_day.dart';
+import 'package:andapp/screen/training/training_exam.dart';
 import 'package:enhance_stepper/enhance_stepper.dart';
 import 'package:flutter/material.dart';
-import 'package:tuple/tuple.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
+import 'package:tuple/tuple.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -18,21 +25,56 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
-  //final LoginSendOTPBloc _bloc = LoginSendOTPBloc();
+  final DashboardBloc bloc = DashboardBloc();
   int groupValue = 0;
+  int? index;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final StepperType _type = StepperType.vertical;
 
+  @override
+  void initState() {
+    super.initState();
+    bloc.getDashboard(context);
+    //bloc.downloadCertificate(context);
+  }
+
+  /* Widget getImagenBase64(String imagen) {
+    var imageBase64 = imagen;
+    const Base64Codec base64 = Base64Codec();
+    if (imageBase64 == null) return Container();
+    var bytes = base64.decode(imageBase64);
+    return Image.memory(
+      bytes,
+      width: MediaQuery.of(context).size.width,
+      fit: BoxFit.fitWidth,
+    );
+  }*/
+
   List<Tuple3> tuples = const [
-    Tuple3(Icons.add, StringUtils.accCreated, StepState.complete,),
-    Tuple3(Icons.add, StringUtils.pospReg, StepState.editing,),
-    Tuple3(Icons.add, StringUtils.training, StepState.disabled,),
-    Tuple3(Icons.add, StringUtils.startEarning, StepState.disabled,),
+    Tuple3(
+      Icons.add,
+      StringUtils.accCreated,
+      StepState.complete,
+    ),
+    Tuple3(
+      Icons.add,
+      StringUtils.pospReg,
+      StepState.editing,
+    ),
+    Tuple3(
+      Icons.add,
+      StringUtils.training,
+      StepState.disabled,
+    ),
+    Tuple3(
+      Icons.add,
+      StringUtils.startEarning,
+      StepState.disabled,
+    ),
   ];
 
-  final int _index = 2;
-
-  Widget pospReg(BuildContext context) {
+  Widget pospReg(BuildContext context, GetDashboardData? dashboardData) {
+    var pospData = dashboardData?.data?.pospRegistration;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -41,26 +83,49 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
-            const SizedBox(width: 10,),
+            const SizedBox(
+              width: 10,
+            ),
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.35,
+                width: MediaQuery.of(context).size.width * 0.35,
                 child: const Text(StringUtils.kycDetails)),
             //const SizedBox(width: 56,),
-            SvgPicture.asset(SvgImages.iconApprove, height: 16, width: 16),
+
+            SvgPicture.asset(
+                pospData?.kycDetail == "approve"
+                    ? SvgImages.iconApprove
+                    : pospData?.kycDetail == "reject"
+                        ? SvgImages.iconReject
+                        : SvgImages.iconPending,
+                height: 16,
+                width: 16),
           ],
         ),
-        const SizedBox(height: 10,),
+        const SizedBox(
+          height: 10,
+        ),
         Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
-            const SizedBox(width: 10,),
+            const SizedBox(
+              width: 10,
+            ),
             SizedBox(
                 width: MediaQuery.of(context).size.width * 0.35,
                 child: const Text(StringUtils.acDetails)),
             //const SizedBox(width: 28,),
-            SvgPicture.asset(SvgImages.iconReject, height: 20, width: 20),
+            SvgPicture.asset(
+                (pospData?.panDetail == "approve" &&
+                        pospData?.gstDetail == "approve")
+                    ? SvgImages.iconApprove
+                    : ((pospData?.panDetail == "reject" &&
+                            pospData?.gstDetail == "reject"))
+                        ? SvgImages.iconReject
+                        : SvgImages.iconPending,
+                height: 16,
+                width: 16),
           ],
         ),
         Padding(
@@ -74,7 +139,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
               /* if (form?.validate() ?? false) {
                       form?.save();
                       Navigator.push(
-                        context,
+                        context,+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
                         MaterialPageRoute(
                             builder: (context) {
                               return LoginVerifyOTP(
@@ -83,42 +149,67 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                             }),
                       );
                     }*/
-            },),
+            },
+          ),
         ),
         Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
-            const SizedBox(width: 10,),
+            const SizedBox(
+              width: 10,
+            ),
             SizedBox(
                 width: MediaQuery.of(context).size.width * 0.35,
                 child: const Text(StringUtils.bankDetails)),
             //const SizedBox(width: 42,),
-            SvgPicture.asset(SvgImages.iconPending, height: 30, width: 30),
+            SvgPicture.asset(
+                pospData?.bankDetail == "approve"
+                    ? SvgImages.iconApprove
+                    : pospData?.kycDetail == "reject"
+                        ? SvgImages.iconReject
+                        : SvgImages.iconPending,
+                height: 16,
+                width: 16),
           ],
         ),
-        const SizedBox(height: 10,),
+        const SizedBox(
+          height: 10,
+        ),
         Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
-            const SizedBox(width: 10,),
+            const SizedBox(
+              width: 10,
+            ),
             SizedBox(
                 width: MediaQuery.of(context).size.width * 0.35,
                 child: const Text(StringUtils.academicDetails)),
             //const SizedBox(width: 14),
-            SvgPicture.asset(SvgImages.iconPending, height: 30, width: 30),
+            SvgPicture.asset(
+                pospData?.kycDetail == "approve"
+                    ? SvgImages.iconApprove
+                    : pospData?.academicDetail == "reject"
+                        ? SvgImages.iconReject
+                        : SvgImages.iconPending,
+                height: 16,
+                width: 16),
           ],
         ),
-        const SizedBox(height: 10,),
+        const SizedBox(
+          height: 10,
+        ),
         Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
-            const SizedBox(width: 10,),
+            const SizedBox(
+              width: 10,
+            ),
             SizedBox(
                 width: MediaQuery.of(context).size.width * 0.35,
                 child: const Text(StringUtils.iibApproved)),
@@ -129,93 +220,185 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     );
   }
 
-  Widget training(BuildContext context) {
+  Widget training(BuildContext context, GetDashboardData? dashboardData) {
+    var training = dashboardData?.data?.training;
+    var giTime = training?.generalInsurance?.latestTime;
+    DateTime now = DateTime.now();
+    String giDay = "";
+    bool allowGIDay = false, allowLiDay = false;
+    if (giTime != null && giTime.isNotEmpty) {
+      DateTime giDate = DateFormat("MM/dd/yyyy hh:mm:ss").parse(giTime);
+      if (now.day - giDate.day >= 1) {
+        allowGIDay = true;
+      }
+      training?.generalInsurance?.day1 == "false"
+          ? giDay = "1"
+          : training?.generalInsurance?.day2 == "false"
+              ? giDay = "2"
+              : training?.generalInsurance?.day3 == "false"
+                  ? giDay = "3"
+                  : giDay = "";
+    }
+
+    var liTime = training?.lifeInsurance?.latestTime;
+    String liDay = "";
+    if (liTime != null && liTime.isNotEmpty) {
+      DateTime liDate = DateFormat("MM/dd/yyyy hh:mm:ss").parse(liTime);
+      if (now.day - liDate.day >= 1) {
+        allowLiDay = true;
+      }
+      training?.lifeInsurance?.day1 == "false"
+          ? liDay = "1"
+          : training?.lifeInsurance?.day2 == "false"
+              ? liDay = "2"
+              : training?.lifeInsurance?.day3 == "false"
+                  ? liDay = "3"
+                  : liDay = "";
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-           /* Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
-                const SizedBox(width: 10,),
-                const Text(StringUtils.generalInsurance,style: TextStyle(fontSize: 15),),
-              ],
-            ),
-            const SizedBox(height: 10,),
             Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(width: 20,),
-                SvgPicture.asset(SvgImages.iconApprove, height: 16, width: 16),
-                const SizedBox(width: 10,),
-                const Text(StringUtils.day1),
+                SvgPicture.asset(SvgImages.dashboardBullet,
+                    height: 6, width: 6),
+                const SizedBox(
+                  width: 10,
+                ),
+                const Text(
+                  StringUtils.generalInsurance,
+                  style: TextStyle(fontSize: 15),
+                ),
               ],
             ),
-            const SizedBox(height: 10,),
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(width: 20,),
-                SvgPicture.asset(SvgImages.iconApprove, height: 16, width: 16),
-                const SizedBox(width: 10,),
-                const Text(StringUtils.day2),
-              ],
-            ),*/
-            const SizedBox(height: 10,),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, top: 4.0, bottom: 8),
-              child: PinkBorderButton(
-                isEnabled: true,
-                content: "Start Day 1",
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) {
-                          return const TrainingDashboardGI();
-                        }),
-                  );
-                },),
-            ),
-       /*     Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(width: 20,),
-                SvgPicture.asset(SvgImages.iconApprove, height: 16, width: 16),
-                const SizedBox(width: 10,),
-                const Text(StringUtils.day3),
-              ],
-            ),
-            const SizedBox(height: 10,),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, top: 4.0, bottom: 8),
-              child: PinkBorderButton(
-                isEnabled: true,
-                content: "Start Exam",
-                onPressed: () {
-                    *//* final form = sendOTPKey
-                            .currentState;
-                   if (form?.validate() ?? false) {
-                          form?.save();
+            training?.generalInsurance?.day1 == "true"
+                ? Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            SvgPicture.asset(SvgImages.iconApprove,
+                                height: 16, width: 16),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            const Text(StringUtils.day1),
+                          ],
+                        ),
+                      ),
+                      training?.generalInsurance?.day2 == "true"
+                          ? Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                      SvgPicture.asset(SvgImages.iconApprove,
+                                          height: 16, width: 16),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      const Text(StringUtils.day2),
+                                    ],
+                                  ),
+                                ),
+                                training?.generalInsurance?.day3 == "true"
+                                    ? Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 10.0),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(
+                                              width: 20,
+                                            ),
+                                            SvgPicture.asset(
+                                                SvgImages.iconApprove,
+                                                height: 16,
+                                                width: 16),
+                                            const SizedBox(
+                                              width: 10,
+                                            ),
+                                            const Text(StringUtils.day3),
+                                          ],
+                                        ),
+                                      )
+                                    : Container(),
+                              ],
+                            )
+                          : Container(),
+                    ],
+                  )
+                : Container(),
+            giDay == "1"
+                ? Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, top: 4.0, bottom: 8),
+                    child: PinkBorderButton(
+                      isEnabled: true,
+                      content: "Start Course",
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) {
+                            return const TrainingDashboardGI();
+                          }),
+                        );
+                      },
+                    ),
+                  )
+                : Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, top: 4.0, bottom: 8),
+                    child: PinkBorderButton(
+                      isEnabled: true,
+                      content:
+                          giDay.isNotEmpty ? "Start Day $giDay" : "Start Exam",
+                      onPressed: () {
+                        if (giDay.isNotEmpty) {
+                          if (allowGIDay) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return TrainingDays(
+                                    title: StringUtils.generalInsurance,
+                                    day: giDay);
+                              }),
+                            );
+                          } else {
+                            CommonToast.getInstance()?.displayToast(
+                                message: StringUtils.trainingDayMsg);
+                          }
+                        } else {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) {
-                                  return LoginVerifyOTP(
-                                    enteredMobNo: mobNo
-                                        .text,);
-                                }),
+                            MaterialPageRoute(builder: (context) {
+                              return const TrainingExam(
+                                  title: StringUtils.generalInsurance);
+                            }),
                           );
-                        }*//*
-                },),
-            ),*/
+                        }
+                      },
+                    ),
+                  ),
           ],
         ),
         Column(
@@ -225,53 +408,170 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
-                const SizedBox(width: 10,),
-                const Text(StringUtils.lifeInsurance,style: TextStyle(fontSize: 15),),
+                SvgPicture.asset(SvgImages.dashboardBullet,
+                    height: 6, width: 6),
+                const SizedBox(
+                  width: 10,
+                ),
+                const Text(
+                  StringUtils.lifeInsurance,
+                  style: TextStyle(fontSize: 15),
+                ),
               ],
             ),
-            const SizedBox(height: 10,),
-            /*
+            training?.lifeInsurance?.day1 == "true"
+                ? Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            SvgPicture.asset(SvgImages.iconApprove,
+                                height: 16, width: 16),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            const Text(StringUtils.day1),
+                          ],
+                        ),
+                      ),
+                      training?.lifeInsurance?.day2 == "true"
+                          ? Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                      SvgPicture.asset(SvgImages.iconApprove,
+                                          height: 16, width: 16),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      const Text(StringUtils.day2),
+                                    ],
+                                  ),
+                                ),
+                                training?.lifeInsurance?.day3 == "true"
+                                    ? Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 10.0),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(
+                                              width: 20,
+                                            ),
+                                            SvgPicture.asset(
+                                                SvgImages.iconApprove,
+                                                height: 16,
+                                                width: 16),
+                                            const SizedBox(
+                                              width: 10,
+                                            ),
+                                            const Text(StringUtils.day3),
+                                          ],
+                                        ),
+                                      )
+                                    : Container(),
+                              ],
+                            )
+                          : Container(),
+                    ],
+                  )
+                : Container(),
+            liDay == "1"
+                ? Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, top: 4.0, bottom: 8),
+                    child: PinkBorderButton(
+                      isEnabled: true,
+                      content: "Start Course",
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) {
+                            return const TrainingDashboardLI();
+                          }),
+                        );
+                      },
+                    ),
+                  )
+                : Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, top: 4.0, bottom: 8),
+                    child: PinkBorderButton(
+                      isEnabled: true,
+                      content:
+                          liDay.isNotEmpty ? "Start Day $giDay" : "Start Exam",
+                      onPressed: () {
+                        if (liDay.isNotEmpty) {
+                          if (allowLiDay) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return TrainingDays(
+                                    title: StringUtils.lifeInsurance,
+                                    day: liDay);
+                              }),
+                            );
+                          } else {
+                            CommonToast.getInstance()?.displayToast(
+                                message: StringUtils.trainingDayMsg);
+                          }
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return const TrainingExam(
+                                  title: StringUtils.lifeInsurance);
+                            }),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+          ],
+        ),
+        /*Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(width: 20,),
-                SvgPicture.asset(SvgImages.iconApprove, height: 16, width: 16),
-                const SizedBox(width: 10,),
-                const Text(StringUtils.day1),
+                SvgPicture.asset(SvgImages.dashboardBullet,
+                    height: 6, width: 6),
+                const SizedBox(
+                  width: 10,
+                ),
+                const Text(
+                  StringUtils.lifeInsurance,
+                  style: TextStyle(fontSize: 15),
+                ),
               ],
             ),
-            const SizedBox(height: 10,),
-           Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(width: 20,),
-                SvgPicture.asset(SvgImages.iconApprove, height: 16, width: 16),
-                const SizedBox(width: 10,),
-                const Text(StringUtils.day2),
-              ],
+            const SizedBox(
+              height: 10,
             ),
-            const SizedBox(height: 10,),
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(width: 20,),
-                SvgPicture.asset(SvgImages.iconApprove, height: 16, width: 16),
-                const SizedBox(width: 10,),
-                const Text(StringUtils.day3),
-              ],
-            ),
-            const SizedBox(height: 10,),*/
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 4.0, bottom: 8),
               child: PinkBorderButton(
                 isEnabled: true,
                 content: "Start Course",
                 onPressed: () {
-                  /* final form = sendOTPKey
+                  */ /* final form = sendOTPKey
                             .currentState;
                    if (form?.validate() ?? false) {
                           form?.save();
@@ -284,40 +584,49 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                         .text,);
                                 }),
                           );
-                        }*/
-                },),
+                        }*/ /*
+                },
+              ),
             ),
           ],
-        ),
+        ),*/
       ],
     );
   }
 
-  Widget buildStepperCustom(BuildContext context) {
+  Widget buildStepperCustom(
+      BuildContext context, GetDashboardData? dashboardData) {
     return EnhanceStepper(
         stepIconSize: 30,
         type: _type,
         horizontalTitlePosition: HorizontalTitlePosition.bottom,
         horizontalLinePosition: HorizontalLinePosition.top,
-        currentStep: _index,
+        currentStep: index ?? 1,
         physics: const ClampingScrollPhysics(),
-        steps: tuples.map((e) =>
-            EnhanceStep(
-              icon:
-              e.item3 == StepState.complete ?
-              SvgPicture.asset(
-                  SvgImages.dashboardCompleted, height: 40, width: 40)
-                  :
-              SvgPicture.asset(
-                  SvgImages.dashboardPending, height: 40, width: 40),
-              state: StepState.values[tuples.indexOf(e)],
-              isActive: _index == tuples.indexOf(e),
-              title: Text(e.item2.toString(), style: TextStyle(fontSize: 18,
-                  fontWeight: FontType.getFontWeightType(
-                      FontWeightType.medium)),),
-              //subtitle: Text(e.item2.toString().split(".").last,),
-              content: _index == 1 ? pospReg(context) : _index == 2 ? training(context) : Container(),
-            )).toList(),
+        steps: tuples
+            .map((e) => EnhanceStep(
+                  icon: e.item3 == StepState.complete
+                      ? SvgPicture.asset(SvgImages.dashboardCompleted,
+                          height: 40, width: 40)
+                      : SvgPicture.asset(SvgImages.dashboardPending,
+                          height: 40, width: 40),
+                  state: StepState.values[tuples.indexOf(e)],
+                  isActive: index == tuples.indexOf(e),
+                  title: Text(
+                    e.item2.toString(),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight:
+                            FontType.getFontWeightType(FontWeightType.medium)),
+                  ),
+                  //subtitle: Text(e.item2.toString().split(".").last,),
+                  content: index == 1
+                      ? pospReg(context, dashboardData)
+                      : index == 2
+                          ? training(context, dashboardData)
+                          : Container(),
+                ))
+            .toList(),
         onStepCancel: () {
           //go(-1);
         },
@@ -326,12 +635,12 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         },
         onStepTapped: (index) {
           // ddlog(index);
-         /* setState(() {
+          /* setState(() {
             _index = index;
           });*/
         },
         controlsBuilder: (BuildContext context, ControlsDetails controlsDetails,
-            { VoidCallback? onStepContinue, VoidCallback? onStepCancel }) {
+            {VoidCallback? onStepContinue, VoidCallback? onStepCancel}) {
           return Container();
           /*Row(
             children: [
@@ -347,8 +656,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
               ),
             ],
           );*/
-        }
-    );
+        });
   }
 
   @override
@@ -359,20 +667,17 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         appBar: AppBar(
             title: Align(
               alignment: Alignment.centerLeft,
-              child: Text("Dashboard", textAlign: TextAlign.left
-                , style: Theme
-                    .of(context)
-                    .appBarTheme
-                    .titleTextStyle,),
+              child: Text(
+                "Dashboard",
+                textAlign: TextAlign.left,
+                style: Theme.of(context).appBarTheme.titleTextStyle,
+              ),
             ),
-            backgroundColor: Theme
-                .of(context)
-                .scaffoldBackgroundColor,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             centerTitle: true,
             elevation: 0,
             // give the app bar rounded corners
-            leading:
-            Builder(
+            leading: Builder(
               builder: (BuildContext context) {
                 return IconButton(
                   icon: const Icon(Icons.menu, color: Colors.white),
@@ -380,89 +685,107 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                     _scaffoldKey.currentState?.openDrawer();
                   },
                   iconSize: 30,
-                  tooltip: MaterialLocalizations
-                      .of(context)
-                      .showMenuTooltip,
+                  tooltip: MaterialLocalizations.of(context).showMenuTooltip,
                 );
-              },)
-        ),
+              },
+            )),
         //backgroundColor: const Color(0xff222222),
         drawer: const NavBar(),
-        body: LayoutBuilder(
-            builder: (context, constraint) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraint.maxHeight),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Text(
-                            "Welcome!",
-                            style: TextStyle(fontSize: 25,
-                                fontWeight: FontWeight.normal),
-                            textAlign: TextAlign.center,),
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12.0),
-                          child: Text(
-                              "Complete the following steps to become a PoSP advisor with AndApp",
-                              style: TextStyle(fontSize: 17,
-                                  fontWeight: FontType.getFontWeightType(
-                                      FontWeightType.regular)),
-                              maxLines: 3,
-                              textAlign: TextAlign.center),
-                        ),
-                        const SizedBox(height: 24,),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: AppThemeState().greyColor,
-                              borderRadius: const BorderRadius.only(
-                                  topRight: Radius.circular(18.0),
-                                  topLeft: Radius.circular(18.0)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppThemeState().separatorColor,
-                              spreadRadius: 2,
-                              blurRadius: 2,
-                              //offset: Offset(0, 0),
-                            )
-                          ]),
-                          child: Container(
-                            //elevation: 2,
-                            margin: const EdgeInsetsDirectional.only(start: 1, end: 1, top: 1),
-                            decoration: BoxDecoration(
-                              color: Theme
-                                  .of(context)
-                                  .scaffoldBackgroundColor,
-
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(18.0),
-                                topRight: Radius.circular(18.0),
-                              ),// BorderRadius
-
+        body: LayoutBuilder(builder: (context, constraint) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraint.maxHeight),
+              child: StreamBuilder<GetDashboardData>(
+                  stream: bloc.dashboardStream,
+                  builder: (BuildContext context,
+                      AsyncSnapshot<GetDashboardData> snapshot) {
+                    if (snapshot.hasData && snapshot.data != null) {
+                      var dashboardData = snapshot.data;
+                      if (dashboardData?.data?.trainingStatus == "true") {
+                        index = 3;
+                      } else if (dashboardData?.data?.pospRegistrationStatus ==
+                          "true") {
+                        index = 2;
+                      } else {
+                        index = 1;
+                      }
+                      return Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text(
+                                StringUtils.welcome,
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.normal),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
-                              /*shape: const RoundedRectangleBorder(
-                                  side: BorderSide(
-                                      color: Colors.white, width: 0.8),
-                                  borderRadius: BorderRadius.only(
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
+                              child: Text(StringUtils.dashboardTitle,
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontType.getFontWeightType(
+                                          FontWeightType.regular)),
+                                  maxLines: 3,
+                                  textAlign: TextAlign.center),
+                            ),
+                            const SizedBox(
+                              height: 24,
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                  color: AppThemeState().greyColor,
+                                  borderRadius: const BorderRadius.only(
+                                      topRight: Radius.circular(18.0),
+                                      topLeft: Radius.circular(18.0)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppThemeState().separatorColor,
+                                      spreadRadius: 2,
+                                      blurRadius: 2,
+                                      //offset: Offset(0, 0),
+                                    )
+                                  ]),
+                              child: Container(
+                                //elevation: 2,
+                                margin: const EdgeInsetsDirectional.only(
+                                    start: 1, end: 1, top: 1),
+                                decoration: BoxDecoration(
+                                  color:
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(18.0),
                                     topRight: Radius.circular(18.0),
-                                    topLeft: Radius.circular(18.0))),*/
-
-                            //Wrap with IntrinsicHeight
-                            child:
-                            buildStepperCustom(context),
-                          ),
-                        ),
-                      ]),
-                ),
-              );
-            }
-        ),
+                                  ), // BorderRadius
+                                ),
+                                //Wrap with IntrinsicHeight
+                                child:
+                                    buildStepperCustom(context, dashboardData),
+                                /*StreamBuilder(
+                                    stream: bloc.resultStream,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        DownloadCertificate dc = snapshot.data
+                                            as DownloadCertificate;
+                                        return getImagenBase64(
+                                            dc.data?.data?.image ?? "");
+                                      }
+                                      return Container();
+                                    }),*/
+                              ),
+                            ),
+                          ]);
+                    }
+                    return Container();
+                  }),
+            ),
+          );
+        }),
         /*StreamBuilder(
           stream: _bloc.mainStream,
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {

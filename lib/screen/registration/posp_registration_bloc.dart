@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:andapp/common/bloc_provider.dart';
 import 'package:andapp/di/app_component_base.dart';
-import 'package:andapp/screen/dashboard/document_page.dart';
 import 'package:andapp/services/api_client.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -10,6 +9,7 @@ import 'package:flutter/material.dart';
 
 class PospRegistrationBloc extends BlocBase {
   StreamController mainStreamController = StreamController.broadcast();
+
   Stream get mainStream => mainStreamController.stream;
   TextEditingController username = TextEditingController();
   TextEditingController email = TextEditingController();
@@ -32,15 +32,14 @@ class PospRegistrationBloc extends BlocBase {
   TextEditingController bankAcNo = TextEditingController();
   TextEditingController ifscCode = TextEditingController();
   TextEditingController bankAcHolderName = TextEditingController();
-  PlatformFile? aadharFront,aadharBack,gst,pan,academicCerti;
+  PlatformFile? aadharFront, aadharBack, gst, pan, academicCerti;
 
-  void sendAadharOTP(BuildContext context) {
-    AppComponentBase
-        .getInstance()
+  Future<String?> sendAadharOTP(BuildContext context) async {
+    await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
         .commonSendOTP(
-        aadharNo: aadharNumber.text, type: ApiClient.otpTypeAadhar)
+            aadharNo: aadharNumber.text, type: ApiClient.otpTypeAadhar)
         .then((sendOTPData) {
       if (sendOTPData != null &&
           sendOTPData.resultflag == ApiClient.resultflagSuccess) {
@@ -48,17 +47,17 @@ class PospRegistrationBloc extends BlocBase {
           print("OTP : ${sendOTPData.data?.oTP}");
         }
         //otp.text = "${sendOTPData.data?.oTP}";
+        return sendOTPData.resultflag;
       }
     });
+    return null;
   }
 
-  Future getAadharData(BuildContext context) async{
-    await AppComponentBase
-        .getInstance()
+  Future getAadharData(BuildContext context) async {
+    await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .getAadharData(
-        aadharNo: aadharNumber.text, otp: otp.text)
+        .getAadharData(aadharNo: aadharNumber.text, otp: otp.text)
         .then((getAadharData) {
       if (getAadharData != null &&
           getAadharData.resultflag == ApiClient.resultflagSuccess) {
@@ -67,26 +66,22 @@ class PospRegistrationBloc extends BlocBase {
         }
         aadharAName.text = getAadharData.data?.data?.fullname ?? "";
         var gender = getAadharData.data?.data?.gender ?? "";
-        if(gender == "M") {
+        if (gender == "M") {
           aadharAGender.text = "Male";
+        } else {
+          aadharAGender.text = "Female";
         }
-        else
-          {
-            aadharAGender.text = "Female";
-          }
         aadharABirthDate.text = getAadharData.data?.data?.dob ?? "";
         aadharAAddress.text = getAadharData.data?.data?.address?.address ?? "";
       }
     });
   }
 
-  Future getPanData(BuildContext context) async{
-    await AppComponentBase
-        .getInstance()
+  Future getPanData(BuildContext context) async {
+    await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .getPanData(
-        panNo: panNumber.text)
+        .getPanData(panNo: panNumber.text)
         .then((getPanData) {
       if (getPanData != null &&
           getPanData.resultflag == ApiClient.resultflagSuccess) {
@@ -98,13 +93,11 @@ class PospRegistrationBloc extends BlocBase {
     });
   }
 
-  Future getGstData(BuildContext context) async{
-    await AppComponentBase
-        .getInstance()
+  Future getGstData(BuildContext context) async {
+    await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .getGstData(
-        gstNo: gstNumber.text)
+        .getGstData(gstNo: gstNumber.text)
         .then((getGstData) {
       if (getGstData != null &&
           getGstData.resultflag == ApiClient.resultflagSuccess) {
@@ -117,13 +110,11 @@ class PospRegistrationBloc extends BlocBase {
     });
   }
 
-  Future getBankData(BuildContext context) async{
-    await AppComponentBase
-        .getInstance()
+  Future getBankData(BuildContext context) async {
+    await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .getBankData(
-        acNo: bankAcNo.text,ifsc: ifscCode.text)
+        .getBankData(acNo: bankAcNo.text, ifsc: ifscCode.text)
         .then((getPanData) {
       if (getPanData != null &&
           getPanData.resultflag == ApiClient.resultflagSuccess) {
@@ -135,7 +126,20 @@ class PospRegistrationBloc extends BlocBase {
     });
   }
 
+  Future<String?> registerPosp(BuildContext context) async {
+    await AppComponentBase.getInstance()
+        ?.getApiInterface()
+        .getApiRepository()
+        .registerPosp()
+        .then((registerPospData) {
+      if (registerPospData != null &&
+          registerPospData.resultflag == ApiClient.resultflagSuccess) {
+        return registerPospData.resultflag;
+      }
+    });
+    return null;
+  }
+
   @override
   void dispose() {}
-
 }
