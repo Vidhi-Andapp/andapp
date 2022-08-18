@@ -1,12 +1,13 @@
+import 'dart:math' as math;
+
 import 'package:andapp/common/app_theme.dart';
-import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/common/tooltip.dart';
 import 'package:andapp/services/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'dart:math' as math;
-import '../../common/image_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../common/image_utils.dart';
 
 class CustomSpeedDial extends StatefulWidget {
   const CustomSpeedDial({Key? key}) : super(key: key);
@@ -22,6 +23,7 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
   late Animation<double> _animateIcon;
   Animation<double>? _translateButton;
   final Curve _curve = Curves.easeOut;
+
   // this is needed to know how much to "translate"
   // when the menu is closed, we remove elevation to prevent
   // stacking all elevations
@@ -30,8 +32,8 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
   @override
   initState() {
     // a bit faster animation, which looks better: 300
-    _animationController =
-    AnimationController(vsync: this, duration: const Duration(milliseconds: 300))
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300))
       ..addListener(() {
         setState(() {});
       });
@@ -96,10 +98,12 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
             elevation: _shouldHaveElevation ? 6.0 : 0,
             // tooltip: '',
             child: Center(
-                child: SvgPicture.asset(SvgImages.iconCall, height: 20,)),
+                child: SvgPicture.asset(
+              SvgImages.iconCall,
+              height: 20,
+            )),
           ),
-        )
-    );
+        ));
   }
 
   Future<void> _makePhoneCall() async {
@@ -109,11 +113,12 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
     );
     await launchUrl(launchUri);
   }
+
   /*final Uri toLaunch =
   Uri(host: StringUtils.userManualLink, path: 'headers/');*/
   Future<void> _launchInBrowser(String url) async {
     final Uri toLaunch = Uri.parse(url);
-   /* final Uri toLaunch =
+    /* final Uri toLaunch =
     Uri.https(url, path);*/
     if (!await launchUrl(
       toLaunch,
@@ -122,6 +127,7 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
       throw 'Could not launch $url';
     }
   }
+
   /*String? _encodeQueryParameters(Map<String, String> params) {
     return params.entries
         .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
@@ -160,10 +166,12 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
             foregroundColor: Colors.white,
             elevation: _shouldHaveElevation ? 6.0 : 0,
             child: Center(
-                child: SvgPicture.asset(SvgImages.iconCallBack, height: 20,)),
+                child: SvgPicture.asset(
+              SvgImages.iconCallBack,
+              height: 20,
+            )),
           ),
-        )
-    );
+        ));
   }
 
   Widget emailButton() {
@@ -182,7 +190,7 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
           height: 36,
           width: 36,
           child: FloatingActionButton(
-            onPressed: () async{
+            onPressed: () async {
               await launchUrl(emailLaunchUri);
             },
             // tooltip: '',
@@ -192,10 +200,12 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
             foregroundColor: Colors.white,
             elevation: _shouldHaveElevation ? 6.0 : 0,
             child: Center(
-                child: SvgPicture.asset(SvgImages.iconEmail, height: 20,)),
+                child: SvgPicture.asset(
+              SvgImages.iconEmail,
+              height: 20,
+            )),
           ),
-        )
-    );
+        ));
   }
 
   Widget raiseTicketButton() {
@@ -215,7 +225,9 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
           width: 36,
           child: FloatingActionButton(
             onPressed: () {
-              _launchInBrowser(ApiClient.freshDeskUrl);
+              if (ApiClient.userManualUrl.isNotEmpty) {
+                _launchInBrowser(ApiClient.freshDeskUrl);
+              }
             },
             // tooltip: '',
             heroTag: UniqueKey(),
@@ -224,10 +236,12 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
             foregroundColor: Colors.white,
             elevation: _shouldHaveElevation ? 6.0 : 0,
             child: Center(
-                child: SvgPicture.asset(SvgImages.iconRaiseTicket, height: 20,)),
+                child: SvgPicture.asset(
+              SvgImages.iconRaiseTicket,
+              height: 20,
+            )),
           ),
-        )
-    );
+        ));
   }
 
   Widget userManualButton() {
@@ -247,7 +261,9 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
           width: 36,
           child: FloatingActionButton(
             onPressed: () {
-              _launchInBrowser(ApiClient.userManualUrl);
+              if (ApiClient.userManualUrl.isNotEmpty) {
+                _launchInBrowser(ApiClient.userManualUrl);
+              }
             },
             // tooltip: '',
             heroTag: UniqueKey(),
@@ -256,15 +272,17 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
             foregroundColor: Colors.white,
             elevation: _shouldHaveElevation ? 6.0 : 0,
             child: Center(
-                child: SvgPicture.asset(SvgImages.iconUserManual, height: 20,)),
+                child: SvgPicture.asset(
+              SvgImages.iconUserManual,
+              height: 20,
+            )),
           ),
-        )
-    );
+        ));
   }
 
   Widget menuButton() {
     return
-      /*Container(
+        /*Container(
       height: 36,
       width:36,
       margin: const EdgeInsets.only(bottom: 16),
@@ -283,7 +301,7 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
       ),
     );*/
 
-    Padding(
+        Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: SizedBox(
         height: 36,
@@ -293,17 +311,20 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
           backgroundColor: _appTheme.primaryColor,
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0),bottomLeft: Radius.circular(8.0))
-          ),
-          child:
-          Transform.rotate(
-            origin: Offset(_animateIcon.value , 0),
-            angle: (1 - _animateIcon.value ) * math.pi / 15,
-            child: Center(child: !_isOpened ? SvgPicture.asset(SvgImages.iconCall) : const Icon(
-              Icons.clear,
-              color: Colors.white,
-              //size: 20.0,
-            )),
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8.0),
+                  bottomLeft: Radius.circular(8.0))),
+          child: Transform.rotate(
+            origin: Offset(_animateIcon.value, 0),
+            angle: (1 - _animateIcon.value) * math.pi / 15,
+            child: Center(
+                child: !_isOpened
+                    ? SvgPicture.asset(SvgImages.iconCall)
+                    : const Icon(
+                        Icons.clear,
+                        color: Colors.white,
+                        //size: 20.0,
+                      )),
           ),
         ),
       ),
@@ -311,6 +332,7 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
   }
 
   final AppThemeState _appTheme = AppThemeState();
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -325,17 +347,17 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
               opacity: _isOpened ? 1.0 : 0.0,
               duration: const Duration(milliseconds: 300),
               child: Transform.translate(
-                offset: Offset((_translateButton?.value ?? 1) , 0),
+                offset: Offset((_translateButton?.value ?? 1), 0),
                 child: Container(
-                  margin: const EdgeInsets.fromLTRB(0,0,0,16),
-                  padding: const EdgeInsets.fromLTRB(20,10,20,10),
+                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 16),
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                   decoration: BoxDecoration(
                       border: Border.all(
                         color: _appTheme.greyBorderColor,
                       ),
-                      color:_appTheme.supportFABBgColor,
-                      borderRadius: const BorderRadius.all(Radius.circular(100))
-                  ),
+                      color: _appTheme.supportFABBgColor,
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(100))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -361,12 +383,6 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
     );
   }
 }
-
-
-
-
-
-
 
 /*
 import 'package:flutter/material.dart';
@@ -803,4 +819,3 @@ extension EnumExt on FloatingActionButtonLocation {
   /// Get Value of The SpeedDialDirection Enum like Up, Down, etc. in String format
   String get value => toString().split(".")[1];
 }*/
-

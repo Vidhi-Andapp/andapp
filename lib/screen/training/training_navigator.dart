@@ -1,11 +1,16 @@
 import 'package:andapp/common/app_theme.dart';
 import 'package:andapp/common/image_utils.dart';
+import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/screen/nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class TrainingNavigator extends StatefulWidget {
-  const TrainingNavigator({Key? key}) : super(key: key);
+  final String title;
+  final String day;
+
+  const TrainingNavigator({Key? key, required this.title, required this.day})
+      : super(key: key);
 
   @override
   State<TrainingNavigator> createState() => _TrainingNavigatorState();
@@ -15,10 +20,20 @@ class _TrainingNavigatorState extends State<TrainingNavigator>
     with TickerProviderStateMixin {
   //final LoginSendOTPBloc _bloc = LoginSendOTPBloc();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool day1 = true, day2 = true, day3 = false;
+  bool day1 = false, day2 = false, day3 = false;
 
   @override
   Widget build(BuildContext context) {
+    if (widget.day == "1") {
+      day1 = true;
+    } else if (widget.day == "2") {
+      day1 = true;
+      day2 = true;
+    } else if (widget.day == "2") {
+      day1 = true;
+      day2 = true;
+      day3 = true;
+    }
     final appTheme = AppTheme.of(context);
     return SafeArea(
       child: Scaffold(
@@ -27,7 +42,7 @@ class _TrainingNavigatorState extends State<TrainingNavigator>
             title: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "General Insurance",
+                widget.title,
                 textAlign: TextAlign.left,
                 style: Theme.of(context).appBarTheme.titleTextStyle,
               ),
@@ -88,7 +103,7 @@ class _TrainingNavigatorState extends State<TrainingNavigator>
                               child: Row(
                                 children: [
                                   const Expanded(
-                                    child: Text('Day 1. Basics of Insurance',
+                                    child: Text(StringUtils.day1Title,
                                         style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w400)),
@@ -126,8 +141,7 @@ class _TrainingNavigatorState extends State<TrainingNavigator>
                               child: Row(
                                 children: [
                                   const Expanded(
-                                    child: Text(
-                                        'Day 2. Categories of Insurance',
+                                    child: Text(StringUtils.day2Title,
                                         style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w400)),
@@ -165,8 +179,7 @@ class _TrainingNavigatorState extends State<TrainingNavigator>
                               child: Row(
                                 children: [
                                   const Expanded(
-                                    child: Text(
-                                        'Day 3. Process for Insurance & Claims',
+                                    child: Text(StringUtils.day3Title,
                                         style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w400)),
@@ -202,16 +215,51 @@ class _TrainingNavigatorState extends State<TrainingNavigator>
                             const SizedBox(
                               height: 24,
                             ),
-                            const Text('Congratulations...!',
-                                style: TextStyle(
+                            Text(
+                                widget.day == "3"
+                                    ? StringUtils.trainingDaysSuccessTitle
+                                    : StringUtils.trainingSuccessTitle,
+                                style: const TextStyle(
                                     fontSize: 17, fontWeight: FontWeight.w500)),
                             const SizedBox(
                               height: 20,
                             ),
-                            const Text(
-                                'Your 1st Day Training was completed. Please come back tomorrow for 2nd Day Training',
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w300)),
+                            widget.day == "1"
+                                ? const Text(
+                                    StringUtils.trainingDay1CompleteSuccess,
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w300))
+                                : widget.day == "2"
+                                    ? const Text(
+                                        StringUtils.trainingDay2CompleteSuccess,
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w300))
+                                    : RichText(
+                                        text: TextSpan(children: <TextSpan>[
+                                          const TextSpan(
+                                              text: StringUtils
+                                                  .trainingDay3CompleteSuccess1,
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w300)),
+                                          TextSpan(
+                                              text: StringUtils
+                                                  .trainingDay3CompleteSuccess2,
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: AppTheme.of(context)
+                                                      .primaryColor,
+                                                  fontWeight: FontWeight.w300)),
+                                          const TextSpan(
+                                              text: StringUtils
+                                                  .trainingDay3CompleteSuccess3,
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w300)),
+                                        ]),
+                                        textAlign: TextAlign.center),
                           ],
                         ),
                       ),

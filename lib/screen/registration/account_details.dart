@@ -1,3 +1,4 @@
+/*
 import 'package:andapp/common/app_theme.dart';
 import 'package:andapp/common/pink_border_button.dart';
 import 'package:andapp/common/string_utils.dart';
@@ -149,8 +150,10 @@ class _AccountDetailsState extends State<AccountDetails> {
                                                         content: StringUtils.validate,
                                                         onPressed: () {},),
                                                     ),
-                                                    /*  fillColor: Colors.white,
-                                                    filled: true,*/
+                                                    */
+/*  fillColor: Colors.white,
+                                                    filled: true,*/ /*
+
                                                     enabledBorder: Theme
                                                         .of(context)
                                                         .inputDecorationTheme
@@ -286,8 +289,10 @@ class _AccountDetailsState extends State<AccountDetails> {
                                                             }
                                                           },),
                                                       ),
-                                                      /*  fillColor: Colors.white,
-                                                      filled: true,*/
+                                                      */
+/*  fillColor: Colors.white,
+                                                      filled: true,*/ /*
+
                                                       enabledBorder: Theme
                                                           .of(context)
                                                           .inputDecorationTheme
@@ -585,13 +590,16 @@ class _AccountDetailsState extends State<AccountDetails> {
               );
             }
           )
-        /*StreamBuilder(
+        */
+/*StreamBuilder(
           stream: _bloc.mainStream,
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             return Container();
           },
-        ),*/
+        ),*/ /*
+
       ),
     );
   }
 }
+*/

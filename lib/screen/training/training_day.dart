@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:andapp/common/pink_border_button.dart';
 import 'package:andapp/common/string_utils.dart';
+import 'package:andapp/screen/training/training_day_bloc.dart';
+import 'package:andapp/services/api_client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -19,6 +21,7 @@ class TrainingDays extends StatefulWidget {
 }
 
 class _TrainingDaysState extends State<TrainingDays> {
+  TrainingDayBloc bloc = TrainingDayBloc();
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
 
@@ -33,6 +36,12 @@ class _TrainingDaysState extends State<TrainingDays> {
   @override
   Widget build(BuildContext context) {
     //final appTheme = AppTheme.of(context);
+    var trainingType = widget.title == StringUtils.generalInsurance
+        ? ApiClient.trainingTypeGI
+        : ApiClient.trainingTypeLI;
+    var theme = (Theme.of(context) == ThemeMode.dark) ? "dark" : "light";
+    String url =
+        "${ApiClient.trainingDayURL}${trainingType}day${widget.day}$theme.html";
     return Scaffold(
       appBar: AppBar(
           title: Align(
@@ -63,11 +72,11 @@ class _TrainingDaysState extends State<TrainingDays> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height - 180,
+            height: MediaQuery.of(context).size.height - 160,
             width: MediaQuery.of(context).size.width,
             child: WebView(
-              initialUrl:
-                  'http://ec2-3-7-188-163.ap-south-1.compute.amazonaws.com:8088/Mails/Liday1dark.html',
+              initialUrl: url,
+              //'http://ec2-3-7-188-163.ap-south-1.compute.amazonaws.com:8088/Mails/Liday1dark.html',
               javascriptMode: JavascriptMode.unrestricted,
               onWebViewCreated: (WebViewController webViewController) {
                 _controller.complete(webViewController);
@@ -106,16 +115,21 @@ class _TrainingDaysState extends State<TrainingDays> {
               backgroundColor: const Color(0x00000000),
             ),
           ),
-          Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: PinkBorderButton(
-                  isEnabled: true,
-                  content: StringUtils.submit,
-                  onPressed: () {},
-                ),
-              )),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            child: PinkBorderButton(
+              isEnabled: true,
+              content: StringUtils.submit,
+              onPressed: () {
+                bloc.completeDay(
+                    context,
+                    widget.title,
+                    widget.day,
+                    ''
+                    '');
+              },
+            ),
+          ),
         ],
       ),
     );

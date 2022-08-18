@@ -6,6 +6,7 @@ import 'package:andapp/model/get_dashboard.dart';
 import 'package:andapp/model/get_gst_data.dart';
 import 'package:andapp/model/get_pan_data.dart';
 import 'package:andapp/model/get_question_answer_list.dart';
+import 'package:andapp/model/get_status.dart';
 import 'package:andapp/model/get_urls.dart';
 import 'package:andapp/model/send_otp.dart';
 import 'package:andapp/model/submit_answer.dart';
@@ -43,14 +44,12 @@ class ApiRepositoryIml extends ApiRepository {
 
   @override
   Future<CommonData?> registerDevice({String? mobileNo, String? deviceId}) {
-    return _apiServices.registerDevice(
-        mobileNo ?? '9408878267', deviceId ?? 'ABCFSH635468-6541388adkj!@');
+    return _apiServices.registerDevice(mobileNo ?? '', deviceId ?? '');
   }
 
   @override
   Future<CommonData?> updateMobile({String? mobileNo, String? deviceId}) {
-    return _apiServices.registerDevice(
-        mobileNo ?? '9408878267', deviceId ?? 'ABCFSH635468-6541388adkj!@');
+    return _apiServices.registerDevice(mobileNo ?? '', deviceId ?? '');
   }
 
   @override
@@ -58,6 +57,11 @@ class ApiRepositoryIml extends ApiRepository {
       {String? mobileNo, String? type, String? aadharNo, String? email}) {
     return _apiServices.commonSendOTP(mobileNo ?? '',
         type ?? ApiClient.otpTypeSMS, aadharNo ?? "", email ?? "");
+  }
+
+  @override
+  Future<GetStatus?> getStatus({String? mobileNo}) {
+    return _apiServices.getStatus(mobileNo ?? '');
   }
 
   @override
@@ -87,8 +91,11 @@ class ApiRepositoryIml extends ApiRepository {
 
   @override
   Future<SubmitAnswer?> submitAnswers(
-      {String? trainingType, required List<AnswerList> ansList}) {
-    return _apiServices.submitAnswers(trainingType ?? '', ansList: ansList);
+      {String? trainingType,
+      required String pospId,
+      required List<AnswerList> ansList}) {
+    return _apiServices.submitAnswers(trainingType ?? '', pospId,
+        ansList: ansList);
   }
 
   @override
@@ -114,13 +121,25 @@ class ApiRepositoryIml extends ApiRepository {
 
   @override
   Future<GetDashboard?> getDashboard({String? id}) {
-    return _apiServices.getDashboard(id ?? "29");
+    return _apiServices.getDashboard(id ?? "");
+  }
+
+  @override
+  Future<CommonData?> completeTrainingDay(
+      {String? trainingType, String? day, String? pospId}) {
+    return _apiServices.completeTrainingDay(
+        trainingType ?? "", day ?? "", pospId ?? "");
   }
 
   @override
   Future<DownloadCertificate?> downloadCertificate(
       {String? id, String? trainingType}) {
     return _apiServices.downloadCertificate(id ?? "", trainingType ?? '');
+  }
+
+  @override
+  Future<CommonData?> reExam({String? id, String? trainingType}) {
+    return _apiServices.reExam(id ?? "", trainingType ?? '');
   }
 }
 
@@ -144,6 +163,8 @@ abstract class ApiRepository {
   Future<SendOTP?> commonSendOTP(
       {String? mobileNo, String? type, String? aadharNo, String? email});
 
+  Future<GetStatus?> getStatus({String? mobileNo});
+
   Future<GetAadhar?> getAadharData({String? aadharNo, String? otp});
 
   Future<GetPan?> getPanData({String? panNo});
@@ -155,7 +176,9 @@ abstract class ApiRepository {
   Future<GetQuestionList?> getQuestions({String? trainingType});
 
   Future<SubmitAnswer?> submitAnswers(
-      {String? trainingType, required List<AnswerList> ansList});
+      {String? trainingType,
+      required String pospId,
+      required List<AnswerList> ansList});
 
   Future<GetDashboard?> registerPosp(
       {PlatformFile? addressProof,
@@ -169,7 +192,12 @@ abstract class ApiRepository {
 
   Future<GetDashboard?> getDashboard({String? id});
 
+  Future<CommonData?> completeTrainingDay(
+      {String trainingType, String day, String pospId});
+
   Future<DownloadCertificate?> downloadCertificate(
       {String? id, String? trainingType});
+
+  Future<CommonData?> reExam({String? id, String? trainingType});
 /*Future<Map<String, dynamic>> commonValidateOTP({String? mobileNo, String? type, String? otp, String? email});*/
 }

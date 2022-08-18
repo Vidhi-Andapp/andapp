@@ -1,11 +1,11 @@
-import 'dart:math';
-
 import 'package:andapp/common/app_theme.dart';
 import 'package:andapp/common/common_toast.dart';
 import 'package:andapp/common/govt_validator.dart';
 import 'package:andapp/common/image_utils.dart';
 import 'package:andapp/common/pink_border_button.dart';
 import 'package:andapp/common/string_utils.dart';
+import 'package:andapp/di/app_component_base.dart';
+import 'package:andapp/di/shared_preferences.dart';
 import 'package:andapp/screen/dashboard/dashboard.dart';
 import 'package:andapp/screen/registration/posp_registration_bloc.dart';
 import 'package:andapp/screen/registration/registration_phases.dart';
@@ -51,7 +51,21 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
       titlePan = StringUtils.panCard,
       titleAcademicCerti = StringUtils.uploadCertification;
 
-  final List<String> items = [
+  final List<String> itemsSalutation = [
+    StringUtils.mr,
+    StringUtils.ms,
+    StringUtils.mrs,
+    StringUtils.dr,
+  ];
+  String? selectedSalutation = StringUtils.mr;
+
+  final List<String> itemsGender = [
+    StringUtils.male,
+    StringUtils.female,
+  ];
+  String? selectedGender = StringUtils.male;
+
+  final List<String> itemsCertiType = [
     StringUtils.ssc,
     StringUtils.hsc,
     StringUtils.graduation,
@@ -91,7 +105,9 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                 item,
                 style: TextStyle(
                     fontSize: 14,
-                    color: Theme.of(context).scaffoldBackgroundColor,
+                    color: Theme
+                        .of(context)
+                        .scaffoldBackgroundColor,
                     fontWeight: FontWeight.w400),
               ),
             ),
@@ -108,6 +124,8 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
     return menuItems;
   }
 
+/*
+
   List<int> _getDividersIndexes() {
     List<int> dividersIndexes = [];
     for (var i = 0; i < (items.length * 2) - 1; i++) {
@@ -118,6 +136,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
     }
     return dividersIndexes;
   }
+*/
 
   Future<PlatformFile?> _pickFile() async {
     // opens storage to pick files and the picked file or files
@@ -133,12 +152,12 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
     if (result == null) return null;
     // we will log the name, size and path of the
     // first picked file (if multiple are selected)
-    print(result.files.first.name);
-    print(result.files.first.size);
-    print(result.files.first.path);
+    /*print(result.files.first.name);
+    print("Size in Bytes : ${result.files.first.size}");
+    print(result.files.first.path);*/
     var bytes = result.files.first.size;
-    var i = (log(bytes) / log(1024)).floor();
-    double sizeInMB = ((bytes / pow(1024, i)).toDouble());
+    double sizeInMB = bytes / (1024 * 1024);
+    print("sizeInMB : $sizeInMB");
     if (sizeInMB > 4) {
       CommonToast.getInstance()
           ?.displayToast(message: "Please select file upto 4 MB only");
@@ -162,9 +181,14 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
               title: Text(
                 StringUtils.pospReg,
                 textAlign: TextAlign.left,
-                style: Theme.of(context).appBarTheme.titleTextStyle,
+                style: Theme
+                    .of(context)
+                    .appBarTheme
+                    .titleTextStyle,
               ),
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              backgroundColor: Theme
+                  .of(context)
+                  .scaffoldBackgroundColor,
               centerTitle: true,
               elevation: 0,
               // give the app bar rounded corners
@@ -179,11 +203,14 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                       onBack();
                     },
                     tooltip:
-                        MaterialLocalizations.of(context).backButtonTooltip,
+                    MaterialLocalizations
+                        .of(context)
+                        .backButtonTooltip,
                   );
                 },
               )),
-          backgroundColor: Theme.of(context)
+          backgroundColor: Theme
+              .of(context)
               .scaffoldBackgroundColor, //const Color(0xff222222),
           body: LayoutBuilder(builder: (context, constraint) {
             return ConstrainedBox(
@@ -201,113 +228,122 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                           children: [
                             isPersonalDetailsVisible
                                 ? Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 32),
-                                        child: TextFormField(
-                                          decoration: InputDecoration(
-                                              labelText: StringUtils.userName,
-                                              labelStyle: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyText2
-                                                      ?.color),
-                                              fillColor: Colors.white,
-                                              enabledBorder: Theme.of(context)
-                                                  .inputDecorationTheme
-                                                  .border,
-                                              focusedBorder: Theme.of(context)
-                                                  .inputDecorationTheme
-                                                  .border),
-                                          validator: (val) {
-                                            return null;
-                                          },
-                                          keyboardType: TextInputType.name,
-                                          style: const TextStyle(
-                                            fontFamily: "Poppins",
-                                            //color: Colors.white
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 32),
-                                        child: TextFormField(
-                                          decoration: InputDecoration(
-                                              labelText: StringUtils.emailID,
-                                              labelStyle: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyText2
-                                                      ?.color),
-                                              fillColor: Colors.white,
-                                              enabledBorder: Theme.of(context)
-                                                  .inputDecorationTheme
-                                                  .border,
-                                              focusedBorder: Theme.of(context)
-                                                  .inputDecorationTheme
-                                                  .border),
-                                          validator: (val) {
-                                            if (val == null || val.isEmpty) {
-                                              return "Please enter email Id";
-                                            } else if (!EmailValidator.validate(
-                                                val, true)) {
-                                              return "Please enter valid email Id";
-                                            } else {
-                                              return null;
-                                            }
-                                          },
-                                          keyboardType:
-                                              TextInputType.emailAddress,
-                                          style: const TextStyle(
-                                            fontFamily: "Poppins",
-                                            //color: Colors.white
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 32),
-                                        child: TextFormField(
-                                          decoration: InputDecoration(
-                                              labelText:
-                                                  StringUtils.whatsappNumber,
-                                              labelStyle: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyText2
-                                                      ?.color),
-                                              fillColor: Colors.white,
-                                              enabledBorder: Theme.of(context)
-                                                  .inputDecorationTheme
-                                                  .border,
-                                              focusedBorder: Theme.of(context)
-                                                  .inputDecorationTheme
-                                                  .border),
-                                          validator: (val) {
-                                            String pattern =
-                                                r'(^(?:[+0]9)?[0-9]{10,12}$)';
-                                            RegExp regExp = RegExp(pattern);
-                                            if (val == null || val.isEmpty) {
-                                              return "Please enter whatsapp number";
-                                            } else if (val.length != 10 ||
-                                                !regExp.hasMatch(val)) {
-                                              return "Please enter valid whatsapp number";
-                                            } else {
-                                              return null;
-                                            }
-                                          },
-                                          maxLength: 10,
-                                          keyboardType: TextInputType.phone,
-                                          style: const TextStyle(
-                                            fontFamily: "Poppins",
-                                            //color: Colors.white
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  )
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 32),
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
+                                        labelText: StringUtils.userName,
+                                        labelStyle: TextStyle(
+                                            color: Theme
+                                                .of(context)
+                                                .textTheme
+                                                .bodyText2
+                                                ?.color),
+                                        fillColor: Colors.white,
+                                        enabledBorder: Theme
+                                            .of(context)
+                                            .inputDecorationTheme
+                                            .border,
+                                        focusedBorder: Theme
+                                            .of(context)
+                                            .inputDecorationTheme
+                                            .border),
+                                    validator: (val) {
+                                      return null;
+                                    },
+                                    keyboardType: TextInputType.name,
+                                    style: const TextStyle(
+                                      fontFamily: "Poppins",
+                                      //color: Colors.white
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 32),
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
+                                        labelText: StringUtils.emailID,
+                                        labelStyle: TextStyle(
+                                            color: Theme
+                                                .of(context)
+                                                .textTheme
+                                                .bodyText2
+                                                ?.color),
+                                        fillColor: Colors.white,
+                                        enabledBorder: Theme
+                                            .of(context)
+                                            .inputDecorationTheme
+                                            .border,
+                                        focusedBorder: Theme
+                                            .of(context)
+                                            .inputDecorationTheme
+                                            .border),
+                                    validator: (val) {
+                                      if (val == null || val.isEmpty) {
+                                        return "Please enter email Id";
+                                      } else if (!EmailValidator.validate(
+                                          val, true)) {
+                                        return "Please enter valid email Id";
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                    keyboardType:
+                                    TextInputType.emailAddress,
+                                    style: const TextStyle(
+                                      fontFamily: "Poppins",
+                                      //color: Colors.white
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 32),
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
+                                        labelText:
+                                        StringUtils.whatsappNumber,
+                                        labelStyle: TextStyle(
+                                            color: Theme
+                                                .of(context)
+                                                .textTheme
+                                                .bodyText2
+                                                ?.color),
+                                        fillColor: Colors.white,
+                                        enabledBorder: Theme
+                                            .of(context)
+                                            .inputDecorationTheme
+                                            .border,
+                                        focusedBorder: Theme
+                                            .of(context)
+                                            .inputDecorationTheme
+                                            .border),
+                                    validator: (val) {
+                                      String pattern =
+                                          r'(^(?:[+0]9)?[0-9]{10,12}$)';
+                                      RegExp regExp = RegExp(pattern);
+                                      if (val == null || val.isEmpty) {
+                                        return "Please enter whatsapp number";
+                                      } else if (val.length != 10 ||
+                                          !regExp.hasMatch(val)) {
+                                        return "Please enter valid whatsapp number";
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                    maxLength: 10,
+                                    keyboardType: TextInputType.phone,
+                                    style: const TextStyle(
+                                      fontFamily: "Poppins",
+                                      //color: Colors.white
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
                                 : Container(),
                             RegistrationPhases(
                                 key: _keyRPhases,
@@ -327,18 +363,18 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                             height: 50,
                                             child: TabBar(
                                               indicatorColor:
-                                                  appTheme.primaryColor,
+                                              appTheme.primaryColor,
                                               labelColor: appTheme.primaryColor,
                                               indicatorPadding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 16),
+                                              const EdgeInsets.symmetric(
+                                                  horizontal: 16),
                                               isScrollable: true,
                                               unselectedLabelColor:
-                                                  Colors.white,
+                                              Colors.white,
                                               labelStyle:
-                                                  const TextStyle(fontSize: 16),
+                                              const TextStyle(fontSize: 16),
                                               unselectedLabelStyle:
-                                                  const TextStyle(fontSize: 16),
+                                              const TextStyle(fontSize: 16),
                                               tabs: const [
                                                 Tab(text: "Automated"),
                                                 Tab(text: "Manual"),
@@ -355,90 +391,94 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                   key: sendAadharOTPKey,
                                                   child: Padding(
                                                     padding: const EdgeInsets
-                                                            .symmetric(
+                                                        .symmetric(
                                                         vertical: 8,
                                                         horizontal: 32),
                                                     child: TextFormField(
                                                       controller:
-                                                          bloc.aadharNumber,
+                                                      bloc.aadharNumber,
                                                       onEditingComplete: () {
                                                         setState(() {
                                                           isAadharOtpEnabled =
-                                                              false;
+                                                          false;
                                                         });
                                                       },
                                                       decoration:
-                                                          InputDecoration(
-                                                              labelText: StringUtils
-                                                                  .aadharNumber,
-                                                              labelStyle: TextStyle(
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .bodyText2
-                                                                      ?.color),
-                                                              suffixIcon:
-                                                                  Padding(
-                                                                padding: const EdgeInsets
-                                                                        .symmetric(
-                                                                    vertical:
-                                                                        8.0,
-                                                                    horizontal:
-                                                                        12.0),
-                                                                child:
-                                                                    PinkBorderButton(
-                                                                  isEnabled:
-                                                                      true,
-                                                                  content:
-                                                                      StringUtils
-                                                                          .otp,
-                                                                  onPressed:
-                                                                      () {
-                                                                    final form =
-                                                                        sendAadharOTPKey
-                                                                            .currentState;
-                                                                    if (form?.validate() ??
-                                                                        false) {
-                                                                      form?.save();
-                                                                      bloc
-                                                                          .sendAadharOTP(
-                                                                              context)
-                                                                          .then(
-                                                                              (value) {
+                                                      InputDecoration(
+                                                          labelText: StringUtils
+                                                              .aadharNumber,
+                                                          labelStyle: TextStyle(
+                                                              color: Theme
+                                                                  .of(
+                                                                  context)
+                                                                  .textTheme
+                                                                  .bodyText2
+                                                                  ?.color),
+                                                          suffixIcon:
+                                                          Padding(
+                                                            padding: const EdgeInsets
+                                                                .symmetric(
+                                                                vertical:
+                                                                8.0,
+                                                                horizontal:
+                                                                12.0),
+                                                            child:
+                                                            PinkBorderButton(
+                                                              isEnabled:
+                                                              true,
+                                                              content:
+                                                              StringUtils
+                                                                  .otp,
+                                                              onPressed:
+                                                                  () {
+                                                                final form =
+                                                                    sendAadharOTPKey
+                                                                        .currentState;
+                                                                if (form
+                                                                    ?.validate() ??
+                                                                    false) {
+                                                                  form?.save();
+                                                                  bloc
+                                                                      .sendAadharOTP(
+                                                                      context)
+                                                                      .then(
+                                                                          (
+                                                                          value) {
                                                                         setState(
-                                                                            () {
-                                                                          if (value ==
-                                                                              ApiClient.resultflagSuccess) {
-                                                                            isAadharOtpEnabled =
+                                                                                () {
+                                                                              if (value ==
+                                                                                  ApiClient
+                                                                                      .resultflagSuccess) {
+                                                                                isAadharOtpEnabled =
                                                                                 true;
-                                                                          }
-                                                                        });
+                                                                              }
+                                                                            });
                                                                       });
-                                                                    }
-                                                                  },
-                                                                ),
-                                                              ),
-                                                              enabledBorder: Theme
-                                                                      .of(
-                                                                          context)
-                                                                  .inputDecorationTheme
-                                                                  .border,
-                                                              focusedBorder: Theme
-                                                                      .of(context)
-                                                                  .inputDecorationTheme
-                                                                  .border),
+                                                                }
+                                                              },
+                                                            ),
+                                                          ),
+                                                          enabledBorder: Theme
+                                                              .of(
+                                                              context)
+                                                              .inputDecorationTheme
+                                                              .border,
+                                                          focusedBorder: Theme
+                                                              .of(context)
+                                                              .inputDecorationTheme
+                                                              .border),
                                                       validator: (val) {
                                                         AadharValidator
-                                                            aadharValidator =
-                                                            AadharValidator();
+                                                        aadharValidator =
+                                                        AadharValidator();
                                                         if (val == null ||
                                                             val.isEmpty) {
                                                           return "Please enter aadhar number";
                                                         } else if (val.length <
-                                                                12 ||
+                                                            12 ||
                                                             !aadharValidator
                                                                 .validate(
-                                                                    val)) {
+                                                                val)) {
                                                           return "Please enter valid aadhar number";
                                                         } else {
                                                           return null;
@@ -446,7 +486,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                       },
                                                       maxLength: 12,
                                                       keyboardType:
-                                                          TextInputType.number,
+                                                      TextInputType.number,
                                                       style: TextStyle(
                                                           color: appTheme
                                                               .speedDialLabelBgDT),
@@ -461,63 +501,66 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                     child: TextFormField(
                                                       controller: bloc.otp,
                                                       decoration:
-                                                          InputDecoration(
-                                                              labelText:
-                                                                  StringUtils
-                                                                      .otp,
-                                                              labelStyle: TextStyle(
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .bodyText2
-                                                                      ?.color),
-                                                              suffixIcon:
-                                                                  Padding(
-                                                                padding: const EdgeInsets
-                                                                        .symmetric(
-                                                                    vertical:
-                                                                        8.0,
-                                                                    horizontal:
-                                                                        12.0),
-                                                                child:
-                                                                    PinkBorderButton(
-                                                                  isEnabled:
-                                                                      true,
-                                                                  content:
-                                                                      StringUtils
-                                                                          .validate,
-                                                                  onPressed:
-                                                                      () async {
-                                                                    final form =
-                                                                        validateAadharOTPKey
-                                                                            .currentState;
-                                                                    if (form?.validate() ??
-                                                                        false) {
-                                                                      form?.save();
-                                                                      await bloc
-                                                                          .getAadharData(
-                                                                              context)
-                                                                          .then((value) =>
-                                                                              {});
-                                                                    }
-                                                                  },
-                                                                ),
-                                                              ),
-                                                              fillColor: appTheme
-                                                                  .speedDialLabelBgDT,
-                                                              filled:
-                                                                  !isAadharOtpEnabled,
-                                                              enabled:
-                                                                  isAadharOtpEnabled,
-                                                              enabledBorder: Theme
-                                                                      .of(
-                                                                          context)
-                                                                  .inputDecorationTheme
-                                                                  .border,
-                                                              focusedBorder: Theme
-                                                                      .of(context)
-                                                                  .inputDecorationTheme
-                                                                  .border),
+                                                      InputDecoration(
+                                                          labelText:
+                                                          StringUtils
+                                                              .otp,
+                                                          labelStyle: TextStyle(
+                                                              color: Theme
+                                                                  .of(
+                                                                  context)
+                                                                  .textTheme
+                                                                  .bodyText2
+                                                                  ?.color),
+                                                          suffixIcon:
+                                                          Padding(
+                                                            padding: const EdgeInsets
+                                                                .symmetric(
+                                                                vertical:
+                                                                8.0,
+                                                                horizontal:
+                                                                12.0),
+                                                            child:
+                                                            PinkBorderButton(
+                                                              isEnabled:
+                                                              true,
+                                                              content:
+                                                              StringUtils
+                                                                  .validate,
+                                                              onPressed:
+                                                                  () async {
+                                                                final form =
+                                                                    validateAadharOTPKey
+                                                                        .currentState;
+                                                                if (form
+                                                                    ?.validate() ??
+                                                                    false) {
+                                                                  form?.save();
+                                                                  await bloc
+                                                                      .getAadharData(
+                                                                      context)
+                                                                      .then((
+                                                                      value) =>
+                                                                  {});
+                                                                }
+                                                              },
+                                                            ),
+                                                          ),
+                                                          fillColor: appTheme
+                                                              .speedDialLabelBgDT,
+                                                          filled:
+                                                          !isAadharOtpEnabled,
+                                                          enabled:
+                                                          isAadharOtpEnabled,
+                                                          enabledBorder: Theme
+                                                              .of(
+                                                              context)
+                                                              .inputDecorationTheme
+                                                              .border,
+                                                          focusedBorder: Theme
+                                                              .of(context)
+                                                              .inputDecorationTheme
+                                                              .border),
                                                       validator: (val) {
                                                         // ignore: prefer_is_empty
                                                         if (val?.length == 0 &&
@@ -529,7 +572,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                       },
                                                       maxLength: 6,
                                                       keyboardType:
-                                                          TextInputType.number,
+                                                      TextInputType.number,
                                                       style: TextStyle(
                                                           color: appTheme
                                                               .speedDialLabelBgDT),
@@ -542,48 +585,50 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                     children: [
                                                       Padding(
                                                         padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                bottom: 16),
+                                                        const EdgeInsets
+                                                            .only(
+                                                            bottom: 16),
                                                         child: Text(
                                                           StringUtils
                                                               .regOtpContent,
                                                           textAlign:
-                                                              TextAlign.start,
+                                                          TextAlign.start,
                                                           style: TextStyle(
                                                               color: appTheme
                                                                   .separatorColor,
                                                               fontSize: 12,
                                                               fontWeight:
-                                                                  FontWeight
-                                                                      .normal),
+                                                              FontWeight
+                                                                  .normal),
                                                         ),
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                vertical: 8,
-                                                                horizontal: 32),
+                                                        const EdgeInsets
+                                                            .symmetric(
+                                                            vertical: 8,
+                                                            horizontal: 32),
                                                         child: TextFormField(
                                                           controller:
-                                                              bloc.aadharAName,
+                                                          bloc.aadharAName,
                                                           autovalidateMode:
-                                                              AutovalidateMode
-                                                                  .always,
+                                                          AutovalidateMode
+                                                              .always,
                                                           decoration:
-                                                              InputDecoration(
+                                                          InputDecoration(
                                                             labelText:
-                                                                StringUtils
-                                                                    .name,
+                                                            StringUtils
+                                                                .name,
                                                             labelStyle: TextStyle(
-                                                                color: Theme.of(
-                                                                        context)
+                                                                color: Theme
+                                                                    .of(
+                                                                    context)
                                                                     .textTheme
                                                                     .bodyText2
                                                                     ?.color),
-                                                            border: Theme.of(
-                                                                    context)
+                                                            border: Theme
+                                                                .of(
+                                                                context)
                                                                 .inputDecorationTheme
                                                                 .border,
                                                             enabled: false,
@@ -591,16 +636,17 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                 .speedDialLabelBgDT,
                                                             filled: true,
                                                             errorStyle:
-                                                                TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
+                                                            TextStyle(
+                                                              color: Theme
+                                                                  .of(
+                                                                  context)
                                                                   .errorColor,
                                                             ),
                                                           ),
                                                           style:
-                                                              const TextStyle(
+                                                          const TextStyle(
                                                             fontFamily:
-                                                                "Poppins",
+                                                            "Poppins",
                                                             //color: Colors.white
                                                           ),
                                                           validator: (val) {
@@ -609,12 +655,12 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                               return StringUtils
                                                                   .valEmptyAadharDetails;
                                                             } else if (val
-                                                                        .length !=
-                                                                    5 ||
+                                                                .length !=
+                                                                5 ||
                                                                 !ApiClient
                                                                     .nameRegExp
                                                                     .hasMatch(
-                                                                        val)) {
+                                                                    val)) {
                                                               return StringUtils
                                                                   .valEmptyAadharDetails;
                                                             } else {
@@ -625,26 +671,28 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                vertical: 8,
-                                                                horizontal: 32),
+                                                        const EdgeInsets
+                                                            .symmetric(
+                                                            vertical: 8,
+                                                            horizontal: 32),
                                                         child: TextFormField(
                                                             controller: bloc
                                                                 .aadharAGender,
                                                             decoration:
-                                                                InputDecoration(
+                                                            InputDecoration(
                                                               labelText:
-                                                                  StringUtils
-                                                                      .gender,
+                                                              StringUtils
+                                                                  .gender,
                                                               labelStyle: TextStyle(
-                                                                  color: Theme.of(
-                                                                          context)
+                                                                  color: Theme
+                                                                      .of(
+                                                                      context)
                                                                       .textTheme
                                                                       .bodyText2
                                                                       ?.color),
-                                                              border: Theme.of(
-                                                                      context)
+                                                              border: Theme
+                                                                  .of(
+                                                                  context)
                                                                   .inputDecorationTheme
                                                                   .border,
                                                               enabled: false,
@@ -653,9 +701,9 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                               filled: true,
                                                             ),
                                                             style:
-                                                                const TextStyle(
+                                                            const TextStyle(
                                                               fontFamily:
-                                                                  "Poppins",
+                                                              "Poppins",
                                                               //color: Colors.white
                                                             ),
                                                             validator: (val) {
@@ -664,12 +712,12 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                 return StringUtils
                                                                     .valEmptyAadharDetails;
                                                               } else if (val
-                                                                          .length !=
-                                                                      5 ||
+                                                                  .length !=
+                                                                  5 ||
                                                                   !ApiClient
                                                                       .nameRegExp
                                                                       .hasMatch(
-                                                                          val)) {
+                                                                      val)) {
                                                                 return StringUtils
                                                                     .valEmptyAadharDetails;
                                                               } else {
@@ -679,26 +727,28 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                vertical: 8,
-                                                                horizontal: 32),
+                                                        const EdgeInsets
+                                                            .symmetric(
+                                                            vertical: 8,
+                                                            horizontal: 32),
                                                         child: TextFormField(
                                                             controller: bloc
                                                                 .aadharABirthDate,
                                                             decoration:
-                                                                InputDecoration(
+                                                            InputDecoration(
                                                               labelText:
-                                                                  StringUtils
-                                                                      .birthdate,
+                                                              StringUtils
+                                                                  .birthdate,
                                                               labelStyle: TextStyle(
-                                                                  color: Theme.of(
-                                                                          context)
+                                                                  color: Theme
+                                                                      .of(
+                                                                      context)
                                                                       .textTheme
                                                                       .bodyText2
                                                                       ?.color),
-                                                              border: Theme.of(
-                                                                      context)
+                                                              border: Theme
+                                                                  .of(
+                                                                  context)
                                                                   .inputDecorationTheme
                                                                   .border,
                                                               enabled: false,
@@ -707,9 +757,9 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                               filled: true,
                                                             ),
                                                             style:
-                                                                const TextStyle(
+                                                            const TextStyle(
                                                               fontFamily:
-                                                                  "Poppins",
+                                                              "Poppins",
                                                               //color: Colors.white
                                                             ),
                                                             validator: (val) {
@@ -718,12 +768,12 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                 return StringUtils
                                                                     .valEmptyAadharDetails;
                                                               } else if (val
-                                                                          .length !=
-                                                                      5 ||
+                                                                  .length !=
+                                                                  5 ||
                                                                   !ApiClient
                                                                       .nameRegExp
                                                                       .hasMatch(
-                                                                          val)) {
+                                                                      val)) {
                                                                 return StringUtils
                                                                     .valEmptyAadharDetails;
                                                               } else {
@@ -733,26 +783,28 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                vertical: 8,
-                                                                horizontal: 32),
+                                                        const EdgeInsets
+                                                            .symmetric(
+                                                            vertical: 8,
+                                                            horizontal: 32),
                                                         child: TextFormField(
                                                             controller: bloc
                                                                 .aadharAAddress,
                                                             decoration:
-                                                                InputDecoration(
+                                                            InputDecoration(
                                                               labelText:
-                                                                  StringUtils
-                                                                      .address,
+                                                              StringUtils
+                                                                  .address,
                                                               labelStyle: TextStyle(
-                                                                  color: Theme.of(
-                                                                          context)
+                                                                  color: Theme
+                                                                      .of(
+                                                                      context)
                                                                       .textTheme
                                                                       .bodyText2
                                                                       ?.color),
-                                                              border: Theme.of(
-                                                                      context)
+                                                              border: Theme
+                                                                  .of(
+                                                                  context)
                                                                   .inputDecorationTheme
                                                                   .border,
                                                               enabled: false,
@@ -761,9 +813,9 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                               filled: true,
                                                             ),
                                                             style:
-                                                                const TextStyle(
+                                                            const TextStyle(
                                                               fontFamily:
-                                                                  "Poppins",
+                                                              "Poppins",
                                                               //color: Colors.white
                                                             ),
                                                             validator: (val) {
@@ -772,12 +824,12 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                 return StringUtils
                                                                     .valEmptyAadharDetails;
                                                               } else if (val
-                                                                          .length !=
-                                                                      5 ||
+                                                                  .length !=
+                                                                  5 ||
                                                                   !ApiClient
                                                                       .nameRegExp
                                                                       .hasMatch(
-                                                                          val)) {
+                                                                      val)) {
                                                                 return StringUtils
                                                                     .valEmptyAadharDetails;
                                                               } else {
@@ -794,7 +846,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                               key: kycManualKey,
                                               child: Column(
                                                 children: [
-                                                  Padding(
+                                                  /* Padding(
                                                     padding: const EdgeInsets
                                                             .symmetric(
                                                         vertical: 8,
@@ -835,10 +887,176 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                         //color: Colors.white
                                                       ),
                                                     ),
+                                                  ),*/
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        vertical: 16,
+                                                        horizontal: 32),
+                                                    child:
+                                                    DropdownButtonHideUnderline(
+                                                      child:
+                                                      DropdownButtonFormField2(
+                                                        decoration: InputDecoration(
+                                                            labelText: StringUtils
+                                                                .salutation,
+                                                            labelStyle: TextStyle(
+                                                                color: Theme
+                                                                    .of(context)
+                                                                    .textTheme
+                                                                    .bodyText2
+                                                                    ?.color),
+                                                            hintStyle: TextStyle(
+                                                                color: Theme
+                                                                    .of(
+                                                                    context)
+                                                                    .textTheme
+                                                                    .bodyText2
+                                                                    ?.color),
+                                                            fillColor:
+                                                            Colors.white,
+                                                            contentPadding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal:
+                                                                16),
+                                                            enabledBorder:
+                                                            Theme
+                                                                .of(context)
+                                                                .inputDecorationTheme
+                                                                .border,
+                                                            focusedBorder:
+                                                            Theme
+                                                                .of(context)
+                                                                .inputDecorationTheme
+                                                                .border),
+                                                        dropdownDecoration:
+                                                        BoxDecoration(
+                                                            color: Colors
+                                                                .white,
+                                                            border:
+                                                            Border.all(
+                                                              width: 1,
+                                                              color: Colors
+                                                                  .white,
+                                                            ),
+                                                            borderRadius:
+                                                            const BorderRadius
+                                                                .all(
+                                                                Radius.circular(
+                                                                    8))),
+                                                        isExpanded: true,
+                                                        icon: Padding(
+                                                          padding:
+                                                          const EdgeInsets
+                                                              .only(
+                                                              top: 8.0,
+                                                              bottom: 8.0),
+                                                          child:
+                                                          SvgPicture.asset(
+                                                              SvgImages
+                                                                  .dropdown,
+                                                              height: 28,
+                                                              width: 28),
+                                                        ),
+                                                        hint: selectedSalutation ==
+                                                            null
+                                                            ? const Text(
+                                                            StringUtils
+                                                                .salutation,
+                                                            maxLines: 2,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                            textAlign:
+                                                            TextAlign
+                                                                .start,
+                                                            style: TextStyle(
+                                                                fontSize:
+                                                                14,
+                                                                color: Colors
+                                                                    .white))
+                                                            : Text(
+                                                            selectedSalutation ??
+                                                                "",
+                                                            maxLines: 2,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                            textAlign:
+                                                            TextAlign
+                                                                .start,
+                                                            style: const TextStyle(
+                                                                fontSize:
+                                                                14,
+                                                                color: Colors
+                                                                    .white)),
+                                                        selectedItemBuilder:
+                                                            (BuildContext
+                                                        context) {
+                                                          return itemsSalutation
+                                                              .map<Widget>(
+                                                                  (String
+                                                              item) {
+                                                                return Text(
+                                                                    item,
+                                                                    maxLines: 2,
+                                                                    overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                    textAlign:
+                                                                    TextAlign
+                                                                        .start,
+                                                                    style: const TextStyle(
+                                                                        fontSize:
+                                                                        14,
+                                                                        color: Colors
+                                                                            .white));
+                                                              }).toList();
+                                                        },
+                                                        items:
+                                                        _addDividersAfterItems(
+                                                            itemsSalutation),
+                                                        /*items: items.map((String item) {
+                                                  return DropdownMenuItem<String>(
+                                                    value: item,
+                                                    child: Text('Log $item'),
+                                                  );
+                                                }).toList(),
+                                                customItemsIndexes: _getDividersIndexes(),
+                                                customItemsHeight: 4,*/
+                                                        customItemsHeight: 1,
+                                                        value:
+                                                        selectedSalutation,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            selectedSalutation =
+                                                            value as String;
+                                                          });
+                                                        },
+                                                        buttonHeight: 55,
+                                                        buttonWidth:
+                                                        MediaQuery
+                                                            .of(
+                                                            context)
+                                                            .size
+                                                            .width -
+                                                            64,
+                                                        itemHeight: 55,
+                                                        itemPadding:
+                                                        const EdgeInsets
+                                                            .symmetric(
+                                                            horizontal:
+                                                            8.0),
+                                                        selectedItemHighlightColor:
+                                                        appTheme
+                                                            .primaryColor,
+                                                      ),
+                                                    ),
                                                   ),
                                                   Padding(
                                                     padding: const EdgeInsets
-                                                            .symmetric(
+                                                        .symmetric(
                                                         vertical: 8,
                                                         horizontal: 32),
                                                     child: TextFormField(
@@ -846,24 +1064,25 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                           labelText: StringUtils
                                                               .firstName,
                                                           labelStyle: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
+                                                              color: Theme
+                                                                  .of(
+                                                                  context)
                                                                   .textTheme
                                                                   .bodyText2
                                                                   ?.color),
                                                           fillColor:
-                                                              Colors.white,
+                                                          Colors.white,
                                                           enabledBorder: Theme
-                                                                  .of(context)
+                                                              .of(context)
                                                               .inputDecorationTheme
                                                               .border,
                                                           focusedBorder: Theme
-                                                                  .of(context)
+                                                              .of(context)
                                                               .inputDecorationTheme
                                                               .border),
                                                       validator: (val) {},
                                                       keyboardType:
-                                                          TextInputType.text,
+                                                      TextInputType.name,
                                                       style: const TextStyle(
                                                         fontFamily: "Poppins",
                                                         //color: Colors.white
@@ -872,7 +1091,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                   ),
                                                   Padding(
                                                     padding: const EdgeInsets
-                                                            .symmetric(
+                                                        .symmetric(
                                                         vertical: 8,
                                                         horizontal: 32),
                                                     child: TextFormField(
@@ -880,24 +1099,25 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                           labelText: StringUtils
                                                               .middleName,
                                                           labelStyle: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
+                                                              color: Theme
+                                                                  .of(
+                                                                  context)
                                                                   .textTheme
                                                                   .bodyText2
                                                                   ?.color),
                                                           fillColor:
-                                                              Colors.white,
+                                                          Colors.white,
                                                           enabledBorder: Theme
-                                                                  .of(context)
+                                                              .of(context)
                                                               .inputDecorationTheme
                                                               .border,
                                                           focusedBorder: Theme
-                                                                  .of(context)
+                                                              .of(context)
                                                               .inputDecorationTheme
                                                               .border),
                                                       validator: (val) {},
                                                       keyboardType:
-                                                          TextInputType.text,
+                                                      TextInputType.name,
                                                       style: const TextStyle(
                                                         fontFamily: "Poppins",
                                                         //color: Colors.white
@@ -906,7 +1126,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                   ),
                                                   Padding(
                                                     padding: const EdgeInsets
-                                                            .symmetric(
+                                                        .symmetric(
                                                         vertical: 8,
                                                         horizontal: 32),
                                                     child: TextFormField(
@@ -914,33 +1134,34 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                           labelText: StringUtils
                                                               .lastName,
                                                           labelStyle: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
+                                                              color: Theme
+                                                                  .of(
+                                                                  context)
                                                                   .textTheme
                                                                   .bodyText2
                                                                   ?.color),
                                                           fillColor:
-                                                              Colors.white,
+                                                          Colors.white,
                                                           enabledBorder: Theme
-                                                                  .of(context)
+                                                              .of(context)
                                                               .inputDecorationTheme
                                                               .border,
                                                           focusedBorder: Theme
-                                                                  .of(context)
+                                                              .of(context)
                                                               .inputDecorationTheme
                                                               .border),
                                                       validator: (val) {},
                                                       keyboardType:
-                                                          TextInputType.text,
+                                                      TextInputType.name,
                                                       style: const TextStyle(
                                                         fontFamily: "Poppins",
                                                         //color: Colors.white
                                                       ),
                                                     ),
                                                   ),
-                                                  Padding(
+                                                  /* Padding(
                                                     padding: const EdgeInsets
-                                                            .symmetric(
+                                                        .symmetric(
                                                         vertical: 8,
                                                         horizontal: 32),
                                                     child: TextFormField(
@@ -948,33 +1169,199 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                           labelText: StringUtils
                                                               .gender,
                                                           labelStyle: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
+                                                              color: Theme
+                                                                  .of(
+                                                                  context)
                                                                   .textTheme
                                                                   .bodyText2
                                                                   ?.color),
                                                           fillColor:
-                                                              Colors.white,
+                                                          Colors.white,
                                                           enabledBorder: Theme
-                                                                  .of(context)
+                                                              .of(context)
                                                               .inputDecorationTheme
                                                               .border,
                                                           focusedBorder: Theme
-                                                                  .of(context)
+                                                              .of(context)
                                                               .inputDecorationTheme
                                                               .border),
                                                       validator: (val) {},
                                                       keyboardType:
-                                                          TextInputType.text,
+                                                      TextInputType.text,
                                                       style: const TextStyle(
                                                         fontFamily: "Poppins",
                                                         //color: Colors.white
                                                       ),
                                                     ),
+                                                  ),*/
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        vertical: 16,
+                                                        horizontal: 32),
+                                                    child:
+                                                    DropdownButtonHideUnderline(
+                                                      child:
+                                                      DropdownButtonFormField2(
+                                                        decoration: InputDecoration(
+                                                            labelText:
+                                                            StringUtils
+                                                                .gender,
+                                                            labelStyle: TextStyle(
+                                                                color: Theme
+                                                                    .of(context)
+                                                                    .textTheme
+                                                                    .bodyText2
+                                                                    ?.color),
+                                                            hintStyle: TextStyle(
+                                                                color: Theme
+                                                                    .of(context)
+                                                                    .textTheme
+                                                                    .bodyText2
+                                                                    ?.color),
+                                                            fillColor:
+                                                            Colors.white,
+                                                            contentPadding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal:
+                                                                16),
+                                                            enabledBorder:
+                                                            Theme
+                                                                .of(context)
+                                                                .inputDecorationTheme
+                                                                .border,
+                                                            focusedBorder:
+                                                            Theme
+                                                                .of(context)
+                                                                .inputDecorationTheme
+                                                                .border),
+                                                        dropdownDecoration:
+                                                        BoxDecoration(
+                                                            color: Colors
+                                                                .white,
+                                                            border:
+                                                            Border.all(
+                                                              width: 1,
+                                                              color: Colors
+                                                                  .white,
+                                                            ),
+                                                            borderRadius:
+                                                            const BorderRadius
+                                                                .all(
+                                                                Radius.circular(
+                                                                    8))),
+                                                        isExpanded: true,
+                                                        icon: Padding(
+                                                          padding:
+                                                          const EdgeInsets
+                                                              .only(
+                                                              top: 8.0,
+                                                              bottom: 8.0),
+                                                          child:
+                                                          SvgPicture.asset(
+                                                              SvgImages
+                                                                  .dropdown,
+                                                              height: 28,
+                                                              width: 28),
+                                                        ),
+                                                        hint: selectedGender ==
+                                                            null
+                                                            ? const Text(
+                                                            StringUtils
+                                                                .gender,
+                                                            maxLines: 2,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                            textAlign:
+                                                            TextAlign
+                                                                .start,
+                                                            style: TextStyle(
+                                                                fontSize:
+                                                                14,
+                                                                color: Colors
+                                                                    .white))
+                                                            : Text(
+                                                            selectedGender ??
+                                                                "",
+                                                            maxLines: 2,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                            textAlign:
+                                                            TextAlign
+                                                                .start,
+                                                            style: const TextStyle(
+                                                                fontSize:
+                                                                14,
+                                                                color: Colors
+                                                                    .white)),
+                                                        selectedItemBuilder:
+                                                            (BuildContext
+                                                        context) {
+                                                          return itemsGender
+                                                              .map<Widget>(
+                                                                  (String
+                                                              item) {
+                                                                return Text(
+                                                                    item,
+                                                                    maxLines: 2,
+                                                                    overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                    textAlign:
+                                                                    TextAlign
+                                                                        .start,
+                                                                    style: const TextStyle(
+                                                                        fontSize:
+                                                                        14,
+                                                                        color: Colors
+                                                                            .white));
+                                                              }).toList();
+                                                        },
+                                                        items:
+                                                        _addDividersAfterItems(
+                                                            itemsGender),
+                                                        /*items: items.map((String item) {
+                                                  return DropdownMenuItem<String>(
+                                                    value: item,
+                                                    child: Text('Log $item'),
+                                                  );
+                                                }).toList(),
+                                                customItemsIndexes: _getDividersIndexes(),
+                                                customItemsHeight: 4,*/
+                                                        customItemsHeight: 1,
+                                                        value: selectedGender,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            selectedGender =
+                                                            value as String;
+                                                          });
+                                                        },
+                                                        buttonHeight: 55,
+                                                        buttonWidth:
+                                                        MediaQuery
+                                                            .of(
+                                                            context)
+                                                            .size
+                                                            .width -
+                                                            64,
+                                                        itemHeight: 55,
+                                                        itemPadding:
+                                                        const EdgeInsets
+                                                            .symmetric(
+                                                            horizontal:
+                                                            8.0),
+                                                        selectedItemHighlightColor:
+                                                        appTheme
+                                                            .primaryColor,
+                                                      ),
+                                                    ),
                                                   ),
                                                   Padding(
                                                     padding: const EdgeInsets
-                                                            .symmetric(
+                                                        .symmetric(
                                                         vertical: 8,
                                                         horizontal: 32),
                                                     child: Row(
@@ -982,70 +1369,89 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                         Flexible(
                                                           flex: 1,
                                                           child:
-                                                              GestureDetector(
+                                                          GestureDetector(
                                                             onTap: () async {
                                                               bloc.aadharFront =
-                                                                  await _pickFile();
-                                                              if (bloc.aadharFront !=
+                                                              await _pickFile();
+                                                              if (bloc
+                                                                  .aadharFront !=
                                                                   null) {
                                                                 titleAadharFront =
-                                                                    "file selected";
+                                                                    StringUtils
+                                                                        .fileUploaded;
+                                                              } else {
+                                                                titleAadharFront =
+                                                                    StringUtils
+                                                                        .aadharFront;
                                                               }
+                                                              setState(() {});
                                                             },
                                                             child: Container(
                                                                 padding: const EdgeInsets
-                                                                        .symmetric(
+                                                                    .symmetric(
                                                                     vertical: 8,
                                                                     horizontal:
-                                                                        16),
+                                                                    16),
                                                                 decoration:
-                                                                    BoxDecoration(
-                                                                        border: Border
-                                                                            .all(
-                                                                          width:
-                                                                              1,
-                                                                          color:
-                                                                              Colors.white,
-                                                                        ),
-                                                                        borderRadius:
-                                                                            const BorderRadius.all(Radius.circular(8))),
+                                                                BoxDecoration(
+                                                                    border: Border
+                                                                        .all(
+                                                                      width:
+                                                                      1,
+                                                                      color:
+                                                                      Colors
+                                                                          .white,
+                                                                    ),
+                                                                    borderRadius:
+                                                                    const BorderRadius
+                                                                        .all(
+                                                                        Radius
+                                                                            .circular(
+                                                                            8))),
                                                                 child: Row(
                                                                   mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceBetween,
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
                                                                   crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .center,
+                                                                  CrossAxisAlignment
+                                                                      .center,
                                                                   children: [
                                                                     SizedBox(
-                                                                      width: (MediaQuery.of(context).size.width /
-                                                                              2) -
+                                                                      width: (MediaQuery
+                                                                          .of(
+                                                                          context)
+                                                                          .size
+                                                                          .width /
+                                                                          2) -
                                                                           108,
                                                                       child:
-                                                                          Text(
+                                                                      Text(
                                                                         titleAadharFront,
                                                                         maxLines:
-                                                                            2,
+                                                                        2,
                                                                         overflow:
-                                                                            TextOverflow.ellipsis,
+                                                                        TextOverflow
+                                                                            .ellipsis,
                                                                         textAlign:
-                                                                            TextAlign.start,
+                                                                        TextAlign
+                                                                            .start,
                                                                       ),
                                                                     ),
                                                                     Padding(
                                                                       padding: const EdgeInsets
-                                                                              .only(
+                                                                          .only(
                                                                           top:
-                                                                              8.0,
+                                                                          8.0,
                                                                           bottom:
-                                                                              8.0),
-                                                                      child: SvgPicture.asset(
+                                                                          8.0),
+                                                                      child: SvgPicture
+                                                                          .asset(
                                                                           SvgImages
                                                                               .iconAttachment,
                                                                           height:
-                                                                              20,
+                                                                          20,
                                                                           width:
-                                                                              20),
+                                                                          20),
                                                                     ),
                                                                   ],
                                                                 )),
@@ -1057,70 +1463,89 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                         Flexible(
                                                           flex: 1,
                                                           child:
-                                                              GestureDetector(
+                                                          GestureDetector(
                                                             onTap: () async {
                                                               bloc.aadharBack =
-                                                                  await _pickFile();
-                                                              if (bloc.aadharBack !=
+                                                              await _pickFile();
+                                                              if (bloc
+                                                                  .aadharBack !=
                                                                   null) {
                                                                 titleAadharBack =
-                                                                    "file selected";
+                                                                    StringUtils
+                                                                        .fileUploaded;
+                                                              } else {
+                                                                titleAadharBack =
+                                                                    StringUtils
+                                                                        .aadharBack;
                                                               }
+                                                              setState(() {});
                                                             },
                                                             child: Container(
                                                                 padding: const EdgeInsets
-                                                                        .symmetric(
+                                                                    .symmetric(
                                                                     vertical: 8,
                                                                     horizontal:
-                                                                        16),
+                                                                    16),
                                                                 decoration:
-                                                                    BoxDecoration(
-                                                                        border: Border
-                                                                            .all(
-                                                                          width:
-                                                                              1,
-                                                                          color:
-                                                                              Colors.white,
-                                                                        ),
-                                                                        borderRadius:
-                                                                            const BorderRadius.all(Radius.circular(8))),
+                                                                BoxDecoration(
+                                                                    border: Border
+                                                                        .all(
+                                                                      width:
+                                                                      1,
+                                                                      color:
+                                                                      Colors
+                                                                          .white,
+                                                                    ),
+                                                                    borderRadius:
+                                                                    const BorderRadius
+                                                                        .all(
+                                                                        Radius
+                                                                            .circular(
+                                                                            8))),
                                                                 child: Row(
                                                                   mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceBetween,
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
                                                                   crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .center,
+                                                                  CrossAxisAlignment
+                                                                      .center,
                                                                   children: [
                                                                     SizedBox(
-                                                                      width: (MediaQuery.of(context).size.width /
-                                                                              2) -
+                                                                      width: (MediaQuery
+                                                                          .of(
+                                                                          context)
+                                                                          .size
+                                                                          .width /
+                                                                          2) -
                                                                           108,
                                                                       child:
-                                                                          Text(
+                                                                      Text(
                                                                         titleAadharBack,
                                                                         maxLines:
-                                                                            2,
+                                                                        2,
                                                                         overflow:
-                                                                            TextOverflow.ellipsis,
+                                                                        TextOverflow
+                                                                            .ellipsis,
                                                                         textAlign:
-                                                                            TextAlign.start,
+                                                                        TextAlign
+                                                                            .start,
                                                                       ),
                                                                     ),
                                                                     Padding(
                                                                       padding: const EdgeInsets
-                                                                              .only(
+                                                                          .only(
                                                                           top:
-                                                                              8.0,
+                                                                          8.0,
                                                                           bottom:
-                                                                              8.0),
-                                                                      child: SvgPicture.asset(
+                                                                          8.0),
+                                                                      child: SvgPicture
+                                                                          .asset(
                                                                           SvgImages
                                                                               .iconAttachment,
                                                                           height:
-                                                                              20,
+                                                                          20,
                                                                           width:
-                                                                              20),
+                                                                          20),
                                                                     ),
                                                                   ],
                                                                 )),
@@ -1131,12 +1556,12 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                   ),
                                                   Padding(
                                                     padding: const EdgeInsets
-                                                            .fromLTRB(
+                                                        .fromLTRB(
                                                         0.0, 0, 0, 12),
                                                     child: Text(
                                                       StringUtils.uploadContent,
                                                       textAlign:
-                                                          TextAlign.start,
+                                                      TextAlign.start,
                                                       style: TextStyle(
                                                           color: appTheme
                                                               .separatorColor,
@@ -1156,967 +1581,1093 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                 else
                                   selectedIndex == 2
                                       ? Column(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                        const EdgeInsets.symmetric(
+                                            vertical: 8,
+                                            horizontal: 32),
+                                        child: SizedBox(
+                                            height: 50,
+                                            child: TabBar(
+                                              indicatorColor:
+                                              appTheme.primaryColor,
+                                              labelColor:
+                                              appTheme.primaryColor,
+                                              indicatorPadding:
+                                              const EdgeInsets
+                                                  .symmetric(
+                                                  horizontal: 16),
+                                              isScrollable: true,
+                                              unselectedLabelColor:
+                                              Colors.white,
+                                              labelStyle: const TextStyle(
+                                                  fontSize: 16),
+                                              unselectedLabelStyle:
+                                              const TextStyle(
+                                                  fontSize: 16),
+                                              tabs: const [
+                                                Tab(text: "Automated"),
+                                                Tab(text: "Manual"),
+                                              ],
+                                            )),
+                                      ),
+                                      SizedBox(
+                                        height: 300,
+                                        child: TabBarView(
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                  const EdgeInsets
+                                                      .symmetric(
+                                                      vertical: 8,
+                                                      horizontal: 16),
+                                                  child: MergeSemantics(
+                                                    child: ListTile(
+                                                      title: const Text(
+                                                          StringUtils
+                                                              .personalWithGST),
+                                                      trailing:
+                                                      CupertinoSwitch(
+                                                        activeColor: appTheme
+                                                            .primaryColor,
+                                                        trackColor: appTheme
+                                                            .speedDialLabelBgDT,
+                                                        value: _withGSTA,
+                                                        onChanged:
+                                                            (bool value) {
+                                                          setState(() {
+                                                            _withGSTA =
+                                                                value;
+                                                          });
+                                                        },
+                                                      ),
+                                                      onTap: () {
+                                                        setState(() {
+                                                          _withGSTA =
+                                                          !_withGSTA;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
+                                                if (_withGSTA)
+                                                  Column(
+                                                    children: [
+                                                      Form(
+                                                        key:
+                                                        gstValidateKey,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets
+                                                              .symmetric(
+                                                              vertical: 0,
+                                                              horizontal:
+                                                              32),
+                                                          child:
+                                                          TextFormField(
+                                                            controller: bloc
+                                                                .gstNumber,
+                                                            decoration: InputDecoration(
+                                                                labelText: StringUtils
+                                                                    .gstNumber,
+                                                                labelStyle: TextStyle(
+                                                                    color: Theme
+                                                                        .of(
+                                                                        context)
+                                                                        .textTheme
+                                                                        .bodyText2
+                                                                        ?.color),
+                                                                suffixIcon: Padding(
+                                                                  padding: const EdgeInsets
+                                                                      .symmetric(
+                                                                      vertical:
+                                                                      8.0,
+                                                                      horizontal:
+                                                                      12.0),
+                                                                  child:
+                                                                  PinkBorderButton(
+                                                                    isEnabled:
+                                                                    true,
+                                                                    content:
+                                                                    StringUtils
+                                                                        .validate,
+                                                                    onPressed:
+                                                                        () async {
+                                                                      final form =
+                                                                          gstValidateKey
+                                                                              .currentState;
+                                                                      if (form
+                                                                          ?.validate() ??
+                                                                          false) {
+                                                                        form
+                                                                            ?.save();
+                                                                        await bloc
+                                                                            .getGstData(
+                                                                            context);
+                                                                      }
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                                /*  fillColor: Colors.white,
+                                                                      filled: true,*/
+                                                                enabledBorder: Theme
+                                                                    .of(context)
+                                                                    .inputDecorationTheme
+                                                                    .border,
+                                                                focusedBorder: Theme
+                                                                    .of(context)
+                                                                    .inputDecorationTheme
+                                                                    .border),
+                                                            validator:
+                                                                (val) {
+                                                              GSTValidator
+                                                              gstValidator =
+                                                              GSTValidator();
+                                                              if (val ==
+                                                                  null ||
+                                                                  val.isEmpty) {
+                                                                return "Please enter GST number";
+                                                              } else
+                                                              if (val.length <
+                                                                  15 ||
+                                                                  !gstValidator
+                                                                      .validate(
+                                                                      val)) {
+                                                                return "Please enter valid GST number";
+                                                              } else {
+                                                                return null;
+                                                              }
+                                                            },
+                                                            keyboardType:
+                                                            TextInputType
+                                                                .text,
+                                                            style: TextStyle(
+                                                                color: appTheme
+                                                                    .speedDialLabelBgDT),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 8,
+                                                      ),
+                                                      Padding(
+                                                        padding: const EdgeInsets
+                                                            .symmetric(
+                                                            vertical: 8,
+                                                            horizontal:
+                                                            32),
+                                                        child:
+                                                        TextFormField(
+                                                          controller: bloc
+                                                              .gstName,
+                                                          decoration:
+                                                          InputDecoration(
+                                                            labelText:
+                                                            StringUtils
+                                                                .name,
+                                                            labelStyle: TextStyle(
+                                                                color: Theme
+                                                                    .of(
+                                                                    context)
+                                                                    .textTheme
+                                                                    .bodyText2
+                                                                    ?.color),
+                                                            border: Theme
+                                                                .of(
+                                                                context)
+                                                                .inputDecorationTheme
+                                                                .border,
+                                                            enabled:
+                                                            false,
+                                                            fillColor:
+                                                            appTheme
+                                                                .speedDialLabelBgDT,
+                                                            filled: true,
+                                                          ),
+                                                          validator:
+                                                              (val) {
+                                                            // ignore: prefer_is_empty
+                                                            if (val?.length ==
+                                                                0 &&
+                                                                val?.length !=
+                                                                    10) {
+                                                              return "Please enter valid mobile number";
+                                                            } else {
+                                                              return null;
+                                                            }
+                                                          },
+                                                          keyboardType:
+                                                          TextInputType
+                                                              .name,
+                                                          style:
+                                                          const TextStyle(
+                                                            fontFamily:
+                                                            "Poppins",
+                                                            //color: Colors.white
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding: const EdgeInsets
+                                                            .symmetric(
+                                                            vertical: 8,
+                                                            horizontal:
+                                                            32),
+                                                        child:
+                                                        TextFormField(
+                                                          controller: bloc
+                                                              .gstPanNumber,
+                                                          decoration:
+                                                          InputDecoration(
+                                                            labelText:
+                                                            StringUtils
+                                                                .panNumber,
+                                                            labelStyle: TextStyle(
+                                                                color: Theme
+                                                                    .of(
+                                                                    context)
+                                                                    .textTheme
+                                                                    .bodyText2
+                                                                    ?.color),
+                                                            border: Theme
+                                                                .of(
+                                                                context)
+                                                                .inputDecorationTheme
+                                                                .border,
+                                                            enabled:
+                                                            false,
+                                                            fillColor:
+                                                            appTheme
+                                                                .speedDialLabelBgDT,
+                                                            filled: true,
+                                                          ),
+                                                          validator:
+                                                              (val) {
+                                                            PANValidator
+                                                            panValidator =
+                                                            PANValidator();
+                                                            if (val ==
+                                                                null ||
+                                                                val.isEmpty) {
+                                                              return "Please enter PAN number";
+                                                            } else if (val
+                                                                .length <
+                                                                10 ||
+                                                                !panValidator
+                                                                    .validate(
+                                                                    val)) {
+                                                              return "Please enter valid PAN number";
+                                                            } else {
+                                                              return null;
+                                                            }
+                                                          },
+                                                          keyboardType:
+                                                          TextInputType
+                                                              .name,
+                                                          style:
+                                                          const TextStyle(
+                                                            fontFamily:
+                                                            "Poppins",
+                                                            //color: Colors.white
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  )
+                                                else
+                                                  Column(
+                                                    children: [
+                                                      Form(
+                                                        key:
+                                                        panValidateKey,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets
+                                                              .symmetric(
+                                                              horizontal:
+                                                              32),
+                                                          child:
+                                                          TextFormField(
+                                                            controller: bloc
+                                                                .panNumber,
+                                                            decoration: InputDecoration(
+                                                                labelText: StringUtils
+                                                                    .panNumber,
+                                                                labelStyle: TextStyle(
+                                                                    color: Theme
+                                                                        .of(
+                                                                        context)
+                                                                        .textTheme
+                                                                        .bodyText2
+                                                                        ?.color),
+                                                                suffixIcon: Padding(
+                                                                  padding: const EdgeInsets
+                                                                      .symmetric(
+                                                                      vertical:
+                                                                      8.0,
+                                                                      horizontal:
+                                                                      12.0),
+                                                                  child:
+                                                                  PinkBorderButton(
+                                                                    isEnabled:
+                                                                    true,
+                                                                    content:
+                                                                    StringUtils
+                                                                        .validate,
+                                                                    onPressed:
+                                                                        () {
+                                                                      final form =
+                                                                          panValidateKey
+                                                                              .currentState;
+                                                                      if (form
+                                                                          ?.validate() ??
+                                                                          false) {
+                                                                        form
+                                                                            ?.save();
+                                                                        bloc
+                                                                            .getPanData(
+                                                                            context);
+                                                                      }
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                                enabledBorder: Theme
+                                                                    .of(context)
+                                                                    .inputDecorationTheme
+                                                                    .border,
+                                                                focusedBorder: Theme
+                                                                    .of(context)
+                                                                    .inputDecorationTheme
+                                                                    .border),
+                                                            validator:
+                                                                (val) {
+                                                              // ignore: prefer_is_empty
+                                                              if (val?.length ==
+                                                                  0 &&
+                                                                  val?.length !=
+                                                                      10) {
+                                                                return "Please enter valid mobile number";
+                                                              } else {
+                                                                return null;
+                                                              }
+                                                            },
+                                                            maxLength: 10,
+                                                            keyboardType:
+                                                            TextInputType
+                                                                .text,
+                                                            style: TextStyle(
+                                                                color: appTheme
+                                                                    .speedDialLabelBgDT),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 8,
+                                                      ),
+                                                      Padding(
+                                                        padding: const EdgeInsets
+                                                            .symmetric(
+                                                            vertical: 8,
+                                                            horizontal:
+                                                            32),
+                                                        child:
+                                                        TextFormField(
+                                                          controller: bloc
+                                                              .panName,
+                                                          decoration:
+                                                          InputDecoration(
+                                                            labelText:
+                                                            StringUtils
+                                                                .name,
+                                                            labelStyle: TextStyle(
+                                                                color: Theme
+                                                                    .of(
+                                                                    context)
+                                                                    .textTheme
+                                                                    .bodyText2
+                                                                    ?.color),
+                                                            border: Theme
+                                                                .of(
+                                                                context)
+                                                                .inputDecorationTheme
+                                                                .border,
+                                                            enabled:
+                                                            false,
+                                                            fillColor:
+                                                            appTheme
+                                                                .speedDialLabelBgDT,
+                                                            filled: true,
+                                                          ),
+                                                          validator:
+                                                              (val) {
+                                                            // ignore: prefer_is_empty
+                                                            if (val?.length ==
+                                                                0 &&
+                                                                val?.length !=
+                                                                    10) {
+                                                              return "Please enter valid mobile number";
+                                                            } else {
+                                                              return null;
+                                                            }
+                                                          },
+                                                          keyboardType:
+                                                          TextInputType
+                                                              .name,
+                                                          style:
+                                                          const TextStyle(
+                                                            fontFamily:
+                                                            "Poppins",
+                                                            //color: Colors.white
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  )
+                                              ],
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                  const EdgeInsets
+                                                      .symmetric(
+                                                      vertical: 8,
+                                                      horizontal: 16),
+                                                  child: MergeSemantics(
+                                                    child: ListTile(
+                                                      title: const Text(
+                                                          StringUtils
+                                                              .personalWithGST),
+                                                      trailing:
+                                                      CupertinoSwitch(
+                                                        activeColor: appTheme
+                                                            .primaryColor,
+                                                        trackColor: appTheme
+                                                            .speedDialLabelBgDT,
+                                                        value: _withGSTM,
+                                                        onChanged:
+                                                            (bool value) {
+                                                          setState(() {
+                                                            _withGSTM =
+                                                                value;
+                                                          });
+                                                        },
+                                                      ),
+                                                      onTap: () {
+                                                        setState(() {
+                                                          _withGSTM =
+                                                          !_withGSTM;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
+                                                _withGSTM
+                                                    ? Column(
+                                                  crossAxisAlignment:
+                                                  CrossAxisAlignment
+                                                      .start,
+                                                  children: [
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal:
+                                                          32),
+                                                      child:
+                                                      GestureDetector(
+                                                        onTap:
+                                                            () async {
+                                                          bloc.gst =
+                                                          await _pickFile();
+                                                          if (bloc
+                                                              .gst !=
+                                                              null) {
+                                                            titleGst =
+                                                                StringUtils
+                                                                    .fileUploaded;
+                                                          } else {
+                                                            titleGst =
+                                                                StringUtils
+                                                                    .gstCertification;
+                                                          }
+                                                          setState(() {});
+                                                        },
+                                                        child: Container(
+                                                            padding: const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 8,
+                                                                horizontal: 16),
+                                                            decoration: BoxDecoration(
+                                                                border: Border
+                                                                    .all(
+                                                                  width: 1,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                                borderRadius: const BorderRadius
+                                                                    .all(Radius
+                                                                    .circular(
+                                                                    8))),
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                              crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                              children: [
+                                                                Text(
+                                                                  titleGst,
+                                                                  maxLines: 2,
+                                                                  overflow: TextOverflow
+                                                                      .ellipsis,
+                                                                  textAlign: TextAlign
+                                                                      .start,
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsets
+                                                                      .only(
+                                                                      top: 8.0,
+                                                                      bottom: 8.0),
+                                                                  child: SvgPicture
+                                                                      .asset(
+                                                                      SvgImages
+                                                                          .iconAttachment,
+                                                                      height: 20,
+                                                                      width: 20),
+                                                                ),
+                                                              ],
+                                                            )),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 8,
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal:
+                                                          32),
+                                                      child:
+                                                      GestureDetector(
+                                                        onTap:
+                                                            () async {
+                                                          bloc.pan =
+                                                          await _pickFile();
+                                                          if (bloc
+                                                              .pan !=
+                                                              null) {
+                                                            titlePan =
+                                                                StringUtils
+                                                                    .fileUploaded;
+                                                          } else {
+                                                            titlePan =
+                                                                StringUtils
+                                                                    .panCard;
+                                                          }
+                                                          setState(() {});
+                                                        },
+                                                        child: Container(
+                                                            padding: const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 8,
+                                                                horizontal: 16),
+                                                            decoration: BoxDecoration(
+                                                                border: Border
+                                                                    .all(
+                                                                  width: 1,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                                borderRadius: const BorderRadius
+                                                                    .all(Radius
+                                                                    .circular(
+                                                                    8))),
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                              crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                              children: [
+                                                                Text(
+                                                                  titlePan,
+                                                                  maxLines: 2,
+                                                                  overflow: TextOverflow
+                                                                      .ellipsis,
+                                                                  textAlign: TextAlign
+                                                                      .start,
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsets
+                                                                      .only(
+                                                                      top: 8.0,
+                                                                      bottom: 8.0),
+                                                                  child: SvgPicture
+                                                                      .asset(
+                                                                      SvgImages
+                                                                          .iconAttachment,
+                                                                      height: 20,
+                                                                      width: 20),
+                                                                ),
+                                                              ],
+                                                            )),
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                      const EdgeInsets
+                                                          .fromLTRB(
+                                                          32,
+                                                          8,
+                                                          32,
+                                                          12),
+                                                      child: Text(
+                                                        StringUtils
+                                                            .uploadContent,
+                                                        textAlign:
+                                                        TextAlign
+                                                            .start,
+                                                        style: TextStyle(
+                                                            color: appTheme
+                                                                .separatorColor,
+                                                            fontSize:
+                                                            12,
+                                                            fontWeight:
+                                                            FontWeight.normal),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                                    : Column(
+                                                  crossAxisAlignment:
+                                                  CrossAxisAlignment
+                                                      .start,
+                                                  children: [
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal:
+                                                          32),
+                                                      child:
+                                                      GestureDetector(
+                                                        onTap:
+                                                            () async {
+                                                          bloc.pan =
+                                                          await _pickFile();
+                                                          if (bloc.pan !=
+                                                              null) {
+                                                            titlePan =
+                                                            "file selected";
+                                                          }
+                                                        },
+                                                        child: Container(
+                                                            padding: const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 8,
+                                                                horizontal: 16),
+                                                            decoration: BoxDecoration(
+                                                                border: Border
+                                                                    .all(
+                                                                  width: 1,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                                borderRadius: const BorderRadius
+                                                                    .all(Radius
+                                                                    .circular(
+                                                                    8))),
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                              crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                              children: [
+                                                                Text(
+                                                                  titlePan,
+                                                                  maxLines: 2,
+                                                                  overflow: TextOverflow
+                                                                      .ellipsis,
+                                                                  textAlign: TextAlign
+                                                                      .start,
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsets
+                                                                      .only(
+                                                                      top: 8.0,
+                                                                      bottom: 8.0),
+                                                                  child: SvgPicture
+                                                                      .asset(
+                                                                      SvgImages
+                                                                          .iconAttachment,
+                                                                      height: 20,
+                                                                      width: 20),
+                                                                ),
+                                                              ],
+                                                            )),
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                      const EdgeInsets
+                                                          .fromLTRB(
+                                                          32,
+                                                          8,
+                                                          32,
+                                                          12),
+                                                      child: Text(
+                                                        StringUtils
+                                                            .uploadContent,
+                                                        textAlign:
+                                                        TextAlign
+                                                            .start,
+                                                        style: TextStyle(
+                                                            color: appTheme
+                                                                .separatorColor,
+                                                            fontSize:
+                                                            12,
+                                                            fontWeight:
+                                                            FontWeight.normal),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                      : selectedIndex == 3
+                                      ? Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      Form(
+                                        key: bankValidateKey,
+                                        child: Column(
                                           children: [
                                             Padding(
                                               padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 8,
-                                                      horizontal: 32),
-                                              child: SizedBox(
-                                                  height: 50,
-                                                  child: TabBar(
-                                                    indicatorColor:
-                                                        appTheme.primaryColor,
-                                                    labelColor:
-                                                        appTheme.primaryColor,
-                                                    indicatorPadding:
-                                                        const EdgeInsets
-                                                                .symmetric(
-                                                            horizontal: 16),
-                                                    isScrollable: true,
-                                                    unselectedLabelColor:
-                                                        Colors.white,
-                                                    labelStyle: const TextStyle(
-                                                        fontSize: 16),
-                                                    unselectedLabelStyle:
-                                                        const TextStyle(
-                                                            fontSize: 16),
-                                                    tabs: const [
-                                                      Tab(text: "Automated"),
-                                                      Tab(text: "Manual"),
-                                                    ],
-                                                  )),
+                                              const EdgeInsets
+                                                  .symmetric(
+                                                  vertical: 8,
+                                                  horizontal: 32),
+                                              child: TextFormField(
+                                                controller:
+                                                bloc.bankAcNo,
+                                                decoration: InputDecoration(
+                                                    labelText: StringUtils
+                                                        .bankAcNumber,
+                                                    labelStyle: TextStyle(
+                                                        color: Theme
+                                                            .of(
+                                                            context)
+                                                            .textTheme
+                                                            .bodyText2
+                                                            ?.color),
+                                                    enabledBorder: Theme
+                                                        .of(
+                                                        context)
+                                                        .inputDecorationTheme
+                                                        .border,
+                                                    focusedBorder: Theme
+                                                        .of(context)
+                                                        .inputDecorationTheme
+                                                        .border),
+                                                validator: (val) {
+                                                  String pattern =
+                                                      r'^\d{9,18}$';
+                                                  RegExp regExp =
+                                                  RegExp(pattern);
+                                                  if (val == null ||
+                                                      val.isEmpty) {
+                                                    return "Please enter Bank Account Number";
+                                                  } else if (val
+                                                      .length <
+                                                      9 ||
+                                                      !regExp
+                                                          .hasMatch(
+                                                          val)) {
+                                                    return "Please enter valid Bank Account Number";
+                                                  } else {
+                                                    return null;
+                                                  }
+                                                },
+                                                maxLength: 18,
+                                                keyboardType:
+                                                TextInputType
+                                                    .number,
+                                                style: TextStyle(
+                                                    color: appTheme
+                                                        .speedDialLabelBgDT),
+                                              ),
                                             ),
-                                            SizedBox(
-                                              height: 300,
-                                              child: TabBarView(
-                                                children: [
-                                                  Column(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                vertical: 8,
-                                                                horizontal: 16),
-                                                        child: MergeSemantics(
-                                                          child: ListTile(
-                                                            title: const Text(
-                                                                StringUtils
-                                                                    .personalWithGST),
-                                                            trailing:
-                                                                CupertinoSwitch(
-                                                              activeColor: appTheme
-                                                                  .primaryColor,
-                                                              trackColor: appTheme
-                                                                  .speedDialLabelBgDT,
-                                                              value: _withGSTA,
-                                                              onChanged:
-                                                                  (bool value) {
-                                                                setState(() {
-                                                                  _withGSTA =
-                                                                      value;
-                                                                });
-                                                              },
-                                                            ),
-                                                            onTap: () {
-                                                              setState(() {
-                                                                _withGSTA =
-                                                                    !_withGSTA;
-                                                              });
-                                                            },
-                                                          ),
-                                                        ),
+                                            Padding(
+                                              padding:
+                                              const EdgeInsets
+                                                  .symmetric(
+                                                  vertical: 8,
+                                                  horizontal: 32),
+                                              child: TextFormField(
+                                                controller:
+                                                bloc.ifscCode,
+                                                decoration:
+                                                InputDecoration(
+                                                    labelText:
+                                                    StringUtils
+                                                        .ifscCode,
+                                                    labelStyle: TextStyle(
+                                                        color: Theme
+                                                            .of(
+                                                            context)
+                                                            .textTheme
+                                                            .bodyText2
+                                                            ?.color),
+                                                    suffixIcon:
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          vertical:
+                                                          8.0,
+                                                          horizontal:
+                                                          12.0),
+                                                      child:
+                                                      PinkBorderButton(
+                                                        isEnabled:
+                                                        true,
+                                                        content:
+                                                        StringUtils
+                                                            .validate,
+                                                        onPressed:
+                                                            () {
+                                                          final form =
+                                                              bankValidateKey
+                                                                  .currentState;
+                                                          if (form
+                                                              ?.validate() ??
+                                                              false) {
+                                                            form?.save();
+                                                            bloc.getBankData(
+                                                                context);
+                                                          }
+                                                        },
                                                       ),
-                                                      if (_withGSTA)
-                                                        Column(
-                                                          children: [
-                                                            Form(
-                                                              key:
-                                                                  gstValidateKey,
-                                                              child: Padding(
-                                                                padding: const EdgeInsets
-                                                                        .symmetric(
-                                                                    vertical: 0,
-                                                                    horizontal:
-                                                                        32),
-                                                                child:
-                                                                    TextFormField(
-                                                                  controller: bloc
-                                                                      .gstNumber,
-                                                                  decoration: InputDecoration(
-                                                                      labelText: StringUtils.gstNumber,
-                                                                      labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyText2?.color),
-                                                                      suffixIcon: Padding(
-                                                                        padding: const EdgeInsets.symmetric(
-                                                                            vertical:
-                                                                                8.0,
-                                                                            horizontal:
-                                                                                12.0),
-                                                                        child:
-                                                                            PinkBorderButton(
-                                                                          isEnabled:
-                                                                              true,
-                                                                          content:
-                                                                              StringUtils.validate,
-                                                                          onPressed:
-                                                                              () async {
-                                                                            final form =
-                                                                                gstValidateKey.currentState;
-                                                                            if (form?.validate() ??
-                                                                                false) {
-                                                                              form?.save();
-                                                                              await bloc.getGstData(context);
-                                                                            }
-                                                                          },
-                                                                        ),
-                                                                      ),
-                                                                      /*  fillColor: Colors.white,
-                                                                      filled: true,*/
-                                                                      enabledBorder: Theme.of(context).inputDecorationTheme.border,
-                                                                      focusedBorder: Theme.of(context).inputDecorationTheme.border),
-                                                                  validator:
-                                                                      (val) {
-                                                                    GSTValidator
-                                                                        gstValidator =
-                                                                        GSTValidator();
-                                                                    if (val ==
-                                                                            null ||
-                                                                        val.isEmpty) {
-                                                                      return "Please enter GST number";
-                                                                    } else if (val.length <
-                                                                            15 ||
-                                                                        !gstValidator
-                                                                            .validate(val)) {
-                                                                      return "Please enter valid GST number";
-                                                                    } else {
-                                                                      return null;
-                                                                    }
-                                                                  },
-                                                                  keyboardType:
-                                                                      TextInputType
-                                                                          .text,
-                                                                  style: TextStyle(
-                                                                      color: appTheme
-                                                                          .speedDialLabelBgDT),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 8,
-                                                            ),
-                                                            Padding(
-                                                              padding: const EdgeInsets
-                                                                      .symmetric(
-                                                                  vertical: 8,
-                                                                  horizontal:
-                                                                      32),
-                                                              child:
-                                                                  TextFormField(
-                                                                controller: bloc
-                                                                    .gstName,
-                                                                decoration:
-                                                                    InputDecoration(
-                                                                  labelText:
-                                                                      StringUtils
-                                                                          .name,
-                                                                  labelStyle: TextStyle(
-                                                                      color: Theme.of(
-                                                                              context)
-                                                                          .textTheme
-                                                                          .bodyText2
-                                                                          ?.color),
-                                                                  border: Theme.of(
-                                                                          context)
-                                                                      .inputDecorationTheme
-                                                                      .border,
-                                                                  enabled:
-                                                                      false,
-                                                                  fillColor:
-                                                                      appTheme
-                                                                          .speedDialLabelBgDT,
-                                                                  filled: true,
-                                                                ),
-                                                                validator:
-                                                                    (val) {
-                                                                  // ignore: prefer_is_empty
-                                                                  if (val?.length ==
-                                                                          0 &&
-                                                                      val?.length !=
-                                                                          10) {
-                                                                    return "Please enter valid mobile number";
-                                                                  } else {
-                                                                    return null;
-                                                                  }
-                                                                },
-                                                                keyboardType:
-                                                                    TextInputType
-                                                                        .name,
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontFamily:
-                                                                      "Poppins",
-                                                                  //color: Colors.white
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            Padding(
-                                                              padding: const EdgeInsets
-                                                                      .symmetric(
-                                                                  vertical: 8,
-                                                                  horizontal:
-                                                                      32),
-                                                              child:
-                                                                  TextFormField(
-                                                                controller: bloc
-                                                                    .gstPanNumber,
-                                                                decoration:
-                                                                    InputDecoration(
-                                                                  labelText:
-                                                                      StringUtils
-                                                                          .panNumber,
-                                                                  labelStyle: TextStyle(
-                                                                      color: Theme.of(
-                                                                              context)
-                                                                          .textTheme
-                                                                          .bodyText2
-                                                                          ?.color),
-                                                                  border: Theme.of(
-                                                                          context)
-                                                                      .inputDecorationTheme
-                                                                      .border,
-                                                                  enabled:
-                                                                      false,
-                                                                  fillColor:
-                                                                      appTheme
-                                                                          .speedDialLabelBgDT,
-                                                                  filled: true,
-                                                                ),
-                                                                validator:
-                                                                    (val) {
-                                                                  PANValidator
-                                                                      panValidator =
-                                                                      PANValidator();
-                                                                  if (val ==
-                                                                          null ||
-                                                                      val.isEmpty) {
-                                                                    return "Please enter PAN number";
-                                                                  } else if (val
-                                                                              .length <
-                                                                          10 ||
-                                                                      !panValidator
-                                                                          .validate(
-                                                                              val)) {
-                                                                    return "Please enter valid PAN number";
-                                                                  } else {
-                                                                    return null;
-                                                                  }
-                                                                },
-                                                                keyboardType:
-                                                                    TextInputType
-                                                                        .name,
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontFamily:
-                                                                      "Poppins",
-                                                                  //color: Colors.white
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        )
-                                                      else
-                                                        Column(
-                                                          children: [
-                                                            Form(
-                                                              key:
-                                                                  panValidateKey,
-                                                              child: Padding(
-                                                                padding: const EdgeInsets
-                                                                        .symmetric(
-                                                                    horizontal:
-                                                                        32),
-                                                                child:
-                                                                    TextFormField(
-                                                                  controller: bloc
-                                                                      .panNumber,
-                                                                  decoration: InputDecoration(
-                                                                      labelText: StringUtils.panNumber,
-                                                                      labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyText2?.color),
-                                                                      suffixIcon: Padding(
-                                                                        padding: const EdgeInsets.symmetric(
-                                                                            vertical:
-                                                                                8.0,
-                                                                            horizontal:
-                                                                                12.0),
-                                                                        child:
-                                                                            PinkBorderButton(
-                                                                          isEnabled:
-                                                                              true,
-                                                                          content:
-                                                                              StringUtils.validate,
-                                                                          onPressed:
-                                                                              () {
-                                                                            final form =
-                                                                                panValidateKey.currentState;
-                                                                            if (form?.validate() ??
-                                                                                false) {
-                                                                              form?.save();
-                                                                              bloc.getPanData(context);
-                                                                            }
-                                                                          },
-                                                                        ),
-                                                                      ),
-                                                                      enabledBorder: Theme.of(context).inputDecorationTheme.border,
-                                                                      focusedBorder: Theme.of(context).inputDecorationTheme.border),
-                                                                  validator:
-                                                                      (val) {
-                                                                    // ignore: prefer_is_empty
-                                                                    if (val?.length ==
-                                                                            0 &&
-                                                                        val?.length !=
-                                                                            10) {
-                                                                      return "Please enter valid mobile number";
-                                                                    } else {
-                                                                      return null;
-                                                                    }
-                                                                  },
-                                                                  maxLength: 10,
-                                                                  keyboardType:
-                                                                      TextInputType
-                                                                          .text,
-                                                                  style: TextStyle(
-                                                                      color: appTheme
-                                                                          .speedDialLabelBgDT),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 8,
-                                                            ),
-                                                            Padding(
-                                                              padding: const EdgeInsets
-                                                                      .symmetric(
-                                                                  vertical: 8,
-                                                                  horizontal:
-                                                                      32),
-                                                              child:
-                                                                  TextFormField(
-                                                                controller: bloc
-                                                                    .panName,
-                                                                decoration:
-                                                                    InputDecoration(
-                                                                  labelText:
-                                                                      StringUtils
-                                                                          .name,
-                                                                  labelStyle: TextStyle(
-                                                                      color: Theme.of(
-                                                                              context)
-                                                                          .textTheme
-                                                                          .bodyText2
-                                                                          ?.color),
-                                                                  border: Theme.of(
-                                                                          context)
-                                                                      .inputDecorationTheme
-                                                                      .border,
-                                                                  enabled:
-                                                                      false,
-                                                                  fillColor:
-                                                                      appTheme
-                                                                          .speedDialLabelBgDT,
-                                                                  filled: true,
-                                                                ),
-                                                                validator:
-                                                                    (val) {
-                                                                  // ignore: prefer_is_empty
-                                                                  if (val?.length ==
-                                                                          0 &&
-                                                                      val?.length !=
-                                                                          10) {
-                                                                    return "Please enter valid mobile number";
-                                                                  } else {
-                                                                    return null;
-                                                                  }
-                                                                },
-                                                                keyboardType:
-                                                                    TextInputType
-                                                                        .name,
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontFamily:
-                                                                      "Poppins",
-                                                                  //color: Colors.white
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        )
-                                                    ],
-                                                  ),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                vertical: 8,
-                                                                horizontal: 16),
-                                                        child: MergeSemantics(
-                                                          child: ListTile(
-                                                            title: const Text(
-                                                                StringUtils
-                                                                    .personalWithGST),
-                                                            trailing:
-                                                                CupertinoSwitch(
-                                                              activeColor: appTheme
-                                                                  .primaryColor,
-                                                              trackColor: appTheme
-                                                                  .speedDialLabelBgDT,
-                                                              value: _withGSTM,
-                                                              onChanged:
-                                                                  (bool value) {
-                                                                setState(() {
-                                                                  _withGSTM =
-                                                                      value;
-                                                                });
-                                                              },
-                                                            ),
-                                                            onTap: () {
-                                                              setState(() {
-                                                                _withGSTM =
-                                                                    !_withGSTM;
-                                                              });
-                                                            },
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      _withGSTM
-                                                          ? Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Padding(
-                                                                  padding: const EdgeInsets
-                                                                          .symmetric(
-                                                                      horizontal:
-                                                                          32),
-                                                                  child:
-                                                                      GestureDetector(
-                                                                    onTap:
-                                                                        () async {
-                                                                      bloc.gst =
-                                                                          await _pickFile();
-                                                                      if (bloc.gst !=
-                                                                          null) {
-                                                                        titleGst =
-                                                                            "file selected";
-                                                                      }
-                                                                    },
-                                                                    child: Container(
-                                                                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                                                                        decoration: BoxDecoration(
-                                                                            border: Border.all(
-                                                                              width: 1,
-                                                                              color: Colors.white,
-                                                                            ),
-                                                                            borderRadius: const BorderRadius.all(Radius.circular(8))),
-                                                                        child: Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceBetween,
-                                                                          crossAxisAlignment:
-                                                                              CrossAxisAlignment.center,
-                                                                          children: [
-                                                                            Text(
-                                                                              titleGst,
-                                                                              maxLines: 2,
-                                                                              overflow: TextOverflow.ellipsis,
-                                                                              textAlign: TextAlign.start,
-                                                                            ),
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                                                                              child: SvgPicture.asset(SvgImages.iconAttachment, height: 20, width: 20),
-                                                                            ),
-                                                                          ],
-                                                                        )),
-                                                                  ),
-                                                                ),
-                                                                const SizedBox(
-                                                                  height: 8,
-                                                                ),
-                                                                Padding(
-                                                                  padding: const EdgeInsets
-                                                                          .symmetric(
-                                                                      horizontal:
-                                                                          32),
-                                                                  child:
-                                                                      GestureDetector(
-                                                                    onTap:
-                                                                        () async {
-                                                                      bloc.pan =
-                                                                          await _pickFile();
-                                                                      if (bloc.pan !=
-                                                                          null) {
-                                                                        titlePan =
-                                                                            "file selected";
-                                                                      }
-                                                                    },
-                                                                    child: Container(
-                                                                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                                                                        decoration: BoxDecoration(
-                                                                            border: Border.all(
-                                                                              width: 1,
-                                                                              color: Colors.white,
-                                                                            ),
-                                                                            borderRadius: const BorderRadius.all(Radius.circular(8))),
-                                                                        child: Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceBetween,
-                                                                          crossAxisAlignment:
-                                                                              CrossAxisAlignment.center,
-                                                                          children: [
-                                                                            Text(
-                                                                              titlePan,
-                                                                              maxLines: 2,
-                                                                              overflow: TextOverflow.ellipsis,
-                                                                              textAlign: TextAlign.start,
-                                                                            ),
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                                                                              child: SvgPicture.asset(SvgImages.iconAttachment, height: 20, width: 20),
-                                                                            ),
-                                                                          ],
-                                                                        )),
-                                                                  ),
-                                                                ),
-                                                                Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                              .fromLTRB(
-                                                                          32,
-                                                                          8,
-                                                                          32,
-                                                                          12),
-                                                                  child: Text(
-                                                                    StringUtils
-                                                                        .uploadContent,
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .start,
-                                                                    style: TextStyle(
-                                                                        color: appTheme
-                                                                            .separatorColor,
-                                                                        fontSize:
-                                                                            12,
-                                                                        fontWeight:
-                                                                            FontWeight.normal),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            )
-                                                          : Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Padding(
-                                                                  padding: const EdgeInsets
-                                                                          .symmetric(
-                                                                      horizontal:
-                                                                          32),
-                                                                  child:
-                                                                      GestureDetector(
-                                                                    onTap:
-                                                                        () async {
-                                                                      bloc.pan =
-                                                                          await _pickFile();
-                                                                      if (bloc.pan !=
-                                                                          null) {
-                                                                        titlePan =
-                                                                            "file selected";
-                                                                      }
-                                                                    },
-                                                                    child: Container(
-                                                                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                                                                        decoration: BoxDecoration(
-                                                                            border: Border.all(
-                                                                              width: 1,
-                                                                              color: Colors.white,
-                                                                            ),
-                                                                            borderRadius: const BorderRadius.all(Radius.circular(8))),
-                                                                        child: Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceBetween,
-                                                                          crossAxisAlignment:
-                                                                              CrossAxisAlignment.center,
-                                                                          children: [
-                                                                            Text(
-                                                                              titlePan,
-                                                                              maxLines: 2,
-                                                                              overflow: TextOverflow.ellipsis,
-                                                                              textAlign: TextAlign.start,
-                                                                            ),
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                                                                              child: SvgPicture.asset(SvgImages.iconAttachment, height: 20, width: 20),
-                                                                            ),
-                                                                          ],
-                                                                        )),
-                                                                  ),
-                                                                ),
-                                                                Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                              .fromLTRB(
-                                                                          32,
-                                                                          8,
-                                                                          32,
-                                                                          12),
-                                                                  child: Text(
-                                                                    StringUtils
-                                                                        .uploadContent,
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .start,
-                                                                    style: TextStyle(
-                                                                        color: appTheme
-                                                                            .separatorColor,
-                                                                        fontSize:
-                                                                            12,
-                                                                        fontWeight:
-                                                                            FontWeight.normal),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            )
-                                                    ],
-                                                  ),
-                                                ],
+                                                    ),
+                                                    /*  fillColor: Colors.white,
+                                                                        filled: true,*/
+                                                    enabledBorder: Theme
+                                                        .of(
+                                                        context)
+                                                        .inputDecorationTheme
+                                                        .border,
+                                                    focusedBorder: Theme
+                                                        .of(
+                                                        context)
+                                                        .inputDecorationTheme
+                                                        .border),
+                                                validator: (val) {
+                                                  String pattern =
+                                                      r'/^[A-Za-z]{4}[a-zA-Z0-9]{7}$/';
+                                                  RegExp regExp =
+                                                  RegExp(pattern);
+                                                  if (val == null ||
+                                                      val.isEmpty) {
+                                                    return "Please enter IFSC Code";
+                                                  } else if (val
+                                                      .length !=
+                                                      11 ||
+                                                      !regExp
+                                                          .hasMatch(
+                                                          val)) {
+                                                    return "Please enter valid IFSC Code";
+                                                  } else {
+                                                    return null;
+                                                  }
+                                                },
+                                                maxLength: 11,
+                                                keyboardType:
+                                                TextInputType
+                                                    .text,
+                                                style: TextStyle(
+                                                    color: appTheme
+                                                        .speedDialLabelBgDT),
                                               ),
                                             ),
                                           ],
-                                        )
-                                      : selectedIndex == 3
-                                          ? Column(
-                                              children: [
-                                                const SizedBox(
-                                                  height: 8,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets
+                                            .symmetric(
+                                            vertical: 8,
+                                            horizontal: 32),
+                                        child: TextFormField(
+                                          controller:
+                                          bloc.bankAcHolderName,
+                                          decoration: InputDecoration(
+                                            labelText: StringUtils
+                                                .bankAcHolder,
+                                            labelStyle: TextStyle(
+                                                color:
+                                                Theme
+                                                    .of(context)
+                                                    .textTheme
+                                                    .bodyText2
+                                                    ?.color),
+                                            border: Theme
+                                                .of(context)
+                                                .inputDecorationTheme
+                                                .border,
+                                            enabled: false,
+                                            fillColor: appTheme
+                                                .speedDialLabelBgDT,
+                                            filled: true,
+                                          ),
+                                          validator: (val) {},
+                                          keyboardType:
+                                          TextInputType.name,
+                                          style: const TextStyle(
+                                            fontFamily: "Poppins",
+                                            //color: Colors.white
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                      : Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets
+                                            .symmetric(
+                                            vertical: 16,
+                                            horizontal: 32),
+                                        child:
+                                        DropdownButtonHideUnderline(
+                                          child:
+                                          DropdownButtonFormField2(
+                                            decoration: InputDecoration(
+                                                labelText: StringUtils
+                                                    .certificationType,
+                                                labelStyle: TextStyle(
+                                                    color: Theme
+                                                        .of(
+                                                        context)
+                                                        .textTheme
+                                                        .bodyText2
+                                                        ?.color),
+                                                hintStyle: TextStyle(
+                                                    color:
+                                                    Theme
+                                                        .of(context)
+                                                        .textTheme
+                                                        .bodyText2
+                                                        ?.color),
+                                                fillColor:
+                                                Colors.white,
+                                                contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal:
+                                                    16),
+                                                enabledBorder:
+                                                Theme
+                                                    .of(context)
+                                                    .inputDecorationTheme
+                                                    .border,
+                                                focusedBorder:
+                                                Theme
+                                                    .of(context)
+                                                    .inputDecorationTheme
+                                                    .border),
+                                            dropdownDecoration:
+                                            BoxDecoration(
+                                                color:
+                                                Colors.white,
+                                                border:
+                                                Border.all(
+                                                  width: 1,
+                                                  color: Colors
+                                                      .white,
                                                 ),
-                                                Form(
-                                                  key: bankValidateKey,
-                                                  child: Column(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                vertical: 8,
-                                                                horizontal: 32),
-                                                        child: TextFormField(
-                                                          controller:
-                                                              bloc.bankAcNo,
-                                                          decoration: InputDecoration(
-                                                              labelText: StringUtils
-                                                                  .bankAcNumber,
-                                                              labelStyle: TextStyle(
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .bodyText2
-                                                                      ?.color),
-                                                              enabledBorder: Theme
-                                                                      .of(
-                                                                          context)
-                                                                  .inputDecorationTheme
-                                                                  .border,
-                                                              focusedBorder: Theme
-                                                                      .of(context)
-                                                                  .inputDecorationTheme
-                                                                  .border),
-                                                          validator: (val) {
-                                                            String pattern =
-                                                                r'^\d{9,18}$';
-                                                            RegExp regExp =
-                                                                RegExp(pattern);
-                                                            if (val == null ||
-                                                                val.isEmpty) {
-                                                              return "Please enter Bank Account Number";
-                                                            } else if (val
-                                                                        .length <
-                                                                    9 ||
-                                                                !regExp
-                                                                    .hasMatch(
-                                                                        val)) {
-                                                              return "Please enter valid Bank Account Number";
-                                                            } else {
-                                                              return null;
-                                                            }
-                                                          },
-                                                          maxLength: 18,
-                                                          keyboardType:
-                                                              TextInputType
-                                                                  .text,
-                                                          style: TextStyle(
-                                                              color: appTheme
-                                                                  .speedDialLabelBgDT),
-                                                        ),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                vertical: 8,
-                                                                horizontal: 32),
-                                                        child: TextFormField(
-                                                          controller:
-                                                              bloc.ifscCode,
-                                                          decoration:
-                                                              InputDecoration(
-                                                                  labelText:
-                                                                      StringUtils
-                                                                          .ifscCode,
-                                                                  labelStyle: TextStyle(
-                                                                      color: Theme.of(
-                                                                              context)
-                                                                          .textTheme
-                                                                          .bodyText2
-                                                                          ?.color),
-                                                                  suffixIcon:
-                                                                      Padding(
-                                                                    padding: const EdgeInsets
-                                                                            .symmetric(
-                                                                        vertical:
-                                                                            8.0,
-                                                                        horizontal:
-                                                                            12.0),
-                                                                    child:
-                                                                        PinkBorderButton(
-                                                                      isEnabled:
-                                                                          true,
-                                                                      content:
-                                                                          StringUtils
-                                                                              .validate,
-                                                                      onPressed:
-                                                                          () {
-                                                                        final form =
-                                                                            bankValidateKey.currentState;
-                                                                        if (form?.validate() ??
-                                                                            false) {
-                                                                          form?.save();
-                                                                          bloc.getBankData(
-                                                                              context);
-                                                                        }
-                                                                      },
-                                                                    ),
-                                                                  ),
-                                                                  /*  fillColor: Colors.white,
-                                                                        filled: true,*/
-                                                                  enabledBorder: Theme.of(
-                                                                          context)
-                                                                      .inputDecorationTheme
-                                                                      .border,
-                                                                  focusedBorder: Theme.of(
-                                                                          context)
-                                                                      .inputDecorationTheme
-                                                                      .border),
-                                                          validator: (val) {
-                                                            String pattern =
-                                                                r'/^[A-Za-z]{4}[a-zA-Z0-9]{7}$/';
-                                                            RegExp regExp =
-                                                                RegExp(pattern);
-                                                            if (val == null ||
-                                                                val.isEmpty) {
-                                                              return "Please enter IFSC Code";
-                                                            } else if (val
-                                                                        .length !=
-                                                                    11 ||
-                                                                !regExp
-                                                                    .hasMatch(
-                                                                        val)) {
-                                                              return "Please enter valid IFSC Code";
-                                                            } else {
-                                                              return null;
-                                                            }
-                                                          },
-                                                          maxLength: 11,
-                                                          keyboardType:
-                                                              TextInputType
-                                                                  .text,
-                                                          style: TextStyle(
-                                                              color: appTheme
-                                                                  .speedDialLabelBgDT),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      vertical: 8,
-                                                      horizontal: 32),
-                                                  child: TextFormField(
-                                                    controller:
-                                                        bloc.bankAcHolderName,
-                                                    decoration: InputDecoration(
-                                                      labelText: StringUtils
-                                                          .bankAcHolder,
-                                                      labelStyle: TextStyle(
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyText2
-                                                                  ?.color),
-                                                      border: Theme.of(context)
-                                                          .inputDecorationTheme
-                                                          .border,
-                                                      enabled: false,
-                                                      fillColor: appTheme
-                                                          .speedDialLabelBgDT,
-                                                      filled: true,
-                                                    ),
-                                                    validator: (val) {
-                                                      // ignore: prefer_is_empty
-                                                      if (val?.length == 0 &&
-                                                          val?.length != 10) {
-                                                        return "Please enter valid mobile number";
-                                                      } else {
-                                                        return null;
-                                                      }
-                                                    },
-                                                    keyboardType:
-                                                        TextInputType.name,
-                                                    style: const TextStyle(
-                                                      fontFamily: "Poppins",
-                                                      //color: Colors.white
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          : Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      vertical: 16,
-                                                      horizontal: 32),
-                                                  child:
-                                                      DropdownButtonHideUnderline(
-                                                    child:
-                                                        DropdownButtonFormField2(
-                                                      decoration: InputDecoration(
-                                                          labelText: StringUtils
-                                                              .certificationType,
-                                                          labelStyle: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .bodyText2
-                                                                  ?.color),
-                                                          hintStyle: TextStyle(
-                                                              color:
-                                                                  Theme.of(context)
-                                                                      .textTheme
-                                                                      .bodyText2
-                                                                      ?.color),
-                                                          fillColor:
-                                                              Colors.white,
-                                                          contentPadding:
-                                                              const EdgeInsets.symmetric(
-                                                                  horizontal:
-                                                                      16),
-                                                          enabledBorder:
-                                                              Theme.of(context)
-                                                                  .inputDecorationTheme
-                                                                  .border,
-                                                          focusedBorder:
-                                                              Theme.of(context)
-                                                                  .inputDecorationTheme
-                                                                  .border),
-                                                      dropdownDecoration:
-                                                          BoxDecoration(
-                                                              color:
-                                                                  Colors.white,
-                                                              border:
-                                                                  Border.all(
-                                                                width: 1,
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                              borderRadius:
-                                                                  const BorderRadius
-                                                                          .all(
-                                                                      Radius.circular(
-                                                                          8))),
-                                                      isExpanded: true,
-                                                      icon: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                top: 8.0,
-                                                                bottom: 8.0),
-                                                        child: SvgPicture.asset(
-                                                            SvgImages.dropdown,
-                                                            height: 28,
-                                                            width: 28),
-                                                      ),
-                                                      hint: selectedCertiType == null
-                                                          ? const Text(
-                                                              StringUtils
-                                                                  .selectCertificationType,
-                                                              maxLines: 2,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .start,
-                                                              style: TextStyle(
-                                                                  fontSize: 14,
-                                                                  color: Colors
-                                                                      .white))
-                                                          : Text(selectedCertiType!,
-                                                              maxLines: 2,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .start,
-                                                              style: const TextStyle(
-                                                                  fontSize: 14,
-                                                                  color: Colors
-                                                                      .white)),
-                                                      selectedItemBuilder:
-                                                          (BuildContext
-                                                              context) {
-                                                        return items
-                                                            .map<Widget>(
-                                                                (String item) {
-                                                          return Text(item,
-                                                              maxLines: 2,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .start,
-                                                              style: const TextStyle(
-                                                                  fontSize: 14,
-                                                                  color: Colors
-                                                                      .white));
-                                                        }).toList();
-                                                      },
-                                                      items:
-                                                          _addDividersAfterItems(
-                                                              items),
-                                                      /*items: items.map((String item) {
+                                                borderRadius:
+                                                const BorderRadius
+                                                    .all(
+                                                    Radius.circular(
+                                                        8))),
+                                            isExpanded: true,
+                                            icon: Padding(
+                                              padding:
+                                              const EdgeInsets
+                                                  .only(
+                                                  top: 8.0,
+                                                  bottom: 8.0),
+                                              child: SvgPicture.asset(
+                                                  SvgImages.dropdown,
+                                                  height: 28,
+                                                  width: 28),
+                                            ),
+                                            hint: selectedCertiType == null
+                                                ? const Text(
+                                                StringUtils
+                                                    .selectCertificationType,
+                                                maxLines: 2,
+                                                overflow:
+                                                TextOverflow
+                                                    .ellipsis,
+                                                textAlign:
+                                                TextAlign
+                                                    .start,
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors
+                                                        .white))
+                                                : Text(selectedCertiType!,
+                                                maxLines: 2,
+                                                overflow:
+                                                TextOverflow
+                                                    .ellipsis,
+                                                textAlign:
+                                                TextAlign
+                                                    .start,
+                                                style: const TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors
+                                                        .white)),
+                                            selectedItemBuilder:
+                                                (BuildContext
+                                            context) {
+                                              return itemsCertiType
+                                                  .map<Widget>(
+                                                      (String item) {
+                                                    return Text(item,
+                                                        maxLines: 2,
+                                                        overflow:
+                                                        TextOverflow
+                                                            .ellipsis,
+                                                        textAlign:
+                                                        TextAlign
+                                                            .start,
+                                                        style: const TextStyle(
+                                                            fontSize: 14,
+                                                            color: Colors
+                                                                .white));
+                                                  }).toList();
+                                            },
+                                            items:
+                                            _addDividersAfterItems(
+                                                itemsCertiType),
+                                            /*items: items.map((String item) {
                                                   return DropdownMenuItem<String>(
                                                     value: item,
                                                     child: Text('Log $item'),
@@ -2124,118 +2675,126 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                 }).toList(),
                                                 customItemsIndexes: _getDividersIndexes(),
                                                 customItemsHeight: 4,*/
-                                                      customItemsHeight: 1,
-                                                      value: selectedCertiType,
-                                                      onChanged: (value) {
-                                                        setState(() {
-                                                          selectedCertiType =
-                                                              value as String;
-                                                        });
-                                                      },
-                                                      buttonHeight: 55,
-                                                      buttonWidth:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width -
-                                                              64,
-                                                      itemHeight: 55,
-                                                      itemPadding:
-                                                          const EdgeInsets
-                                                                  .symmetric(
-                                                              horizontal: 8.0),
-                                                      selectedItemHighlightColor:
-                                                          appTheme.primaryColor,
-                                                    ),
+                                            customItemsHeight: 1,
+                                            value: selectedCertiType,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                selectedCertiType =
+                                                value as String;
+                                              });
+                                            },
+                                            buttonHeight: 55,
+                                            buttonWidth:
+                                            MediaQuery
+                                                .of(context)
+                                                .size
+                                                .width -
+                                                64,
+                                            itemHeight: 55,
+                                            itemPadding:
+                                            const EdgeInsets
+                                                .symmetric(
+                                                horizontal: 8.0),
+                                            selectedItemHighlightColor:
+                                            appTheme.primaryColor,
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets
+                                            .symmetric(
+                                            horizontal: 32),
+                                        child: GestureDetector(
+                                          onTap: () async {
+                                            bloc.academicCerti =
+                                            await _pickFile();
+                                            if (bloc
+                                                .academicCerti !=
+                                                null) {
+                                              titleAcademicCerti =
+                                                  StringUtils
+                                                      .fileUploaded;
+                                            } else {
+                                              titleAcademicCerti =
+                                                  StringUtils
+                                                      .uploadCertification;
+                                            }
+                                            setState(() {});
+                                          },
+                                          child: Container(
+                                              padding:
+                                              const EdgeInsets
+                                                  .symmetric(
+                                                  vertical: 8,
+                                                  horizontal: 16),
+                                              decoration:
+                                              BoxDecoration(
+                                                  border:
+                                                  Border.all(
+                                                    width: 1,
+                                                    color: Colors
+                                                        .white,
                                                   ),
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      horizontal: 32),
-                                                  child: GestureDetector(
-                                                    onTap: () async {
-                                                      bloc.academicCerti =
-                                                          await _pickFile();
-                                                      if (bloc.academicCerti !=
-                                                          null) {
-                                                        titleAcademicCerti =
-                                                            "file selected";
-                                                      }
-                                                    },
-                                                    child: Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                vertical: 8,
-                                                                horizontal: 16),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                                border:
-                                                                    Border.all(
-                                                                  width: 1,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                                borderRadius:
-                                                                    const BorderRadius
-                                                                            .all(
-                                                                        Radius.circular(
-                                                                            8))),
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .center,
-                                                          children: [
-                                                            Text(
-                                                              titleAcademicCerti,
-                                                              maxLines: 2,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .start,
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .only(
-                                                                      top: 8.0,
-                                                                      bottom:
-                                                                          8.0),
-                                                              child: SvgPicture
-                                                                  .asset(
-                                                                      SvgImages
-                                                                          .iconAttachment,
-                                                                      height:
-                                                                          20,
-                                                                      width:
-                                                                          20),
-                                                            ),
-                                                          ],
-                                                        )),
+                                                  borderRadius:
+                                                  const BorderRadius
+                                                      .all(
+                                                      Radius.circular(
+                                                          8))),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment
+                                                    .center,
+                                                children: [
+                                                  Text(
+                                                    titleAcademicCerti,
+                                                    maxLines: 2,
+                                                    overflow:
+                                                    TextOverflow
+                                                        .ellipsis,
+                                                    textAlign:
+                                                    TextAlign
+                                                        .start,
                                                   ),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          32, 8, 32, 12),
-                                                  child: Text(
-                                                    StringUtils.uploadContent,
-                                                    textAlign: TextAlign.start,
-                                                    style: TextStyle(
-                                                        color: appTheme
-                                                            .separatorColor,
-                                                        fontSize: 12,
-                                                        fontWeight:
-                                                            FontWeight.normal),
+                                                  Padding(
+                                                    padding:
+                                                    const EdgeInsets
+                                                        .only(
+                                                        top: 8.0,
+                                                        bottom:
+                                                        8.0),
+                                                    child: SvgPicture
+                                                        .asset(
+                                                        SvgImages
+                                                            .iconAttachment,
+                                                        height:
+                                                        20,
+                                                        width:
+                                                        20),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
+                                                ],
+                                              )),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding:
+                                        const EdgeInsets.fromLTRB(
+                                            32, 8, 32, 12),
+                                        child: Text(
+                                          StringUtils.uploadContent,
+                                          textAlign: TextAlign.start,
+                                          style: TextStyle(
+                                              color: appTheme
+                                                  .separatorColor,
+                                              fontSize: 12,
+                                              fontWeight:
+                                              FontWeight.normal),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                               ],
                             ),
                           ]),
@@ -2407,14 +2966,19 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
       setState(() {});
       _keyRPhases.currentState!.methodInChild(selectedIndex);
     } else {
-      if (academicKey.currentState!.validate()) {
+      /*  if (academicKey.currentState!.validate()) {
         //bloc.registerPosp(context);
-      }
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) {
-          return const Dashboard();
-        }),
+      }*/
+      AppComponentBase.getInstance()
+          ?.getSharedPreference()
+          .getUserDetail(key: SharedPreference().pospId)
+          .then((value) =>
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return Dashboard(pospId: value,);
+              }))
+
       );
     }
   }

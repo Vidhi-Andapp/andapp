@@ -1,3 +1,4 @@
+/*
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/screen/registration/academic_details.dart';
 import 'package:andapp/screen/registration/registration_phases.dart';
@@ -47,11 +48,13 @@ class _BankDetailsState extends State<BankDetails> {
                         .backButtonTooltip,
                   );
                 },)),
-          /*
+          */
+/*
           const Icon(
             Icons.arrow_back,
             color: Colors.white
-          ),),*/
+          ),),*/ /*
+
           backgroundColor: Theme
               .of(context)
               .scaffoldBackgroundColor, //const Color(0xff222222),
@@ -125,8 +128,10 @@ class _BankDetailsState extends State<BankDetails> {
                                             content: StringUtils.validate,
                                             onPressed: () {},),
                                         ),
-                                        /*  fillColor: Colors.white,
-                                                      filled: true,*/
+                                        */
+/*  fillColor: Colors.white,
+                                                      filled: true,*/ /*
+
                                         enabledBorder: Theme
                                             .of(context)
                                             .inputDecorationTheme
@@ -238,13 +243,16 @@ class _BankDetailsState extends State<BankDetails> {
                 );
               }
           )
-        /*StreamBuilder(
+        */
+/*StreamBuilder(
           stream: _bloc.mainStream,
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             return Container();
           },
-        ),*/
+        ),*/ /*
+
       ),
     );
   }
 }
+*/

@@ -4,6 +4,7 @@ import 'package:andapp/common/bloc_provider.dart';
 import 'package:andapp/common/common_toast.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/di/app_component_base.dart';
+import 'package:andapp/di/shared_preferences.dart';
 import 'package:andapp/services/api_client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -44,12 +45,15 @@ class LoginSendOTPBloc extends BlocBase {
     });
   }
 
-  void sendOTP(BuildContext context) {
+  void sendOTP(BuildContext context) async {
     if (ApiClient.bearerToken.isNotEmpty) {
+      var deviceId = await AppComponentBase.getInstance()
+          ?.getSharedPreference()
+          .getUserDetail(key: SharedPreference().deviceId);
       AppComponentBase.getInstance()
           ?.getApiInterface()
           .getApiRepository()
-          .registerDevice(mobileNo: mobNo.text)
+          .registerDevice(mobileNo: mobNo.text, deviceId: deviceId)
           .then((commonData) {
         if (commonData != null &&
             commonData.resultflag == ApiClient.resultflagSuccess) {
@@ -72,9 +76,15 @@ class LoginSendOTPBloc extends BlocBase {
               );
             }
           });
+        } else {
+          CommonToast.getInstance()?.displayToast(
+              message: commonData?.messages ?? StringUtils.sendOTPFail);
         }
       });
-    } else {}
+    } else {
+      CommonToast.getInstance()
+          ?.displayToast(message: StringUtils.someThingWentWrong);
+    }
   }
 
   Future sendOTPUpdateMobile(BuildContext context) async {

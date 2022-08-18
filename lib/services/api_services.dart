@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:andapp/di/app_component_base.dart';
+import 'package:andapp/di/shared_preferences.dart';
 import 'package:andapp/model/common_data.dart';
 import 'package:andapp/model/download_certificate.dart';
 import 'package:andapp/model/get_aadhar_data.dart';
@@ -8,6 +10,7 @@ import 'package:andapp/model/get_dashboard.dart';
 import 'package:andapp/model/get_gst_data.dart';
 import 'package:andapp/model/get_pan_data.dart';
 import 'package:andapp/model/get_question_answer_list.dart';
+import 'package:andapp/model/get_status.dart';
 import 'package:andapp/model/get_urls.dart';
 import 'package:andapp/model/send_otp.dart';
 import 'package:andapp/model/submit_answer.dart';
@@ -101,6 +104,23 @@ class ApiServices extends ApiClient {
         isBackground: true);
     if (response != null) {
       var data = SendOTP.fromJson(json.decode(response));
+      return data;
+    }
+    return null;
+  }
+
+  Future<GetStatus?> getStatus(String mobileNo) async {
+    Map body = {
+      "mobile_no": mobileNo,
+    };
+    String jsonString = json.encode(body);
+    var response = await posts(ApiClient.getStatus,
+        body: jsonString,
+        headers: getJsonHeader(),
+        encoding: Encoding.getByName('utf-8'),
+        isBackground: true);
+    if (response != null) {
+      var data = GetStatus.fromJson(json.decode(response));
       return data;
     }
     return null;
@@ -212,7 +232,26 @@ class ApiServices extends ApiClient {
         encoding: Encoding.getByName('utf-8'),
         isBackground: true);
     if (response != null) {
+      AppComponentBase.getInstance()
+          ?.getSharedPreference()
+          .setUserDetail(key: SharedPreference().dashboard, value: response);
       var data = GetDashboard.fromJson(json.decode(response));
+      return data;
+    }
+    return null;
+  }
+
+  Future<CommonData?> completeTrainingDay(
+      String trainingType, String day, String pospId) async {
+    Map body = {"training_type": trainingType, "day": day, "posp_id": pospId};
+    String jsonString = json.encode(body);
+    var response = await posts(ApiClient.completeTrainingDay,
+        body: jsonString,
+        headers: getJsonHeader(),
+        encoding: Encoding.getByName('utf-8'),
+        isBackground: true);
+    if (response != null) {
+      var data = CommonData.fromJson(json.decode(response));
       return data;
     }
     return null;
@@ -235,11 +274,11 @@ class ApiServices extends ApiClient {
     return null;
   }
 
-  Future<SubmitAnswer?> submitAnswers(String trainingType,
+  Future<SubmitAnswer?> submitAnswers(String trainingType, String pospId,
       {required List<AnswerList> ansList}) async {
     Map body = {
       "training_type": trainingType,
-      "posp_id": 28,
+      "posp_id": pospId,
       "answerlist": (ansList)
     };
     String jsonString = json.encode(body);
@@ -269,6 +308,24 @@ class ApiServices extends ApiClient {
         isBackground: true);
     if (response != null) {
       var data = DownloadCertificate.fromJson(json.decode(response));
+      return data;
+    }
+    return null;
+  }
+
+  Future<CommonData?> reExam(String id, String trainingType) async {
+    Map body = {
+      "posp_id": id,
+      "training_type": trainingType,
+    };
+    String jsonString = json.encode(body);
+    var response = await posts(ApiClient.reExam,
+        body: jsonString,
+        headers: getJsonHeader(),
+        encoding: Encoding.getByName('utf-8'),
+        isBackground: true);
+    if (response != null) {
+      var data = CommonData.fromJson(json.decode(response));
       return data;
     }
     return null;

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:andapp/common/bloc_provider.dart';
 import 'package:andapp/di/app_component_base.dart';
+import 'package:andapp/di/shared_preferences.dart';
+import 'package:andapp/screen/dashboard/dashboard.dart';
 import 'package:andapp/screen/dashboard/document_page.dart';
 import 'package:andapp/services/api_client.dart';
 import 'package:flutter/foundation.dart';
@@ -9,12 +11,12 @@ import 'package:flutter/material.dart';
 
 class LoginVerifyOTPBloc extends BlocBase {
   StreamController mainStreamController = StreamController.broadcast();
+
   Stream get mainStream => mainStreamController.stream;
   TextEditingController otp = TextEditingController();
 
-  void reSendOTP(BuildContext context,String mobNo) {
-    AppComponentBase
-        .getInstance()
+  Future<int?>? reSendOTP(BuildContext context, String mobNo) {
+    AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
         .commonSendOTP(mobileNo: mobNo)
@@ -23,31 +25,47 @@ class LoginVerifyOTPBloc extends BlocBase {
           sendOTPData.resultflag == ApiClient.resultflagSuccess) {
         if (kDebugMode) {
           print("OTP : ${sendOTPData.data?.oTP}");
-          otp.text = "${sendOTPData.data?.oTP}";
+          //otp.text = "${sendOTPData.data?.oTP}";
+          return sendOTPData.data?.oTP;
+        }
+      }
+    });
+    return null;
+  }
+
+  void getStatus(BuildContext context, String mobileNo) {
+    AppComponentBase.getInstance()
+        ?.getApiInterface()
+        .getApiRepository()
+        .getStatus(mobileNo: mobileNo) //verify otp here
+        .then((getStatusData) {
+      if (getStatusData != null &&
+          getStatusData.resultflag == ApiClient.resultflagSuccess) {
+        if (getStatusData.data != null && getStatusData.data?.data != null) {
+          AppComponentBase.getInstance()?.getSharedPreference().setUserDetail(
+              key: SharedPreference().pospId,
+              value: getStatusData.data?.data?.pospId.toString());
+          if (getStatusData.data?.data?.pospStatus == 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return const DocumentPage();
+              }),
+            );
+          } else if (getStatusData.data?.data?.pospStatus == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return Dashboard(
+                    pospId: getStatusData.data?.data?.pospId.toString() ?? "");
+              }),
+            );
+          }
         }
       }
     });
   }
 
-  void verifyOTP(BuildContext context) {
-    AppComponentBase
-        .getInstance()
-        ?.getApiInterface()
-        .getApiRepository()
-        .commonSendOTP(mobileNo: otp.text)  //verify otp here
-        .then((sendOTPData) {
-      if (sendOTPData != null &&
-          sendOTPData.resultflag == ApiClient.resultflagSuccess) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) {
-                return const DocumentPage();
-              }),
-        );
-      }
-    });
-  }
 /*
   createPdf() async {
     var bytes = base64Decode(widget.base64String.replaceAll('\n', ''));
@@ -62,5 +80,4 @@ class LoginVerifyOTPBloc extends BlocBase {
 
   @override
   void dispose() {}
-
 }

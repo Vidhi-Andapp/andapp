@@ -3,6 +3,8 @@ import 'package:andapp/common/custom_expansion.dart';
 import 'package:andapp/common/custom_user_account_drawer_header.dart';
 import 'package:andapp/common/image_utils.dart';
 import 'package:andapp/common/string_utils.dart';
+import 'package:andapp/di/app_component_base.dart';
+import 'package:andapp/di/shared_preferences.dart';
 import 'package:andapp/screen/training/training_dashboard_gi.dart';
 import 'package:andapp/screen/training/training_dashboard_li.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +19,7 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   List<Item>? _menu;
+  String? pospId;
 
   List<Item> addItems() {
     List<Item> data = [];
@@ -33,20 +36,24 @@ class _NavBarState extends State<NavBar> {
     data.add(Item(
         headerValue: StringUtils.menuReferral,
         leadingIcon: SvgImages.menuReferral,
-        trailingIcon: const Icon(Icons.keyboard_arrow_down_outlined, size: 30,),
+        trailingIcon: const Icon(
+          Icons.keyboard_arrow_down_outlined,
+          size: 30,
+        ),
         expandedValue: [StringUtils.menuMail, StringUtils.menuCopy],
-        isExpanded: false
-    ));
+        isExpanded: false));
     data.add(Item(
         headerValue: StringUtils.training,
         leadingIcon: SvgImages.menuTraining,
-        trailingIcon: const Icon(Icons.keyboard_arrow_down_outlined, size: 30,),
+        trailingIcon: const Icon(
+          Icons.keyboard_arrow_down_outlined,
+          size: 30,
+        ),
         expandedValue: [
           StringUtils.generalInsurance,
           StringUtils.lifeInsurance
         ],
-        isExpanded: false
-    ));
+        isExpanded: false));
     data.add(Item(
       headerValue: StringUtils.menuLogout,
       leadingIcon: SvgImages.menuLogout,
@@ -60,7 +67,7 @@ class _NavBarState extends State<NavBar> {
       elevation: 0,
       key: const ValueKey<int>(1),
       expandedHeaderPadding: EdgeInsets.zero,
-      dividerColor : Colors.transparent,
+      dividerColor: Colors.transparent,
       expansionCallback: (int index, bool isExpanded) {
         setState(() {
           for (int i = 0; i < _menu!.length; i++) {
@@ -76,47 +83,53 @@ class _NavBarState extends State<NavBar> {
       children: _menu!.map<CustomExpansionPanel>((Item item) {
         return CustomExpansionPanel(
           canTapOnHeader: true,
-          backgroundColor: Theme
-              .of(context)
-              .scaffoldBackgroundColor,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           headerBuilder: (BuildContext context, bool isExpanded) {
             return ListTile(
               leading: SvgPicture.asset(
-                item.leadingIcon, height: 22, width: 22,color: Colors.white,),
-              title: Text(item.headerValue ?? "",style: const TextStyle(fontWeight: FontWeight.w500,fontSize: 14,fontFamily: "Poppins"),),
+                item.leadingIcon,
+                height: 22,
+                width: 22,
+                color: Colors.white,
+              ),
+              title: Text(
+                item.headerValue ?? "",
+                style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    fontFamily: "Poppins"),
+              ),
               dense: true,
             );
           },
           hasIcon: item.trailingIcon == null ? false : true,
-          body: (item.expandedValue != null)?
-          ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.all(0),
-              shrinkWrap: true,
-              itemBuilder: (context, index) =>
-                  ListTile(
-                    onTap: () {
-                      if (item.expandedValue![index] ==
-                          StringUtils.generalInsurance) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) {
-                                return const TrainingDashboardGI();
+          body: (item.expandedValue != null)
+              ? ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.all(0),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) => ListTile(
+                        onTap: () {
+                          if (item.expandedValue![index] ==
+                                  StringUtils.generalInsurance &&
+                              pospId != null) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return TrainingDashboardGI(pospId: pospId!);
                               }),
-                        );
-                      }
-                      else if (item.expandedValue![index] ==
-                          StringUtils.lifeInsurance) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) {
-                                return const TrainingDashboardLI();
+                            );
+                          } else if (item.expandedValue![index] ==
+                                  StringUtils.lifeInsurance &&
+                              pospId != null) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return TrainingDashboardLI(pospId: pospId!);
                               }),
-                        );
-                      }
-                      else if (item.expandedValue![index] ==
+                            );
+                          }
+                          /* else if (item.expandedValue![index] ==
                           StringUtils.menuMail) {
                         Navigator.pushReplacement(
                           context,
@@ -135,22 +148,34 @@ class _NavBarState extends State<NavBar> {
                                 return const TrainingDashboardLI();
                               }),
                         );
-                      }
-                    },
-                    tileColor: const Color(0x20DADADA),
-                    leading: SvgPicture.asset(
-                      item.leadingIcon, height: 22, width: 22,color: Colors.transparent,),
-                    title: Text(item.expandedValue![index]),
-                    dense: true,
-                    //trailing: item.trailingIcon,
-                  ),
-              itemCount: item.expandedValue?.length)
-              :
-          Container(),
+                      }*/
+                        },
+                        tileColor: const Color(0x20DADADA),
+                        leading: SvgPicture.asset(
+                          item.leadingIcon,
+                          height: 22,
+                          width: 22,
+                          color: Colors.transparent,
+                        ),
+                        title: Text(item.expandedValue![index]),
+                        dense: true,
+                        //trailing: item.trailingIcon,
+                      ),
+                  itemCount: item.expandedValue?.length)
+              : Container(),
           isExpanded: item.isExpanded,
         );
       }).toList(),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    AppComponentBase.getInstance()
+        ?.getSharedPreference()
+        .getUserDetail(key: SharedPreference().pospId)
+        .then((value) => pospId = value);
   }
 
   @override
@@ -159,19 +184,27 @@ class _NavBarState extends State<NavBar> {
     _menu ??= addItems();
     return Drawer(
       width: 300,
-      backgroundColor: Theme
-          .of(context)
-          .scaffoldBackgroundColor,
-      child:
-      SizedBox(
-        child:
-        ListView(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      child: SizedBox(
+        child: ListView(
           // Remove padding
           padding: EdgeInsets.zero,
           children: [
             CustomUserAccountsDrawerHeader(
-              accountName: const Text('Vidhi Shah',style: TextStyle(fontWeight: FontWeight.w700,fontSize: 16,fontFamily: "Poppins"),),
-              accountEmail: const Text('P123456789',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 14,fontFamily: "Poppins"),),
+              accountName: const Text(
+                'Vidhi Shah',
+                style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    fontFamily: "Poppins"),
+              ),
+              accountEmail: const Text(
+                'P123456789',
+                style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    fontFamily: "Poppins"),
+              ),
               currentAccountPicture: CircleAvatar(
                 radius: 100,
                 backgroundColor: Colors.white,
@@ -180,8 +213,8 @@ class _NavBarState extends State<NavBar> {
                   backgroundColor: appTheme.primaryColor,
                   child: ClipOval(
                     clipBehavior: Clip.antiAliasWithSaveLayer,
-                    child: Image.asset(
-                      AssetImages.profileAvatarFemale, height: 100, width:100),
+                    child: Image.asset(AssetImages.profileAvatarFemale,
+                        height: 100, width: 100),
                   ),
                 ),
               ),
@@ -191,7 +224,8 @@ class _NavBarState extends State<NavBar> {
             ),
             _buildPanel(),
           ],
-        ),),
+        ),
+      ),
     );
   }
 }

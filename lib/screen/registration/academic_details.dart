@@ -1,3 +1,4 @@
+/*
 import 'package:andapp/common/image_utils.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/screen/dashboard/dashboard.dart';
@@ -101,11 +102,13 @@ class _AcademicDetailsState extends State<AcademicDetails> {
                         .backButtonTooltip,
                   );
                 },)),
-          /*
+          */
+/*
           const Icon(
             Icons.arrow_back,
             color: Colors.white
-          ),),*/
+          ),),*/ /*
+
           backgroundColor: Theme
               .of(context)
               .scaffoldBackgroundColor, //const Color(0xff222222),
@@ -295,13 +298,16 @@ class _AcademicDetailsState extends State<AcademicDetails> {
                 );
               }
           )
-        /*StreamBuilder(
+        */
+/*StreamBuilder(
           stream: _bloc.mainStream,
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             return Container();
           },
-        ),*/
+        ),*/ /*
+
       ),
     );
   }
 }
+*/

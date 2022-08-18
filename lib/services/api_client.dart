@@ -37,16 +37,21 @@ class ApiClient {
   static String registerDevice = "$baseUrl/api/mobileApi/RegisterDevice";
   static String updateMobile = "$baseUrl/api/mobileApi/Updatemobile";
   static String sendOTP = "$baseUrl/api/mobileApi/SendOTP";
+  static String getStatus = "$baseUrl/api/mobileApi/GetStatus";
   static String getAadharData = "$baseUrl/api/mobileApi/GetAadhardata";
   static String getPanData = "$baseUrl/api/mobileApi/GetPandata";
   static String getGstData = "$baseUrl/api/mobileApi/GetGSTdata";
   static String getBankData = "$baseUrl/api/mobileApi/GetBankdata";
   static String registerPosp = "$baseUrl/api/mobileApi/PUTPospData";
+  static String trainingDayURL = "$baseUrl/Mails/";
   static String getDashboard = "$baseUrl/api/mobileApi/GetDashboard";
+  static String completeTrainingDay =
+      "$baseUrl/api/mobileApi/TrainingDayComplete";
   static String getQuestionAnswerList =
       "$baseUrl/api/mobileApi/GetQuestionList";
   static String submitAnswers = "$baseUrl/api/mobileApi/SubmitAnswer";
   static String downloadCerti = "$baseUrl/api/mobileApi/GetCertificate";
+  static String reExam = "$baseUrl/api/mobileApi/ReExam";
   static final RegExp nameRegExp = RegExp('[a-zA-Z]');
 
   Map<String, String> getJsonHeader() {
@@ -136,12 +141,12 @@ class ApiClient {
       if (isProgressBar) {
         AppComponentBase.getInstance()?.showProgressDialog(true);
       }
-      //  AppComponentBase.getInstance()?.disableWidget(true);
+      AppComponentBase.getInstance()?.disableWidget(true);
       try {
         http.Response response = await http.post(Uri.parse(url),
             headers: headers, body: body, encoding: encoding);
         if (successResponse.contains(response.statusCode)) {
-          logPrint(requestData: body, response: response);
+          //logPrint(requestData: body, response: response);
 
           if (isProgressBar) {
             AppComponentBase.getInstance()?.showProgressDialog(false);
@@ -149,6 +154,7 @@ class ApiClient {
           AppComponentBase.getInstance()?.disableWidget(false);
 
           String bodyBytes = utf8.decode(response.bodyBytes);
+          debugPrint('response body : $bodyBytes');
           return bodyBytes;
         }
         /*

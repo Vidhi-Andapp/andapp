@@ -1,22 +1,23 @@
 import 'package:andapp/common/app_theme.dart';
+import 'package:andapp/common/common_toast.dart';
 import 'package:andapp/common/image_utils.dart';
 import 'package:andapp/common/pink_border_button.dart';
 import 'package:andapp/common/string_utils.dart';
-import 'package:andapp/screen/dashboard/document_page.dart';
 import 'package:andapp/screen/login/login_verify_otp_bloc.dart';
 import 'package:andapp/screen/login/timer_button.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
 import 'custom_speed_dial.dart';
 
 class LoginVerifyOTP extends StatefulWidget {
-  final String? enteredMobNo;
+  final String enteredMobNo;
   final int? otp;
 
-  const LoginVerifyOTP({Key? key, @required this.enteredMobNo, this.otp})
+  const LoginVerifyOTP({Key? key, required this.enteredMobNo, this.otp})
       : super(key: key);
 
   @override
@@ -31,9 +32,11 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
   final verifyOTPKey = GlobalKey<FormState>();
   String signature = "{{ app signature }}";
   String? appSignature, _code;
+  int? otpToCompare;
 
   @override
   void initState() {
+    otpToCompare = widget.otp;
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 500))
       ..addListener(() {
@@ -81,7 +84,7 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
   @override
   Widget build(BuildContext context) {
     final appTheme = AppTheme.of(context);
-    bloc.otp.text = "${widget.otp}";
+    //bloc.otp.text = "${widget.otp}";
     return SafeArea(
       child: Scaffold(
         //appBar: AppBar(),
@@ -135,55 +138,50 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 8, horizontal: 32),
-                                child:
-                                    /* TextFormField(
-                                      controller: bloc.otp,
-                                      decoration: InputDecoration(
-                                        labelText: StringUtils.otp,
-                                        labelStyle: TextStyle(color: Theme
-                                            .of(context)
+                                child: TextFormField(
+                                  controller: bloc.otp,
+                                  decoration: InputDecoration(
+                                    labelText: StringUtils.otp,
+                                    labelStyle: TextStyle(
+                                        color: Theme.of(context)
                                             .textTheme
                                             .bodyText2
                                             ?.color),
-                                        fillColor: Colors.white,
-                                        enabledBorder: Theme
-                                            .of(context)
-                                            .inputDecorationTheme
-                                            .border,
-                                        focusedBorder: Theme
-                                            .of(context)
-                                            .inputDecorationTheme
-                                            .border,
-                                      ),
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.allow(
-                                            RegExp("[0-9]")),
-                                      ],
-                                      validator: (val) {
-                                        String pattern = r'^(?:[0-9])?[0-9]{3,5}$';
-                                        RegExp regExp = RegExp(pattern);
-                                        if (val == null || val.isEmpty) {
-                                          return "Please enter OTP";
-                                        }
-                                        else if (
-                                        val.length != 5 ||
-                                            !regExp.hasMatch(val)) {
-                                          return "Please enter valid OTP";
-                                        }
-                                        else {
-                                          return null;
-                                        }
-                                      },
-                                      maxLength: 5,
-                                      keyboardType: const TextInputType
-                                          .numberWithOptions(signed: true),
-                                      // inputFormatters: [WhitelistingTextInputFormatter.digitsOnly]),
-                                      style: const TextStyle(
-                                        fontFamily: "Poppins",
-                                        //color: Colors.white
-                                      ),
-                                    ),*/
-                                    TextFieldPinAutoFill(
+                                    fillColor: Colors.white,
+                                    enabledBorder: Theme.of(context)
+                                        .inputDecorationTheme
+                                        .border,
+                                    focusedBorder: Theme.of(context)
+                                        .inputDecorationTheme
+                                        .border,
+                                  ),
+                                  validator: (val) {
+                                    String pattern = r'^(?:[0-9])?[0-9]{3,5}$';
+                                    RegExp regExp = RegExp(pattern);
+                                    if (val == null || val.isEmpty) {
+                                      return "Please enter OTP";
+                                    } else if (val.length != 5 ||
+                                        !regExp.hasMatch(val)) {
+                                      return "Please enter valid OTP";
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                  /* inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp("[0-9]")),
+                                  ],*/
+                                  maxLength: 5,
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          signed: true),
+                                  // inputFormatters: [WhitelistingTextInputFormatter.digitsOnly]),
+                                  style: const TextStyle(
+                                    fontFamily: "Poppins",
+                                    //color: Colors.white
+                                  ),
+                                ),
+                                /* TextFieldPinAutoFill(
                                   decoration: InputDecoration(
                                     labelText: StringUtils.otp,
                                     labelStyle: TextStyle(
@@ -203,19 +201,22 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                   currentCode: _code,
                                   onCodeSubmitted: (code) {},
                                   onCodeChanged: (code) {
-                                    if (code.length == 6) {
+                                    */ /* if (code.length == 5) {
                                       FocusScope.of(context)
                                           .requestFocus(FocusNode());
-                                    }
+                                    }*/ /*
                                   },
-                                ),
+                                ),*/
                               ),
                               TimerButton(
                                 label: "Resend OTP",
                                 timeOutInSeconds: 120,
-                                onPressed: () {
-                                  bloc.reSendOTP(
-                                      context, widget.enteredMobNo ?? "");
+                                onPressed: () async {
+                                  var otp = await bloc.reSendOTP(
+                                      context, widget.enteredMobNo);
+                                  if (otp != null) {
+                                    otpToCompare = otp;
+                                  }
                                 },
                                 disabledColor: appTheme.dtBlackColor,
                                 color: appTheme.dtBlackColor,
@@ -230,22 +231,22 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                       vertical: 8.0, horizontal: 12.0),
                                   child: PinkBorderButton(
                                       isEnabled: true,
-                                      content: "Verify",
+                                      content: StringUtils.verify,
                                       onPressed: () {
                                         final form = verifyOTPKey.currentState;
                                         if (form!.validate()) {
                                           form.save();
                                           //bloc.verifyOTP(context);
-                                          if (widget.otp != null &&
+                                          if (otpToCompare != null &&
                                               bloc.otp.text ==
-                                                  widget.otp.toString()) {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) {
-                                                return const DocumentPage();
-                                              }),
-                                            );
+                                                  otpToCompare.toString()) {
+                                            bloc.getStatus(
+                                                context, widget.enteredMobNo);
+                                          } else {
+                                            CommonToast.getInstance()
+                                                ?.displayToast(
+                                                    message: StringUtils
+                                                        .verifyOTPFail);
                                           }
                                         }
                                       })),
@@ -257,19 +258,20 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                           child: RichText(
                               text: TextSpan(children: <TextSpan>[
                             TextSpan(
-                                text: "By continuing, you agree to our",
+                                text: StringUtils.termsConditionsByContinue,
                                 style: TextStyle(
                                     color: Theme.of(context)
                                         .textTheme
                                         .bodyText2
                                         ?.color)),
                             TextSpan(
-                                text: " Terms and conditions",
+                                text: " ${StringUtils.termsConditions}",
                                 style: TextStyle(color: appTheme.primaryColor),
                                 recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
+                                  ..onTap = () async {
                                     showModalBottomSheet(
                                         context: context,
+                                        isScrollControlled: true,
                                         shape: const RoundedRectangleBorder(
                                           // <-- SEE HERE
                                           borderRadius: BorderRadius.vertical(
@@ -277,68 +279,121 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                           ),
                                         ),
                                         builder: (context) {
-                                          return SizedBox(
-                                            height: 200,
-                                            child: Column(
-                                              //mainAxisSize: MainAxisSize.max,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.stretch,
-                                              children: <Widget>[
-                                                Container(
-                                                    height: 50,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                            .size
-                                                            .width,
+                                          return DraggableScrollableSheet(
+                                            expand: false,
+                                            initialChildSize: 0.5,
+                                            maxChildSize: 0.75,
+                                            builder: (_, controller) =>
+                                                SingleChildScrollView(
+                                              controller: controller,
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.stretch,
+                                                children: <Widget>[
+                                                  Container(
+                                                      height: 50,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                              .size
+                                                              .width,
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              16),
+                                                      decoration:
+                                                          ShapeDecoration(
+                                                              shape:
+                                                                  const RoundedRectangleBorder(
+                                                                // <-- SEE HERE
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .vertical(
+                                                                  top: Radius
+                                                                      .circular(
+                                                                          16.0),
+                                                                ),
+                                                              ),
+                                                              color: appTheme
+                                                                  .primaryColor),
+                                                      alignment:
+                                                          Alignment.centerLeft,
+                                                      child: Row(
+                                                        children: [
+                                                          const Expanded(
+                                                            child: Text(
+                                                                StringUtils
+                                                                    .termsConditions,
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold)),
+                                                          ),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                            child: const Icon(
+                                                                Icons.clear),
+                                                          ),
+                                                        ],
+                                                      )),
+                                                  Padding(
                                                     padding:
                                                         const EdgeInsets.all(
-                                                            16),
-                                                    decoration: ShapeDecoration(
-                                                        shape:
-                                                            const RoundedRectangleBorder(
-                                                          // <-- SEE HERE
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .vertical(
-                                                            top:
-                                                                Radius.circular(
-                                                                    16.0),
-                                                          ),
-                                                        ),
-                                                        color: appTheme
-                                                            .primaryColor),
-                                                    alignment:
-                                                        Alignment.centerLeft,
-                                                    child: Row(
-                                                      children: [
-                                                        const Text(
-                                                            'Terms and Conditions',
-                                                            style: TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold)),
-                                                        GestureDetector(
-                                                          onTap: () {
-                                                            Navigator.pop(
-                                                                context);
-                                                          },
-                                                          child: const Icon(
-                                                              Icons.clear),
-                                                        ),
-                                                      ],
-                                                    )),
-                                                const Padding(
-                                                  padding: EdgeInsets.all(16.0),
-                                                  child: Text(
-                                                    StringUtils.termsConditions,
-                                                    /* style: TextStyle(
-                                                            color: Theme.of(context).primaryColor,
-                                                            fontSize: 12,
-                                                            fontWeight: FontWeight.normal),*/
+                                                            16.0),
+                                                    child: HtmlWidget(
+                                                      // the first parameter (`html`) is required
+                                                      StringUtils.htmlTerms,
+                                                      // turn on selectable if required (it's disabled by default)
+                                                      isSelectable: true,
+                                                      customStylesBuilder:
+                                                          (element) {
+                                                        if (element.classes
+                                                            .contains(
+                                                                'modal-body')) {
+                                                          return {
+                                                            'color': 'black'
+                                                          };
+                                                        }
+                                                        return null;
+                                                      },
+
+                                                      // these callbacks are called when a complicated element is loading
+                                                      // or failed to render allowing the app to render progress indicator
+                                                      // and fallback widget
+                                                      onErrorBuilder: (context,
+                                                              element, error) =>
+                                                          Text(
+                                                              '$element error: $error'),
+                                                      /*    onLoadingBuilder: (
+                                                                    context,
+                                                                    element,
+                                                                    loadingProgress) => AppComponentBase.getInstance()?.showProgressDialog(true),*/
+                                                      // this callback will be triggered when user taps a link
+                                                      //onTapUrl: (url) => print('tapped $url'),
+
+                                                      // select the render mode for HTML body
+                                                      // by default, a simple `Column` is rendered
+                                                      // consider using `ListView` or `SliverList` for better performance
+                                                      renderMode:
+                                                          RenderMode.column,
+
+                                                      // set the default styling for text
+                                                      textStyle:
+                                                          const TextStyle(
+                                                              fontSize: 14,
+                                                              color: Colors
+                                                                  .black45),
+
+                                                      // turn on `webView` if you need IFRAME support (it's disabled by default)
+                                                      //webView: true,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           );
                                         });

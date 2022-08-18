@@ -1,8 +1,14 @@
+import 'dart:io';
+
 import 'package:andapp/common/app_theme.dart';
 import 'package:andapp/common/custom_progress.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/di/app_component_base.dart';
+import 'package:andapp/di/shared_preferences.dart';
+import 'package:andapp/screen/dashboard/dashboard.dart';
+import 'package:andapp/screen/dashboard/document_page.dart';
 import 'package:andapp/screen/login/login_send_otp_page.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -60,6 +66,10 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> {
   final AppThemeState _appTheme = AppThemeState();
   bool isLoggedIn = false;
+  String? pospId, pospStatus;
+  final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+
+  //Map<String, dynamic> _deviceData = <String, dynamic>{};
 
   @override
   void initState() {
@@ -70,8 +80,95 @@ class MyAppState extends State<MyApp> {
       });
     });*/
     AppComponentBase.getInstance()?.initialiseNetworkManager();
+    initPlatformState().then((value) {
+      AppComponentBase.getInstance()
+          ?.getSharedPreference()
+          .setUserDetail(key: SharedPreference().deviceId, value: value);
+    });
+    AppComponentBase.getInstance()
+        ?.getSharedPreference()
+        .getUserDetail(key: SharedPreference().pospId)
+        .then((value) => pospId = value);
+    AppComponentBase.getInstance()
+        ?.getSharedPreference()
+        .getUserDetail(key: SharedPreference().pospStatus)
+        .then((value) => pospStatus = value);
     /* encryptData("123456789012","YNBWNYIRHGFPZZFD");
     decryptData("+UNNp6GSYgdZSzSNblgeOZdv3yadw33U6iQzPsfBSw0=","YNBWNYIRHGFPZZFD");*/
+  }
+
+  Future<String?> initPlatformState() async {
+    var deviceData = <String, dynamic>{};
+
+    try {
+      if (!kIsWeb) {
+        if (Platform.isAndroid) {
+          deviceData =
+              _readAndroidBuildData(await deviceInfoPlugin.androidInfo);
+        } else if (Platform.isIOS) {
+          deviceData = _readIosDeviceInfo(await deviceInfoPlugin.iosInfo);
+        }
+      }
+    } on PlatformException {
+      deviceData = <String, dynamic>{
+        'Error:': 'Failed to get platform version.'
+      };
+    }
+
+    if (!mounted) return null;
+/*
+    setState(() {
+      _deviceData = deviceData;
+    });*/
+    return deviceData['id'];
+  }
+
+  Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
+    return <String, dynamic>{
+      'version.securityPatch': build.version.securityPatch,
+      'version.sdkInt': build.version.sdkInt,
+      'version.release': build.version.release,
+      'version.previewSdkInt': build.version.previewSdkInt,
+      'version.incremental': build.version.incremental,
+      'version.codename': build.version.codename,
+      'version.baseOS': build.version.baseOS,
+      'board': build.board,
+      'bootloader': build.bootloader,
+      'brand': build.brand,
+      'device': build.device,
+      'display': build.display,
+      'fingerprint': build.fingerprint,
+      'hardware': build.hardware,
+      'host': build.host,
+      'id': build.id,
+      'manufacturer': build.manufacturer,
+      'model': build.model,
+      'product': build.product,
+      'supported32BitAbis': build.supported32BitAbis,
+      'supported64BitAbis': build.supported64BitAbis,
+      'supportedAbis': build.supportedAbis,
+      'tags': build.tags,
+      'type': build.type,
+      'isPhysicalDevice': build.isPhysicalDevice,
+      'systemFeatures': build.systemFeatures,
+    };
+  }
+
+  Map<String, dynamic> _readIosDeviceInfo(IosDeviceInfo data) {
+    return <String, dynamic>{
+      'name': data.name,
+      'systemName': data.systemName,
+      'systemVersion': data.systemVersion,
+      'model': data.model,
+      'localizedModel': data.localizedModel,
+      'identifierForVendor': data.identifierForVendor,
+      'isPhysicalDevice': data.isPhysicalDevice,
+      'utsname.sysname:': data.utsname.sysname,
+      'utsname.nodename:': data.utsname.nodename,
+      'utsname.release:': data.utsname.release,
+      'utsname.version:': data.utsname.version,
+      'utsname.machine:': data.utsname.machine,
+    };
   }
 
   String encryptedData = '';
@@ -198,6 +295,19 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    Widget page = const LoginSendOTP();
+    if (pospId != null && pospId!.isNotEmpty) {
+      if (pospStatus == "1") {
+        page = Dashboard(
+          pospId: pospId ?? "",
+        );
+      } else {
+        page = const DocumentPage();
+        //page = const PoSPRegistration();
+      }
+    } else {
+      page = const LoginSendOTP();
+    }
     return ValueListenableBuilder<ThemeMode>(
         valueListenable: theme,
         builder: (context, value, child) {
@@ -207,7 +317,7 @@ class MyAppState extends State<MyApp> {
             theme: lightThemeData(context),
             darkTheme: darkThemeData(context),
             themeMode: ThemeMode.dark,
-            home: const LoginSendOTP(),
+            home: page,
             builder: (context, widget) {
               return Scaffold(
                 resizeToAvoidBottomInset: false,

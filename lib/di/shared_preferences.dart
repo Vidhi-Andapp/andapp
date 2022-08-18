@@ -1,9 +1,45 @@
-
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SharedPreference extends SharedPreferenceRepository {
-  /*final String _userDetails = 'user_details';
-  final String? _theme = 'theme';*/
+  final String? deviceId = 'device_id';
+  final String? pospId = 'posp_id';
+  final String? pospStatus = 'posp_status';
+  final String? dashboard = 'dashboard';
+  FlutterSecureStorage? storage;
+
+  FlutterSecureStorage initPreference() {
+    const options =
+        IOSOptions(accessibility: KeychainAccessibility.first_unlock);
+    //await storage.write(key: key, value: value, iOptions: options);
+    return const FlutterSecureStorage(iOptions: options);
+  }
+
+  @override
+  Future getUserDetail({String? key}) async {
+    storage ??= initPreference();
+    // Read all values
+    Map<String, String> allValues = await storage!.readAll();
+    String? value = await storage!.read(key: key ?? "");
+    return value;
+  }
+
+  @override
+  Future setUserDetail({String? key, String? value}) async {
+    storage ??= initPreference();
+    await storage!.write(key: key ?? "", value: value ?? "");
+  }
+
+  @override
+  Future<bool?> clearData({String? key}) async {
+    await storage!.delete(key: key ?? "");
+    return true;
+  }
+
+// Delete value
+
+// Delete all
+//await storage.deleteAll();
+/*
   SharedPreferences? _pref;
 
   @override
@@ -26,9 +62,20 @@ class SharedPreference extends SharedPreferenceRepository {
   }
 
   @override
-  Future setUserDetail() async {
+  Future setUserDetail() async {}
 
+  Future saveDeviceId(String deviceId) async {
+    SharedPreferences? pref = _pref;
+    pref?.setString('theme', deviceId);
   }
+
+  getDeviceId() async {
+    var _deviceId = _pref!.reload().then((onValue) {
+      return _pref?.getString('theme') ?? true;
+    });
+    //deviceId = await _deviceId;
+  }*/
+
 /*
 
   Future saveTheme() async{
@@ -37,6 +84,7 @@ class SharedPreference extends SharedPreferenceRepository {
   }
 
   getTheme() async{
+
     var _lightF = _pref.then((SharedPreferences prefs) {
       return prefs.getBool('theme') ?? true;
     });
@@ -47,10 +95,9 @@ class SharedPreference extends SharedPreferenceRepository {
 }
 
 abstract class SharedPreferenceRepository {
-  Future getUserDetail();
+  Future getUserDetail({String key});
 
-  Future setUserDetail();
+  Future setUserDetail({String? key, String? value});
 
-  Future<bool?> clearData();
-
+  Future<bool?> clearData({String key});
 }

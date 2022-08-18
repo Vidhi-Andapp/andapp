@@ -7,6 +7,7 @@ import 'package:andapp/enum/font_type.dart';
 import 'package:andapp/model/get_dashboard.dart';
 import 'package:andapp/screen/dashboard/dashboard_bloc.dart';
 import 'package:andapp/screen/nav_bar.dart';
+import 'package:andapp/screen/registration/posp_registration.dart';
 import 'package:andapp/screen/training/training_dashboard_gi.dart';
 import 'package:andapp/screen/training/training_dashboard_li.dart';
 import 'package:andapp/screen/training/training_day.dart';
@@ -18,14 +19,16 @@ import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  final String pospId;
+
+  const Dashboard({Key? key, required this.pospId}) : super(key: key);
 
   @override
   State<Dashboard> createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
-  final DashboardBloc bloc = DashboardBloc();
+  final DashboardBloc bloc = DashboardBloc.getInstance();
   int groupValue = 0;
   int? index;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -34,21 +37,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    bloc.getDashboard(context);
+    bloc.getDashboard(context, widget.pospId);
     //bloc.downloadCertificate(context);
   }
-
-  /* Widget getImagenBase64(String imagen) {
-    var imageBase64 = imagen;
-    const Base64Codec base64 = Base64Codec();
-    if (imageBase64 == null) return Container();
-    var bytes = base64.decode(imageBase64);
-    return Image.memory(
-      bytes,
-      width: MediaQuery.of(context).size.width,
-      fit: BoxFit.fitWidth,
-    );
-  }*/
 
   List<Tuple3> tuples = const [
     Tuple3(
@@ -134,21 +125,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
             isEnabled: true,
             content: "Re-Fill",
             onPressed: () {
-              /*   final form = sendOTPKey
-                        .currentState;*/
-              /* if (form?.validate() ?? false) {
-                      form?.save();
-                      Navigator.push(
-                        context,+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-                        MaterialPageRoute(
-                            builder: (context) {
-                              return LoginVerifyOTP(
-                                enteredMobNo: mobNo
-                                    .text,);
-                            }),
-                      );
-                    }*/
+              MaterialPageRoute(builder: (context) {
+                return const PoSPRegistration();
+              });
             },
           ),
         ),
@@ -224,7 +203,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     var training = dashboardData?.data?.training;
     var giTime = training?.generalInsurance?.latestTime;
     DateTime now = DateTime.now();
-    String giDay = "";
+    String giDay = "", giExam = "Start Exam", liExam = "Start Exam";
     bool allowGIDay = false, allowLiDay = false;
     if (giTime != null && giTime.isNotEmpty) {
       DateTime giDate = DateFormat("MM/dd/yyyy hh:mm:ss").parse(giTime);
@@ -238,6 +217,14 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
               : training?.generalInsurance?.day3 == "false"
                   ? giDay = "3"
                   : giDay = "";
+    } else {
+      allowGIDay = true;
+      giDay = "1";
+    }
+    if (training?.generalInsurance?.exam == "true") {
+      giExam = StringUtils.downloadCertificate;
+    } else if (training?.generalInsurance?.exam == "false") {
+      giExam = StringUtils.reExam;
     }
 
     var liTime = training?.lifeInsurance?.latestTime;
@@ -254,6 +241,14 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
               : training?.lifeInsurance?.day3 == "false"
                   ? liDay = "3"
                   : liDay = "";
+    } else {
+      allowLiDay = true;
+      liDay = "1";
+    }
+    if (training?.lifeInsurance?.exam == "true") {
+      liExam = StringUtils.downloadCertificate;
+    } else if (training?.lifeInsurance?.exam == "false") {
+      liExam = StringUtils.reExam;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -359,7 +354,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) {
-                            return const TrainingDashboardGI();
+                            return TrainingDashboardGI(
+                              pospId: widget.pospId,
+                            );
                           }),
                         );
                       },
@@ -370,8 +367,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                         const EdgeInsets.only(left: 16, top: 4.0, bottom: 8),
                     child: PinkBorderButton(
                       isEnabled: true,
-                      content:
-                          giDay.isNotEmpty ? "Start Day $giDay" : "Start Exam",
+                      content: giDay.isNotEmpty ? "Start Day $giDay" : giExam,
                       onPressed: () {
                         if (giDay.isNotEmpty) {
                           if (allowGIDay) {
@@ -388,13 +384,33 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                 message: StringUtils.trainingDayMsg);
                           }
                         } else {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) {
-                              return const TrainingExam(
-                                  title: StringUtils.generalInsurance);
-                            }),
-                          );
+                          if (giExam == StringUtils.downloadCertificate) {
+                            bloc.downloadCertificate(context, widget.pospId,
+                                StringUtils.generalInsurance);
+                          } else if (giExam == StringUtils.reExam) {
+                            bloc
+                                .reExam(context, widget.pospId,
+                                    StringUtils.generalInsurance)
+                                .then((value) {
+                              if (value) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) {
+                                    return const TrainingExam(
+                                        title: StringUtils.generalInsurance);
+                                  }),
+                                );
+                              }
+                            });
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return const TrainingExam(
+                                    title: StringUtils.generalInsurance);
+                              }),
+                            );
+                          }
                         }
                       },
                     ),
@@ -502,7 +518,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) {
-                            return const TrainingDashboardLI();
+                            return TrainingDashboardLI(
+                              pospId: widget.pospId,
+                            );
                           }),
                         );
                       },
@@ -513,8 +531,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                         const EdgeInsets.only(left: 16, top: 4.0, bottom: 8),
                     child: PinkBorderButton(
                       isEnabled: true,
-                      content:
-                          liDay.isNotEmpty ? "Start Day $giDay" : "Start Exam",
+                      content: liDay.isNotEmpty ? "Start Day $liDay" : liExam,
                       onPressed: () {
                         if (liDay.isNotEmpty) {
                           if (allowLiDay) {
@@ -531,65 +548,39 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                 message: StringUtils.trainingDayMsg);
                           }
                         } else {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) {
-                              return const TrainingExam(
-                                  title: StringUtils.lifeInsurance);
-                            }),
-                          );
+                          if (liExam == StringUtils.downloadCertificate) {
+                            bloc.downloadCertificate(context, widget.pospId,
+                                StringUtils.lifeInsurance);
+                          } else if (liExam == StringUtils.reExam) {
+                            bloc
+                                .reExam(context, widget.pospId,
+                                    StringUtils.lifeInsurance)
+                                .then((value) {
+                              if (value) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) {
+                                    return const TrainingExam(
+                                        title: StringUtils.lifeInsurance);
+                                  }),
+                                );
+                              }
+                            });
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return const TrainingExam(
+                                    title: StringUtils.lifeInsurance);
+                              }),
+                            );
+                          }
                         }
                       },
                     ),
                   ),
           ],
         ),
-        /*Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SvgPicture.asset(SvgImages.dashboardBullet,
-                    height: 6, width: 6),
-                const SizedBox(
-                  width: 10,
-                ),
-                const Text(
-                  StringUtils.lifeInsurance,
-                  style: TextStyle(fontSize: 15),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, top: 4.0, bottom: 8),
-              child: PinkBorderButton(
-                isEnabled: true,
-                content: "Start Course",
-                onPressed: () {
-                  */ /* final form = sendOTPKey
-                            .currentState;
-                   if (form?.validate() ?? false) {
-                          form?.save();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) {
-                                  return LoginVerifyOTP(
-                                    enteredMobNo: mobNo
-                                        .text,);
-                                }),
-                          );
-                        }*/ /*
-                },
-              ),
-            ),
-          ],
-        ),*/
       ],
     );
   }
@@ -616,6 +607,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                     e.item2.toString(),
                     style: TextStyle(
                         fontSize: 18,
+                        color:
+                            Theme.of(context).primaryTextTheme.bodyText1!.color,
                         fontWeight:
                             FontType.getFontWeightType(FontWeightType.medium)),
                   ),
@@ -633,12 +626,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         onStepContinue: () {
           //go(1);
         },
-        onStepTapped: (index) {
-          // ddlog(index);
-          /* setState(() {
-            _index = index;
-          });*/
-        },
+        onStepTapped: (index) {},
         controlsBuilder: (BuildContext context, ControlsDetails controlsDetails,
             {VoidCallback? onStepContinue, VoidCallback? onStepCancel}) {
           return Container();
@@ -710,32 +698,38 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                         index = 1;
                       }
                       return Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Text(
-                                StringUtils.welcome,
-                                style: TextStyle(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.normal),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12.0),
-                              child: Text(StringUtils.dashboardTitle,
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontType.getFontWeightType(
-                                          FontWeightType.regular)),
-                                  maxLines: 3,
-                                  textAlign: TextAlign.center),
-                            ),
-                            const SizedBox(
-                              height: 24,
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Text(
+                                    StringUtils.welcome,
+                                    style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.normal),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12.0),
+                                  child: Text(StringUtils.dashboardTitle,
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          fontWeight:
+                                              FontType.getFontWeightType(
+                                                  FontWeightType.regular)),
+                                      maxLines: 3,
+                                      textAlign: TextAlign.center),
+                                ),
+                                const SizedBox(
+                                  height: 24,
+                                ),
+                              ],
                             ),
                             Container(
                               decoration: BoxDecoration(
