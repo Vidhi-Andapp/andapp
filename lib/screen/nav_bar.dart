@@ -5,6 +5,7 @@ import 'package:andapp/common/image_utils.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/di/app_component_base.dart';
 import 'package:andapp/di/shared_preferences.dart';
+import 'package:andapp/screen/support/support.dart';
 import 'package:andapp/screen/training/training_dashboard_gi.dart';
 import 'package:andapp/screen/training/training_dashboard_li.dart';
 import 'package:flutter/material.dart';
@@ -86,6 +87,16 @@ class _NavBarState extends State<NavBar> {
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           headerBuilder: (BuildContext context, bool isExpanded) {
             return ListTile(
+              onTap: () {
+                if (item.headerValue == StringUtils.menuSupport) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return const SupportPage();
+                    }),
+                  );
+                }
+              },
               leading: SvgPicture.asset(
                 item.leadingIcon,
                 height: 22,
@@ -106,7 +117,7 @@ class _NavBarState extends State<NavBar> {
           body: (item.expandedValue != null)
               ? ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.all(0),
+                  padding: const EdgeInsets.all(0),
                   shrinkWrap: true,
                   itemBuilder: (context, index) => ListTile(
                         onTap: () {

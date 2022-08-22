@@ -1,8 +1,9 @@
 class StringUtils {
   static String appName = '';
-
-  static const String noInternetConnection =
-      'Please check your Internet connection';
+  static const String noInternet = 'No Internet';
+  static const String noInternetContent =
+      'You must be connected to the internet to complete this action .';
+  static const String tryAgain = 'Try again';
   static const String someThingWentWrong =
       'SomeThing Went Wrong.Please try again later';
   static const String termsConditionsByContinue =
@@ -108,6 +109,11 @@ class StringUtils {
   static const String ansC = "c";
   static const String ansD = "d";
 
+  static const String supportCall = "+91 9081003001";
+  static const String requestACallBack = "Request a CallBack";
+  static const String raiseATicket = "Raise a Ticket";
+  static const String supportMail = "hello@andapp.in";
+  static const String userManual = "User Manual";
   static const String updateMobSuccess =
       "Your Mobile Number has been updated successfully with Andapp";
   static const String sendOTPFail =

@@ -117,13 +117,13 @@ class ApiClient {
     } else {
       if (!isBackground) {
         CommonToast.getInstance()
-            ?.displayToast(message: StringUtils.noInternetConnection);
+            ?.displayToast(message: StringUtils.noInternetContent);
       }
       if (isProgressBar) {
         AppComponentBase.getInstance()?.showProgressDialog(false);
       }
       AppComponentBase.getInstance()?.disableWidget(false);
-      throw StringUtils.noInternetConnection;
+      throw StringUtils.noInternetContent;
     }
   }
 
@@ -183,9 +183,9 @@ class ApiClient {
     } else {
       if (!isBackground) {
         CommonToast.getInstance()
-            ?.displayToast(message: StringUtils.noInternetConnection);
+            ?.displayToast(message: StringUtils.noInternetContent);
       }
-      throw StringUtils.noInternetConnection;
+      throw StringUtils.noInternetContent;
     }
   }
 
@@ -279,9 +279,9 @@ class ApiClient {
     } else {
       if (!isBackground) {
         CommonToast.getInstance()
-            ?.displayToast(message: StringUtils.noInternetConnection);
+            ?.displayToast(message: StringUtils.noInternetContent);
       }
-      throw StringUtils.noInternetConnection;
+      throw StringUtils.noInternetContent;
     }
   }
 

@@ -29,18 +29,22 @@ class LoginSendOTPBloc extends BlocBase {
       if (tokenValue != null && tokenValue.accessToken != null) {
         if (tokenValue.accessToken!.isNotEmpty) {
           ApiClient.bearerToken = tokenValue.accessToken!;
-          AppComponentBase.getInstance()
-              ?.getApiInterface()
-              .getApiRepository()
-              .getURls()
-              .then((getURls) {
-            if (getURls != null &&
-                getURls.resultflag == ApiClient.resultflagSuccess) {
-              ApiClient.freshDeskUrl = getURls.data?.freshdeskurl ?? "";
-              ApiClient.userManualUrl = getURls.data?.usermanualurl ?? "";
-            }
-          });
+          getURLs(context);
         }
+      }
+    });
+  }
+
+  void getURLs(BuildContext context) {
+    AppComponentBase.getInstance()
+        ?.getApiInterface()
+        .getApiRepository()
+        .getURls()
+        .then((getURls) {
+      if (getURls != null &&
+          getURls.resultflag == ApiClient.resultflagSuccess) {
+        ApiClient.freshDeskUrl = getURls.data?.freshdeskurl ?? "";
+        ApiClient.userManualUrl = getURls.data?.usermanualurl ?? "";
       }
     });
   }

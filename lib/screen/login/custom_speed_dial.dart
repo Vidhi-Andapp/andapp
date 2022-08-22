@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:andapp/common/app_theme.dart';
+import 'package:andapp/common/common_functions.dart';
 import 'package:andapp/common/tooltip.dart';
 import 'package:andapp/services/api_client.dart';
 import 'package:flutter/material.dart';
@@ -114,26 +115,6 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
     await launchUrl(launchUri);
   }
 
-  /*final Uri toLaunch =
-  Uri(host: StringUtils.userManualLink, path: 'headers/');*/
-  Future<void> _launchInBrowser(String url) async {
-    final Uri toLaunch = Uri.parse(url);
-    /* final Uri toLaunch =
-    Uri.https(url, path);*/
-    if (!await launchUrl(
-      toLaunch,
-      mode: LaunchMode.externalApplication,
-    )) {
-      throw 'Could not launch $url';
-    }
-  }
-
-  /*String? _encodeQueryParameters(Map<String, String> params) {
-    return params.entries
-        .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
-        .join('&');
-  }*/
-
   final Uri emailLaunchUri = Uri(
     scheme: 'mailto',
     path: 'hello@andapp.in',
@@ -226,7 +207,8 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
           child: FloatingActionButton(
             onPressed: () {
               if (ApiClient.userManualUrl.isNotEmpty) {
-                _launchInBrowser(ApiClient.freshDeskUrl);
+                CommonFunctions.getInstance()!
+                    .launchInBrowser(ApiClient.freshDeskUrl);
               }
             },
             // tooltip: '',
@@ -262,7 +244,8 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
           child: FloatingActionButton(
             onPressed: () {
               if (ApiClient.userManualUrl.isNotEmpty) {
-                _launchInBrowser(ApiClient.userManualUrl);
+                CommonFunctions.getInstance()!
+                    .launchInBrowser(ApiClient.userManualUrl);
               }
             },
             // tooltip: '',

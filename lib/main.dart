@@ -8,6 +8,7 @@ import 'package:andapp/di/shared_preferences.dart';
 import 'package:andapp/screen/dashboard/dashboard.dart';
 import 'package:andapp/screen/dashboard/document_page.dart';
 import 'package:andapp/screen/login/login_send_otp_page.dart';
+import 'package:andapp/screen/no_internet_page.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/foundation.dart';
@@ -88,11 +89,15 @@ class MyAppState extends State<MyApp> {
     AppComponentBase.getInstance()
         ?.getSharedPreference()
         .getUserDetail(key: SharedPreference().pospId)
-        .then((value) => pospId = value);
+        .then((value) => setState(() {
+              pospId = value;
+            }));
     AppComponentBase.getInstance()
         ?.getSharedPreference()
         .getUserDetail(key: SharedPreference().pospStatus)
-        .then((value) => pospStatus = value);
+        .then((value) => setState(() {
+              pospStatus = value;
+            }));
     /* encryptData("123456789012","YNBWNYIRHGFPZZFD");
     decryptData("+UNNp6GSYgdZSzSNblgeOZdv3yadw33U6iQzPsfBSw0=","YNBWNYIRHGFPZZFD");*/
   }
@@ -308,6 +313,7 @@ class MyAppState extends State<MyApp> {
     } else {
       page = const LoginSendOTP();
     }
+    page = const NoInternetPage(); // to be deleted
     return ValueListenableBuilder<ThemeMode>(
         valueListenable: theme,
         builder: (context, value, child) {

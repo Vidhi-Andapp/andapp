@@ -1,5 +1,4 @@
-
-class AssetImages{
+class AssetImages {
   static String imagePlaceholder = 'assets/images/image_placeholder.png';
   static String imageLogin = 'lib/assets/login.png';
   static String htmlTerms = "lib/assets/terms.html";
@@ -7,7 +6,7 @@ class AssetImages{
   static String profileAvatarFemale = 'lib/assets/avatarFemale.png';
 }
 
-class SvgImages{
+class SvgImages {
   static String imageLoginLight = 'lib/assets/login_light.svg';
   static String iconCall = 'lib/assets/call.svg';
   static String iconCallBack = 'lib/assets/callback.svg';
@@ -46,5 +45,6 @@ class SvgImages{
   static String trainingResult = 'lib/assets/training_result.svg';
   static String radioSelected = 'lib/assets/radio_selected.svg';
   static String radioUnSelected = 'lib/assets/radio_unselected.svg';
-
+  static String supportBanner = 'lib/assets/support_banner.svg';
+  static String noInternet = 'lib/assets/nointernet.svg';
 }

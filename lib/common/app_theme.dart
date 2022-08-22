@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:andapp/enum/font_type.dart';
+import 'package:flutter/material.dart';
 
 ///
 /// This class contains all UI related styles
@@ -52,6 +52,8 @@ class AppThemeState extends State<AppTheme> {
 
   Color get trainingResultQueBgColor => const Color(0xff3e3e3e);
 
+  Color get supportBorderColor => const Color(0xff3b3b3b);
+
   Color get trainingResultQueBorderColor => const Color(0xff8c8c8c);
 
   Color get trainingResultAnsBgColor => const Color(0xff343434);
@@ -87,9 +89,13 @@ class AppThemeState extends State<AppTheme> {
   Color get greenColor => Colors.green;
 
   Color get greyColorShade3 => const Color(0xff616161);
+
   Color get greyColorShade4 => const Color(0xff434343);
+
   Color get greyColorShade5 => const Color(0xff3C3C3C);
+
   Color get greyColorShade6 => const Color(0xff434343);
+
   Color get greyColorShade7 => const Color(0xff3C3C3C);
 
   TextStyle customTextStyle(
