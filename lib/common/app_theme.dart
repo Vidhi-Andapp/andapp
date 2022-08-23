@@ -52,11 +52,15 @@ class AppThemeState extends State<AppTheme> {
 
   Color get trainingResultQueBgColor => const Color(0xff3e3e3e);
 
-  Color get supportBorderColor => const Color(0xff3b3b3b);
-
   Color get trainingResultQueBorderColor => const Color(0xff8c8c8c);
 
   Color get trainingResultAnsBgColor => const Color(0xff343434);
+
+  Color get supportBorderColor => const Color(0xff3b3b3b);
+
+  Color get myProfileSecondBgColor => const Color(0xff535151);
+
+  Color get myProfileThirdBgBorderColor => const Color(0xff716f6f);
 
   Color get resendColor => const Color(0xff989191);
 

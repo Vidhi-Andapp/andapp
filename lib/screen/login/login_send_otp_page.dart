@@ -12,7 +12,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 import '../../common/app_theme.dart';
 import '../../common/pink_border_button.dart';
-import 'custom_speed_dial.dart';
+import '../support/custom_speed_dial.dart';
 
 class LoginSendOTP extends StatefulWidget {
   const LoginSendOTP({Key? key}) : super(key: key);

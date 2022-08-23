@@ -47,4 +47,12 @@ class SvgImages {
   static String radioUnSelected = 'lib/assets/radio_unselected.svg';
   static String supportBanner = 'lib/assets/support_banner.svg';
   static String noInternet = 'lib/assets/nointernet.svg';
+  static String profileCamera = 'lib/assets/camera.svg';
+  static String iconPersonalDetails = 'lib/assets/personaldetails.svg';
+  static String iconProfileBankDetails = 'lib/assets/bankdetails2.svg';
+  static String iconQRScan = 'lib/assets/Qr.svg';
+  static String iconAadharNumber = 'lib/assets/aadharnumber.svg';
+  static String iconPanNumber = 'lib/assets/pannumber.svg';
+  static String iconGstNumber = 'lib/assets/gstnumber.svg';
+  static String iconProfileEdit = 'lib/assets/edit2.svg';
 }

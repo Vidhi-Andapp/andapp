@@ -45,6 +45,7 @@ class ApiClient {
   static String registerPosp = "$baseUrl/api/mobileApi/PUTPospData";
   static String trainingDayURL = "$baseUrl/Mails/";
   static String getDashboard = "$baseUrl/api/mobileApi/GetDashboard";
+  static String getProfile = "$baseUrl/api/mobileApi/GetProfile";
   static String completeTrainingDay =
       "$baseUrl/api/mobileApi/TrainingDayComplete";
   static String getQuestionAnswerList =

@@ -114,6 +114,11 @@ class StringUtils {
   static const String raiseATicket = "Raise a Ticket";
   static const String supportMail = "hello@andapp.in";
   static const String userManual = "User Manual";
+
+  static const String titleMyProfile = "My Profile";
+  static const String personalDetails = "Personal Details";
+  static const String qrScan = "QR Scan";
+
   static const String updateMobSuccess =
       "Your Mobile Number has been updated successfully with Andapp";
   static const String sendOTPFail =

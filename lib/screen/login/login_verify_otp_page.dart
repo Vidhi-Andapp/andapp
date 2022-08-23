@@ -11,7 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
-import 'custom_speed_dial.dart';
+import '../support/custom_speed_dial.dart';
 
 class LoginVerifyOTP extends StatefulWidget {
   final String enteredMobNo;

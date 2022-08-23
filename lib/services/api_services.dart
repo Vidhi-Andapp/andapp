@@ -9,6 +9,7 @@ import 'package:andapp/model/get_bank_data.dart';
 import 'package:andapp/model/get_dashboard.dart';
 import 'package:andapp/model/get_gst_data.dart';
 import 'package:andapp/model/get_pan_data.dart';
+import 'package:andapp/model/get_profile.dart';
 import 'package:andapp/model/get_question_answer_list.dart';
 import 'package:andapp/model/get_status.dart';
 import 'package:andapp/model/get_urls.dart';
@@ -236,6 +237,26 @@ class ApiServices extends ApiClient {
           ?.getSharedPreference()
           .setUserDetail(key: SharedPreference().dashboard, value: response);
       var data = GetDashboard.fromJson(json.decode(response));
+      return data;
+    }
+    return null;
+  }
+
+  Future<GetProfile?> getProfile(String id) async {
+    Map body = {
+      "id": id,
+    };
+    String jsonString = json.encode(body);
+    var response = await posts(ApiClient.getProfile,
+        body: jsonString,
+        headers: getJsonHeader(),
+        encoding: Encoding.getByName('utf-8'),
+        isBackground: true);
+    if (response != null) {
+      AppComponentBase.getInstance()
+          ?.getSharedPreference()
+          .setUserDetail(key: SharedPreference().dashboard, value: response);
+      var data = GetProfile.fromJson(json.decode(response));
       return data;
     }
     return null;

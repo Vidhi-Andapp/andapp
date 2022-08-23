@@ -5,6 +5,7 @@ import 'package:andapp/common/image_utils.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/di/app_component_base.dart';
 import 'package:andapp/di/shared_preferences.dart';
+import 'package:andapp/screen/profile/my_profile.dart';
 import 'package:andapp/screen/support/support.dart';
 import 'package:andapp/screen/training/training_dashboard_gi.dart';
 import 'package:andapp/screen/training/training_dashboard_li.dart';
@@ -88,7 +89,14 @@ class _NavBarState extends State<NavBar> {
           headerBuilder: (BuildContext context, bool isExpanded) {
             return ListTile(
               onTap: () {
-                if (item.headerValue == StringUtils.menuSupport) {
+                if (item.headerValue == StringUtils.menuProfile) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return const MyProfile();
+                    }),
+                  );
+                } else if (item.headerValue == StringUtils.menuSupport) {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) {

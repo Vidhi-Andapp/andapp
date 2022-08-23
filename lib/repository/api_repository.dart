@@ -5,6 +5,7 @@ import 'package:andapp/model/get_bank_data.dart';
 import 'package:andapp/model/get_dashboard.dart';
 import 'package:andapp/model/get_gst_data.dart';
 import 'package:andapp/model/get_pan_data.dart';
+import 'package:andapp/model/get_profile.dart';
 import 'package:andapp/model/get_question_answer_list.dart';
 import 'package:andapp/model/get_status.dart';
 import 'package:andapp/model/get_urls.dart';
@@ -31,13 +32,12 @@ class ApiRepositoryIml extends ApiRepository {
   }
 
   @override
-  Future<CommonData?> requestACallBack(
-      {String? name,
-      String? mobile,
-      String? subject,
-      String? date,
-      String? timeFrom,
-      String? timeTo}) async {
+  Future<CommonData?> requestACallBack({String? name,
+    String? mobile,
+    String? subject,
+    String? date,
+    String? timeFrom,
+    String? timeTo}) async {
     return await _apiServices.requestACallBack(name ?? "", mobile ?? "",
         subject ?? "", date ?? "", timeFrom ?? "", timeTo ?? "");
   }
@@ -90,24 +90,22 @@ class ApiRepositoryIml extends ApiRepository {
   }
 
   @override
-  Future<SubmitAnswer?> submitAnswers(
-      {String? trainingType,
-      required String pospId,
-      required List<AnswerList> ansList}) {
+  Future<SubmitAnswer?> submitAnswers({String? trainingType,
+    required String pospId,
+    required List<AnswerList> ansList}) {
     return _apiServices.submitAnswers(trainingType ?? '', pospId,
         ansList: ansList);
   }
 
   @override
-  Future<GetDashboard?> registerPosp(
-      {PlatformFile? addressProof,
-      PlatformFile? pan,
-      PlatformFile? account,
-      PlatformFile? education,
-      PlatformFile? gst,
-      PlatformFile? other,
-      PlatformFile? profile,
-      String? data}) {
+  Future<GetDashboard?> registerPosp({PlatformFile? addressProof,
+    PlatformFile? pan,
+    PlatformFile? account,
+    PlatformFile? education,
+    PlatformFile? gst,
+    PlatformFile? other,
+    PlatformFile? profile,
+    String? data}) {
     return _apiServices.registerPosp(
         addressProof: addressProof,
         pan: pan,
@@ -122,6 +120,11 @@ class ApiRepositoryIml extends ApiRepository {
   @override
   Future<GetDashboard?> getDashboard({String? id}) {
     return _apiServices.getDashboard(id ?? "");
+  }
+
+  @override
+  Future<GetProfile?> getProfile({String? id}) {
+    return _apiServices.getProfile(id ?? "");
   }
 
   @override
@@ -148,13 +151,12 @@ abstract class ApiRepository {
 
   Future<GetUrl?> getURls();
 
-  Future<CommonData?> requestACallBack(
-      {String? name,
-      String? mobile,
-      String? subject,
-      String? date,
-      String? timeFrom,
-      String? timeTo});
+  Future<CommonData?> requestACallBack({String? name,
+    String? mobile,
+    String? subject,
+    String? date,
+    String? timeFrom,
+    String? timeTo});
 
   Future<CommonData?> registerDevice({String? mobileNo, String? deviceId});
 
@@ -175,22 +177,22 @@ abstract class ApiRepository {
 
   Future<GetQuestionList?> getQuestions({String? trainingType});
 
-  Future<SubmitAnswer?> submitAnswers(
-      {String? trainingType,
-      required String pospId,
-      required List<AnswerList> ansList});
+  Future<SubmitAnswer?> submitAnswers({String? trainingType,
+    required String pospId,
+    required List<AnswerList> ansList});
 
-  Future<GetDashboard?> registerPosp(
-      {PlatformFile? addressProof,
-      PlatformFile? pan,
-      PlatformFile? account,
-      PlatformFile? education,
-      PlatformFile? gst,
-      PlatformFile? other,
-      PlatformFile? profile,
-      String? data});
+  Future<GetDashboard?> registerPosp({PlatformFile? addressProof,
+    PlatformFile? pan,
+    PlatformFile? account,
+    PlatformFile? education,
+    PlatformFile? gst,
+    PlatformFile? other,
+    PlatformFile? profile,
+    String? data});
 
   Future<GetDashboard?> getDashboard({String? id});
+
+  Future<GetProfile?> getProfile({String? id});
 
   Future<CommonData?> completeTrainingDay(
       {String trainingType, String day, String pospId});
