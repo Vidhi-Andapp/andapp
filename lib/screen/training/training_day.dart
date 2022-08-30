@@ -122,11 +122,10 @@ class _TrainingDaysState extends State<TrainingDays> {
               content: StringUtils.submit,
               onPressed: () {
                 bloc.completeDay(
-                    context,
-                    widget.title,
-                    widget.day,
-                    ''
-                    '');
+                  context,
+                  widget.title,
+                  widget.day,
+                );
               },
             ),
           ),

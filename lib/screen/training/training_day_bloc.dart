@@ -8,8 +8,7 @@ import 'package:andapp/services/api_client.dart';
 import 'package:flutter/material.dart';
 
 class TrainingDayBloc extends BlocBase {
-  void completeDay(
-      BuildContext context, String trainingType, String day, String pospId) {
+  void completeDay(BuildContext context, String trainingType, String day) {
     AppComponentBase.getInstance()
         ?.getSharedPreference()
         .getUserDetail(key: SharedPreference().pospId)

@@ -50,9 +50,17 @@ class SvgImages {
   static String profileCamera = 'lib/assets/camera.svg';
   static String iconPersonalDetails = 'lib/assets/personaldetails.svg';
   static String iconProfileBankDetails = 'lib/assets/bankdetails2.svg';
-  static String iconQRScan = 'lib/assets/Qr.svg';
+  static String iconQRScan = 'lib/assets/qr.svg';
+  static String iconUsername = 'lib/assets/username.svg';
+  static String iconBirthdate = 'lib/assets/birthdate.svg';
+  static String iconWhatsapp = 'lib/assets/whatsapp.svg';
   static String iconAadharNumber = 'lib/assets/aadharnumber.svg';
   static String iconPanNumber = 'lib/assets/pannumber.svg';
   static String iconGstNumber = 'lib/assets/gstnumber.svg';
   static String iconProfileEdit = 'lib/assets/edit2.svg';
+  static String iconBankAcNumber = 'lib/assets/bankacnumber.svg';
+  static String iconIfscCode = 'lib/assets/ifsccode.svg';
+  static String iconAcHolderName = 'lib/assets/acholdername.svg';
+  static String iconNext = 'lib/assets/next2.svg';
+  static String iconCopy = 'lib/assets/copy.svg';
 }

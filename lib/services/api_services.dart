@@ -19,6 +19,8 @@ import 'package:andapp/model/token.dart';
 import 'package:andapp/services/api_client.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class ApiServices extends ApiClient {
   Future<Token?> token(String userName, String pass, String grantType) async {
@@ -207,14 +209,62 @@ class ApiServices extends ApiClient {
       PlatformFile? profile,
       String? data}) async {
     Map body = {
-      "id": data,
+      "data": data,
     };
-    String jsonString = json.encode(body);
-    var response = await posts(ApiClient.registerPosp,
-        body: jsonString,
-        headers: getJsonHeader(),
-        encoding: Encoding.getByName('utf-8'),
-        isBackground: true);
+    //String jsonString = json.encode(body);
+    var request =
+        http.MultipartRequest("POST", Uri.parse(ApiClient.registerPosp));
+    for (var entry in body.entries) {
+      request.fields[entry.key] = entry.value;
+    }
+
+    if (addressProof != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'address_proof',
+        addressProof.path ?? "",
+        contentType: MediaType(
+            addressProof.extension == "pdf" ? 'application' : 'image',
+            '${addressProof.extension}'),
+      ));
+    }
+    if (pan != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'pan',
+        pan.path ?? "",
+        contentType: MediaType(pan.extension == "pdf" ? 'application' : 'image',
+            '${pan.extension}'),
+      ));
+    }
+    if (gst != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'gst',
+        gst.path ?? "",
+        contentType: MediaType(gst.extension == "pdf" ? 'application' : 'image',
+            '${gst.extension}'),
+      ));
+    }
+    if (education != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'education',
+        education.path ?? "",
+        contentType: MediaType(
+            education.extension == "pdf" ? 'application' : 'image',
+            '${education.extension}'),
+      ));
+    }
+    if (other != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'other',
+        other.path ?? "",
+        contentType: MediaType('application', 'application/pdf'),
+      ));
+    }
+    var response = await postsMultipart(
+      request,
+      headers: getJsonHeader(),
+      encoding: Encoding.getByName('utf-8'),
+      isBackground: true,
+    );
     if (response != null) {
       var data = GetDashboard.fromJson(json.decode(response));
       return data;
@@ -257,6 +307,36 @@ class ApiServices extends ApiClient {
           ?.getSharedPreference()
           .setUserDetail(key: SharedPreference().dashboard, value: response);
       var data = GetProfile.fromJson(json.decode(response));
+      return data;
+    }
+    return null;
+  }
+
+  Future<CommonData?> updateProfilePhoto(
+      {String? id, required PlatformFile profilePhoto}) async {
+    Map body = {
+      "id": id,
+    };
+    String jsonString = json.encode(body);
+    var request =
+        http.MultipartRequest("POST", Uri.parse(ApiClient.updateProfilePhoto));
+    for (var entry in body.entries) {
+      request.fields[entry.key] = entry.value;
+    }
+    request.files.add(await http.MultipartFile.fromPath(
+      'profile',
+      profilePhoto.path ?? "",
+      contentType: MediaType('application', 'png'),
+    ));
+    var response = await postsMultipart(
+      request,
+      body: jsonString,
+      headers: getFormHeader(),
+      encoding: Encoding.getByName('utf-8'),
+      isBackground: true,
+    );
+    if (response != null) {
+      var data = CommonData.fromJson(json.decode(response));
       return data;
     }
     return null;

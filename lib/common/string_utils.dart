@@ -65,6 +65,7 @@ class StringUtils {
   static const String aadharBack = "Aadhar Back";
   static const String panNumber = "PAN Number";
   static const String gstNumber = "GST Number";
+  static const String personal = "Personal";
   static const String personalWithGST = "Personal with GST";
   static const String uploadImagePdf = "Upload image or pdf";
   static const String panCard = "PAN Card";
@@ -72,6 +73,8 @@ class StringUtils {
   static const String bankAcNumber = "Bank A/C Number";
   static const String ifscCode = "IFSC Code";
   static const String bankAcHolder = "Bank A/C Holder’s Name";
+  static const String bankAccountNumber = "Bank Account Number";
+  static const String accountHolder = "Account Holder’s Name";
   static const String certificationType = "Certification Type";
   static const String selectCertificationType = "Select Certification Type";
   static const String uploadCertification = "Upload Certification";
@@ -84,6 +87,7 @@ class StringUtils {
   static const String previous = "Previous";
   static const String next = "Next";
   static const String submit = "Submit";
+  static const String edit = "Edit";
   static const String accCreated = "Account Created";
   static const String pospReg = "PoSP Registration";
   static const String training = "Training";
@@ -119,6 +123,8 @@ class StringUtils {
   static const String personalDetails = "Personal Details";
   static const String qrScan = "QR Scan";
 
+  static const String registerSuccess =
+      "Your PoSP registration has been done successfully with Andapp";
   static const String updateMobSuccess =
       "Your Mobile Number has been updated successfully with Andapp";
   static const String sendOTPFail =
@@ -147,10 +153,10 @@ class StringUtils {
   static const String totalAns = "Total Correct Answers";
 
   static const String valEmptyAadharDetails = "Please validate aadhar otp";
-
-  //static const String valValidAadharDetails = "Please validate aadhar otp";
   static const String valUploadAadharDetails = "Please upload aadhar images";
   static const String trainingDayMsg = "Please come tomorrow for training";
+  static const String uploadAcademicCerti =
+      "Please select and upload certificate";
 
   static const String htmlTerms = """
 <!DOCTYPE html>

@@ -32,12 +32,13 @@ class ApiRepositoryIml extends ApiRepository {
   }
 
   @override
-  Future<CommonData?> requestACallBack({String? name,
-    String? mobile,
-    String? subject,
-    String? date,
-    String? timeFrom,
-    String? timeTo}) async {
+  Future<CommonData?> requestACallBack(
+      {String? name,
+      String? mobile,
+      String? subject,
+      String? date,
+      String? timeFrom,
+      String? timeTo}) async {
     return await _apiServices.requestACallBack(name ?? "", mobile ?? "",
         subject ?? "", date ?? "", timeFrom ?? "", timeTo ?? "");
   }
@@ -90,22 +91,24 @@ class ApiRepositoryIml extends ApiRepository {
   }
 
   @override
-  Future<SubmitAnswer?> submitAnswers({String? trainingType,
-    required String pospId,
-    required List<AnswerList> ansList}) {
+  Future<SubmitAnswer?> submitAnswers(
+      {String? trainingType,
+      required String pospId,
+      required List<AnswerList> ansList}) {
     return _apiServices.submitAnswers(trainingType ?? '', pospId,
         ansList: ansList);
   }
 
   @override
-  Future<GetDashboard?> registerPosp({PlatformFile? addressProof,
-    PlatformFile? pan,
-    PlatformFile? account,
-    PlatformFile? education,
-    PlatformFile? gst,
-    PlatformFile? other,
-    PlatformFile? profile,
-    String? data}) {
+  Future<GetDashboard?> registerPosp(
+      {PlatformFile? addressProof,
+      PlatformFile? pan,
+      PlatformFile? account,
+      PlatformFile? education,
+      PlatformFile? gst,
+      PlatformFile? other,
+      PlatformFile? profile,
+      String? data}) {
     return _apiServices.registerPosp(
         addressProof: addressProof,
         pan: pan,
@@ -125,6 +128,15 @@ class ApiRepositoryIml extends ApiRepository {
   @override
   Future<GetProfile?> getProfile({String? id}) {
     return _apiServices.getProfile(id ?? "");
+  }
+
+  @override
+  Future<CommonData?> updateProfilePhoto(
+      {String? id, required PlatformFile profilePhoto}) {
+    return _apiServices.updateProfilePhoto(
+      id: id ?? "",
+      profilePhoto: profilePhoto,
+    );
   }
 
   @override
@@ -151,12 +163,13 @@ abstract class ApiRepository {
 
   Future<GetUrl?> getURls();
 
-  Future<CommonData?> requestACallBack({String? name,
-    String? mobile,
-    String? subject,
-    String? date,
-    String? timeFrom,
-    String? timeTo});
+  Future<CommonData?> requestACallBack(
+      {String? name,
+      String? mobile,
+      String? subject,
+      String? date,
+      String? timeFrom,
+      String? timeTo});
 
   Future<CommonData?> registerDevice({String? mobileNo, String? deviceId});
 
@@ -177,22 +190,27 @@ abstract class ApiRepository {
 
   Future<GetQuestionList?> getQuestions({String? trainingType});
 
-  Future<SubmitAnswer?> submitAnswers({String? trainingType,
-    required String pospId,
-    required List<AnswerList> ansList});
+  Future<SubmitAnswer?> submitAnswers(
+      {String? trainingType,
+      required String pospId,
+      required List<AnswerList> ansList});
 
-  Future<GetDashboard?> registerPosp({PlatformFile? addressProof,
-    PlatformFile? pan,
-    PlatformFile? account,
-    PlatformFile? education,
-    PlatformFile? gst,
-    PlatformFile? other,
-    PlatformFile? profile,
-    String? data});
+  Future<GetDashboard?> registerPosp(
+      {PlatformFile? addressProof,
+      PlatformFile? pan,
+      PlatformFile? account,
+      PlatformFile? education,
+      PlatformFile? gst,
+      PlatformFile? other,
+      PlatformFile? profile,
+      String? data});
 
   Future<GetDashboard?> getDashboard({String? id});
 
   Future<GetProfile?> getProfile({String? id});
+
+  Future<CommonData?> updateProfilePhoto(
+      {String? id, required PlatformFile profilePhoto});
 
   Future<CommonData?> completeTrainingDay(
       {String trainingType, String day, String pospId});

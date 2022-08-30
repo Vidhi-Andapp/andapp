@@ -8,7 +8,9 @@ class GetAadhar {
   GetAadhar.fromJson(Map<String, dynamic> json) {
     resultflag = json['resultflag'];
     messages = json['Messages'];
-    data = json['Data'] != null ? GetAadharData.fromJson(json['Data']) : null;
+    data =
+    (json['Data'] != null && json['Data'] != '') ? GetAadharData.fromJson(
+        json['Data']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -29,7 +31,8 @@ class GetAadharData {
   bool? success;
   String? type;
 
-  GetAadharData({this.data, this.statusCode, this.message, this.success, this.type});
+  GetAadharData(
+      {this.data, this.statusCode, this.message, this.success, this.type});
 
   GetAadharData.fromJson(Map<String, dynamic> json) {
     data = json['data'] != null ? AadharData.fromJson(json['data']) : null;

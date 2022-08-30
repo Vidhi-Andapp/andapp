@@ -8,7 +8,6 @@ import 'package:andapp/di/shared_preferences.dart';
 import 'package:andapp/screen/dashboard/dashboard.dart';
 import 'package:andapp/screen/dashboard/document_page.dart';
 import 'package:andapp/screen/login/login_send_otp_page.dart';
-import 'package:andapp/screen/profile/my_profile.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/foundation.dart';
@@ -313,7 +312,7 @@ class MyAppState extends State<MyApp> {
     } else {
       page = const LoginSendOTP();
     }
-    page = const MyProfile(); // to be deleted
+    //page = const MyProfile(); // to be deleted
     return ValueListenableBuilder<ThemeMode>(
         valueListenable: theme,
         builder: (context, value, child) {

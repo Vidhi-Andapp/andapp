@@ -8,7 +8,9 @@ class GetProfile {
   GetProfile.fromJson(Map<String, dynamic> json) {
     resultflag = json['resultflag'];
     messages = json['Messages'];
-    data = json['Data'] != null ? GetProfileData.fromJson(json['Data']) : null;
+    data = (json['Data'] != null && json['Data'] != "")
+        ? GetProfileData.fromJson(json['Data'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {

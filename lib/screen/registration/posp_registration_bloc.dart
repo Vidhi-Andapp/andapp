@@ -1,7 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:andapp/common/bloc_provider.dart';
+import 'package:andapp/common/common_toast.dart';
+import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/di/app_component_base.dart';
+import 'package:andapp/di/shared_preferences.dart';
+import 'package:andapp/model/registration_request.dart';
+import 'package:andapp/screen/dashboard/dashboard.dart';
 import 'package:andapp/services/api_client.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -33,9 +39,14 @@ class PospRegistrationBloc extends BlocBase {
   TextEditingController ifscCode = TextEditingController();
   TextEditingController bankAcHolderName = TextEditingController();
   PlatformFile? aadharFront, aadharBack, gst, pan, academicCerti;
+  String? selectedSalutation = StringUtils.mr;
+  String? selectedGender = StringUtils.male;
+  String? selectedCertificateType;
+  int? automatedManual;
+  bool withGSTA = false;
 
   Future<String?> sendAadharOTP(BuildContext context) async {
-    await AppComponentBase.getInstance()
+    var result = await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
         .commonSendOTP(
@@ -46,11 +57,10 @@ class PospRegistrationBloc extends BlocBase {
         if (kDebugMode) {
           print("OTP : ${sendOTPData.data?.oTP}");
         }
-        //otp.text = "${sendOTPData.data?.oTP}";
         return sendOTPData.resultflag;
       }
     });
-    return null;
+    return result;
   }
 
   Future getAadharData(BuildContext context) async {
@@ -73,6 +83,9 @@ class PospRegistrationBloc extends BlocBase {
         }
         aadharABirthDate.text = getAadharData.data?.data?.dob ?? "";
         aadharAAddress.text = getAadharData.data?.data?.address?.address ?? "";
+      } else {
+        CommonToast.getInstance()?.displayToast(
+            message: getAadharData?.messages ?? StringUtils.verifyOTPFail);
       }
     });
   }
@@ -126,20 +139,122 @@ class PospRegistrationBloc extends BlocBase {
     });
   }
 
-  Future<String?> registerPosp(BuildContext context) async {
-    await AppComponentBase.getInstance()
-        ?.getApiInterface()
-        .getApiRepository()
-        .registerPosp()
-        .then((registerPospData) {
-      if (registerPospData != null &&
-          registerPospData.resultflag == ApiClient.resultflagSuccess) {
-        return registerPospData.resultflag;
+  Future registerPosp(BuildContext context) async {
+    AppComponentBase.getInstance()
+        ?.getSharedPreference()
+        .getUserDetail(key: SharedPreference().pospId)
+        .then((value) {
+      RegistrationRequest registrationRequest = RegistrationRequest();
+      PersonalDetails personalDetails = PersonalDetails();
+      KYC kyc = KYC();
+      personalDetails.pospId = value;
+      personalDetails.userName = username.text;
+      //personalDetails.salutation = "";
+      personalDetails.emailId = email.text;
+      if (automatedManual == 0) {
+        personalDetails.firstName = aadharAName.text;
+        kyc.addressProofName = aadharAName.text;
+        /*personalDetails.middleName = middleName.text;
+      personalDetails.lastName = lastName.text;*/
+        personalDetails.gender = aadharAGender.text;
+        personalDetails.address = aadharAAddress.text;
+        personalDetails.dateOfBirth = aadharABirthDate.text;
+        personalDetails.state = "";
+        personalDetails.city = "";
+        personalDetails.pincode = " ";
+        kyc.preferenceType = "MA";
+      } else {
+        personalDetails.firstName = firstName.text;
+        personalDetails.middleName = middleName.text;
+        personalDetails.lastName = lastName.text;
+        personalDetails.gender = aadharMGender.text;
+        kyc.preferenceType = "MM";
       }
+      personalDetails.referredById = "0";
+      //personalDetails.referredType = "";
+
+      kyc.mobileNo = "";
+      kyc.whatsappNo = whatsappNumber.text;
+      if (withGSTA) {
+        kyc.accountType = StringUtils.personalWithGST;
+        kyc.panNo = gstPanNumber.text;
+        kyc.gSTName = gstName.text;
+        kyc.gstNo = gstNumber.text;
+        kyc.gstStatus = "";
+      } else {
+        kyc.accountType = StringUtils.personal;
+        kyc.panNo = panNumber.text;
+        kyc.panName = panName.text;
+      }
+
+      kyc.bankName = bankAcHolderName.text;
+      kyc.aadharNo = aadharNumber.text;
+      kyc.educationProofType = selectedCertificateType;
+      kyc.bankAccountNo = bankAcNo.text;
+      kyc.ifsc = ifscCode.text;
+
+      registrationRequest.personalDetails = [];
+      registrationRequest.kYC = [];
+      registrationRequest.personalDetails!.add(personalDetails);
+      registrationRequest.kYC!.add(kyc);
+      AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .registerPosp(
+              addressProof: aadharFront,
+              other: aadharBack,
+              pan: pan,
+              gst: gst,
+              education: academicCerti,
+              data: jsonEncode(registrationRequest))
+          .then((registerPospData) {
+        if (registerPospData != null &&
+            registerPospData.resultflag == ApiClient.resultflagSuccess) {
+          CommonToast.getInstance()?.displayToast(
+              message:
+                  registerPospData.messages ?? StringUtils.registerSuccess);
+          AppComponentBase.getInstance()
+              ?.getSharedPreference()
+              .getUserDetail(key: SharedPreference().pospId)
+              .then((value) =>
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return Dashboard(
+                      pospId: value,
+                    );
+                  })));
+          //return registerPospData.resultflag;
+        } else {
+          CommonToast.getInstance()?.displayToast(
+              message:
+                  registerPospData?.messages ?? StringUtils.someThingWentWrong);
+        }
+      });
     });
-    return null;
+    //return null;
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    username.dispose();
+    email.dispose();
+    whatsappNumber.dispose();
+    aadharNumber.dispose();
+    otp.dispose();
+    aadharAName.dispose();
+    aadharAGender.dispose();
+    aadharABirthDate.dispose();
+    aadharAAddress.dispose();
+    firstName.dispose();
+    middleName.dispose();
+    lastName.dispose();
+    aadharMGender.dispose();
+    panNumber.dispose();
+    panName.dispose();
+    gstNumber.dispose();
+    gstPanNumber.dispose();
+    gstName.dispose();
+    bankAcNo.dispose();
+    ifscCode.dispose();
+    bankAcHolderName.dispose();
+  }
 }

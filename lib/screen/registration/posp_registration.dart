@@ -4,9 +4,6 @@ import 'package:andapp/common/govt_validator.dart';
 import 'package:andapp/common/image_utils.dart';
 import 'package:andapp/common/pink_border_button.dart';
 import 'package:andapp/common/string_utils.dart';
-import 'package:andapp/di/app_component_base.dart';
-import 'package:andapp/di/shared_preferences.dart';
-import 'package:andapp/screen/dashboard/dashboard.dart';
 import 'package:andapp/screen/registration/posp_registration_bloc.dart';
 import 'package:andapp/screen/registration/registration_phases.dart';
 import 'package:andapp/services/api_client.dart';
@@ -14,6 +11,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -27,9 +25,8 @@ class PoSPRegistration extends StatefulWidget {
 class _PoSPRegistrationState extends State<PoSPRegistration> {
   final PospRegistrationBloc bloc = PospRegistrationBloc();
   static int selectedIndex = 1;
-  bool _withGSTA = false,
-      _withGSTM = false,
-      isPersonalDetailsVisible = true,
+  bool
+  isPersonalDetailsVisible = true,
       isAadharOtpEnabled = false;
   String nextButton = StringUtils.next;
   final GlobalKey<RegistrationPhasesState> _keyRPhases = GlobalKey();
@@ -42,14 +39,13 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
       kycManualKey = GlobalKey<FormState>(),
       accountAutomateKey = GlobalKey<FormState>(),
       accountManualKey = GlobalKey<FormState>(),
-      bankKey = GlobalKey<FormState>(),
-      academicKey = GlobalKey<FormState>();
+      bankKey = GlobalKey<FormState>();
 
   String titleAadharFront = StringUtils.aadharFront,
       titleAadharBack = StringUtils.aadharBack,
       titleGst = StringUtils.gstCertification,
       titlePan = StringUtils.panCard,
-      titleAcademicCerti = StringUtils.uploadCertification;
+      titleAcademicCertificate = StringUtils.uploadCertification;
 
   final List<String> itemsSalutation = [
     StringUtils.mr,
@@ -57,15 +53,13 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
     StringUtils.mrs,
     StringUtils.dr,
   ];
-  String? selectedSalutation = StringUtils.mr;
 
   final List<String> itemsGender = [
     StringUtils.male,
     StringUtils.female,
   ];
-  String? selectedGender = StringUtils.male;
 
-  final List<String> itemsCertiType = [
+  final List<String> itemsCertificateType = [
     StringUtils.ssc,
     StringUtils.hsc,
     StringUtils.graduation,
@@ -73,7 +67,6 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
     StringUtils.phd,
     StringUtils.other,
   ];
-  String? selectedCertiType;
 
   void _refresh(int index) {
     if (index != 1) {
@@ -157,7 +150,9 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
     print(result.files.first.path);*/
     var bytes = result.files.first.size;
     double sizeInMB = bytes / (1024 * 1024);
-    print("sizeInMB : $sizeInMB");
+    if (kDebugMode) {
+      print("sizeInMB : $sizeInMB");
+    }
     if (sizeInMB > 4) {
       CommonToast.getInstance()
           ?.displayToast(message: "Please select file upto 4 MB only");
@@ -173,7 +168,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
       length: 2,
       child: WillPopScope(
         onWillPop: () async {
-          onBack();
+          onBack(false);
           return false;
         },
         child: Scaffold(
@@ -200,7 +195,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      onBack();
+                      onBack(false);
                     },
                     tooltip:
                     MaterialLocalizations
@@ -362,23 +357,27 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                         child: SizedBox(
                                             height: 50,
                                             child: TabBar(
-                                              indicatorColor:
-                                              appTheme.primaryColor,
-                                              labelColor: appTheme.primaryColor,
-                                              indicatorPadding:
-                                              const EdgeInsets.symmetric(
-                                                  horizontal: 16),
-                                              isScrollable: true,
-                                              unselectedLabelColor:
-                                              Colors.white,
-                                              labelStyle:
-                                              const TextStyle(fontSize: 16),
-                                              unselectedLabelStyle:
-                                              const TextStyle(fontSize: 16),
-                                              tabs: const [
-                                                Tab(text: "Automated"),
-                                                Tab(text: "Manual"),
-                                              ],
+                                                indicatorColor:
+                                                appTheme.primaryColor,
+                                                labelColor: appTheme
+                                                    .primaryColor,
+                                                indicatorPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 16),
+                                                isScrollable: true,
+                                                unselectedLabelColor:
+                                                Colors.white,
+                                                labelStyle:
+                                                const TextStyle(fontSize: 16),
+                                                unselectedLabelStyle:
+                                                const TextStyle(fontSize: 16),
+                                                tabs: const [
+                                                  Tab(text: "Automated"),
+                                                  Tab(text: "Manual"),
+                                                ],
+                                                onTap: (int? value) {
+                                                  bloc.automatedManual = value;
+                                                }
                                             )),
                                       ),
                                       SizedBox(
@@ -398,9 +397,10 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                       controller:
                                                       bloc.aadharNumber,
                                                       onEditingComplete: () {
+                                                        isAadharOtpEnabled =
+                                                        false;
                                                         setState(() {
-                                                          isAadharOtpEnabled =
-                                                          false;
+
                                                         });
                                                       },
                                                       decoration:
@@ -430,7 +430,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                               StringUtils
                                                                   .otp,
                                                               onPressed:
-                                                                  () {
+                                                                  () async {
                                                                 final form =
                                                                     sendAadharOTPKey
                                                                         .currentState;
@@ -438,21 +438,21 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                     ?.validate() ??
                                                                     false) {
                                                                   form?.save();
-                                                                  bloc
+                                                                  await bloc
                                                                       .sendAadharOTP(
                                                                       context)
                                                                       .then(
                                                                           (
                                                                           value) {
-                                                                        setState(
-                                                                                () {
-                                                                              if (value ==
-                                                                                  ApiClient
-                                                                                      .resultflagSuccess) {
-                                                                                isAadharOtpEnabled =
-                                                                                true;
-                                                                              }
-                                                                            });
+                                                                        if (value ==
+                                                                            ApiClient
+                                                                                .resultflagSuccess) {
+                                                                          isAadharOtpEnabled =
+                                                                          true;
+                                                                          setState(() {
+
+                                                                          });
+                                                                        }
                                                                       });
                                                                 }
                                                               },
@@ -959,7 +959,8 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                               height: 28,
                                                               width: 28),
                                                         ),
-                                                        hint: selectedSalutation ==
+                                                        hint: bloc
+                                                            .selectedSalutation ==
                                                             null
                                                             ? const Text(
                                                             StringUtils
@@ -977,7 +978,8 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                 color: Colors
                                                                     .white))
                                                             : Text(
-                                                            selectedSalutation ??
+                                                            bloc
+                                                                .selectedSalutation ??
                                                                 "",
                                                             maxLines: 2,
                                                             overflow:
@@ -1027,10 +1029,11 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                 customItemsHeight: 4,*/
                                                         customItemsHeight: 1,
                                                         value:
-                                                        selectedSalutation,
+                                                        bloc.selectedSalutation,
                                                         onChanged: (value) {
                                                           setState(() {
-                                                            selectedSalutation =
+                                                            bloc
+                                                                .selectedSalutation =
                                                             value as String;
                                                           });
                                                         },
@@ -1265,7 +1268,8 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                               height: 28,
                                                               width: 28),
                                                         ),
-                                                        hint: selectedGender ==
+                                                        hint: bloc
+                                                            .selectedGender ==
                                                             null
                                                             ? const Text(
                                                             StringUtils
@@ -1283,7 +1287,8 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                 color: Colors
                                                                     .white))
                                                             : Text(
-                                                            selectedGender ??
+                                                            bloc
+                                                                .selectedGender ??
                                                                 "",
                                                             maxLines: 2,
                                                             overflow:
@@ -1332,10 +1337,12 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                 customItemsIndexes: _getDividersIndexes(),
                                                 customItemsHeight: 4,*/
                                                         customItemsHeight: 1,
-                                                        value: selectedGender,
+                                                        value: bloc
+                                                            .selectedGender,
                                                         onChanged: (value) {
                                                           setState(() {
-                                                            selectedGender =
+                                                            bloc
+                                                                .selectedGender =
                                                             value as String;
                                                           });
                                                         },
@@ -1635,25 +1642,25 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                             .primaryColor,
                                                         trackColor: appTheme
                                                             .speedDialLabelBgDT,
-                                                        value: _withGSTA,
+                                                        value: bloc.withGSTA,
                                                         onChanged:
                                                             (bool value) {
                                                           setState(() {
-                                                            _withGSTA =
+                                                            bloc.withGSTA =
                                                                 value;
                                                           });
                                                         },
                                                       ),
                                                       onTap: () {
                                                         setState(() {
-                                                          _withGSTA =
-                                                          !_withGSTA;
+                                                          bloc.withGSTA =
+                                                          !bloc.withGSTA;
                                                         });
                                                       },
                                                     ),
                                                   ),
                                                 ),
-                                                if (_withGSTA)
+                                                if (bloc.withGSTA)
                                                   Column(
                                                     children: [
                                                       Form(
@@ -2048,105 +2055,116 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                             .primaryColor,
                                                         trackColor: appTheme
                                                             .speedDialLabelBgDT,
-                                                        value: _withGSTM,
+                                                        value: bloc.withGSTA,
                                                         onChanged:
                                                             (bool value) {
                                                           setState(() {
-                                                            _withGSTM =
+                                                            bloc.withGSTA =
                                                                 value;
                                                           });
                                                         },
                                                       ),
                                                       onTap: () {
                                                         setState(() {
-                                                          _withGSTM =
-                                                          !_withGSTM;
+                                                          bloc.withGSTA =
+                                                          !bloc.withGSTA;
                                                         });
                                                       },
                                                     ),
                                                   ),
                                                 ),
-                                                _withGSTM
-                                                    ? Column(
+                                                Column(
                                                   crossAxisAlignment:
                                                   CrossAxisAlignment
                                                       .start,
                                                   children: [
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal:
-                                                          32),
-                                                      child:
-                                                      GestureDetector(
-                                                        onTap:
-                                                            () async {
-                                                          bloc.gst =
-                                                          await _pickFile();
-                                                          if (bloc
-                                                              .gst !=
-                                                              null) {
-                                                            titleGst =
-                                                                StringUtils
-                                                                    .fileUploaded;
-                                                          } else {
-                                                            titleGst =
-                                                                StringUtils
-                                                                    .gstCertification;
-                                                          }
-                                                          setState(() {});
-                                                        },
-                                                        child: Container(
-                                                            padding: const EdgeInsets
-                                                                .symmetric(
-                                                                vertical: 8,
-                                                                horizontal: 16),
-                                                            decoration: BoxDecoration(
-                                                                border: Border
-                                                                    .all(
-                                                                  width: 1,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                                borderRadius: const BorderRadius
-                                                                    .all(Radius
-                                                                    .circular(
-                                                                    8))),
-                                                            child: Row(
-                                                              mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                              crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .center,
-                                                              children: [
-                                                                Text(
-                                                                  titleGst,
-                                                                  maxLines: 2,
-                                                                  overflow: TextOverflow
-                                                                      .ellipsis,
-                                                                  textAlign: TextAlign
-                                                                      .start,
-                                                                ),
-                                                                Padding(
-                                                                  padding: const EdgeInsets
-                                                                      .only(
-                                                                      top: 8.0,
-                                                                      bottom: 8.0),
-                                                                  child: SvgPicture
-                                                                      .asset(
-                                                                      SvgImages
-                                                                          .iconAttachment,
-                                                                      height: 20,
-                                                                      width: 20),
-                                                                ),
-                                                              ],
-                                                            )),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 8,
-                                                    ),
+                                                    bloc.withGSTA
+                                                        ?
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .start,
+                                                      children: [
+                                                        Padding(
+                                                          padding: const EdgeInsets
+                                                              .symmetric(
+                                                              horizontal:
+                                                              32),
+                                                          child:
+                                                          GestureDetector(
+                                                            onTap:
+                                                                () async {
+                                                              bloc.gst =
+                                                              await _pickFile();
+                                                              if (bloc
+                                                                  .gst !=
+                                                                  null) {
+                                                                titleGst =
+                                                                    StringUtils
+                                                                        .fileUploaded;
+                                                              } else {
+                                                                titleGst =
+                                                                    StringUtils
+                                                                        .gstCertification;
+                                                              }
+                                                              setState(() {});
+                                                            },
+                                                            child: Container(
+                                                                padding: const EdgeInsets
+                                                                    .symmetric(
+                                                                    vertical: 8,
+                                                                    horizontal: 16),
+                                                                decoration: BoxDecoration(
+                                                                    border: Border
+                                                                        .all(
+                                                                      width: 1,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                    borderRadius: const BorderRadius
+                                                                        .all(
+                                                                        Radius
+                                                                            .circular(
+                                                                            8))),
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                                  crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .center,
+                                                                  children: [
+                                                                    Text(
+                                                                      titleGst,
+                                                                      maxLines: 2,
+                                                                      overflow: TextOverflow
+                                                                          .ellipsis,
+                                                                      textAlign: TextAlign
+                                                                          .start,
+                                                                    ),
+                                                                    Padding(
+                                                                      padding: const EdgeInsets
+                                                                          .only(
+                                                                          top: 8.0,
+                                                                          bottom: 8.0),
+                                                                      child: SvgPicture
+                                                                          .asset(
+                                                                          SvgImages
+                                                                              .iconAttachment,
+                                                                          height: 20,
+                                                                          width: 20),
+                                                                    ),
+                                                                  ],
+                                                                )),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 8,
+                                                        ),
+                                                      ],
+                                                    )
+                                                        :
+                                                    Container(),
                                                     Padding(
                                                       padding: const EdgeInsets
                                                           .symmetric(
@@ -2244,7 +2262,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                     ),
                                                   ],
                                                 )
-                                                    : Column(
+                                                /*: Column(
                                                   crossAxisAlignment:
                                                   CrossAxisAlignment
                                                       .start,
@@ -2338,7 +2356,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                       ),
                                                     ),
                                                   ],
-                                                )
+                                                )*/
                                               ],
                                             ),
                                           ],
@@ -2486,7 +2504,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                   } else if (val
                                                       .length !=
                                                       11 ||
-                                                      !regExp
+                                                      regExp
                                                           .hasMatch(
                                                           val)) {
                                                     return "Please enter valid IFSC Code";
@@ -2617,7 +2635,8 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                   height: 28,
                                                   width: 28),
                                             ),
-                                            hint: selectedCertiType == null
+                                            hint: bloc
+                                                .selectedCertificateType == null
                                                 ? const Text(
                                                 StringUtils
                                                     .selectCertificationType,
@@ -2632,7 +2651,8 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                     fontSize: 14,
                                                     color: Colors
                                                         .white))
-                                                : Text(selectedCertiType!,
+                                                : Text(
+                                                bloc.selectedCertificateType!,
                                                 maxLines: 2,
                                                 overflow:
                                                 TextOverflow
@@ -2647,7 +2667,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                             selectedItemBuilder:
                                                 (BuildContext
                                             context) {
-                                              return itemsCertiType
+                                              return itemsCertificateType
                                                   .map<Widget>(
                                                       (String item) {
                                                     return Text(item,
@@ -2666,7 +2686,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                             },
                                             items:
                                             _addDividersAfterItems(
-                                                itemsCertiType),
+                                                itemsCertificateType),
                                             /*items: items.map((String item) {
                                                   return DropdownMenuItem<String>(
                                                     value: item,
@@ -2676,10 +2696,10 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                 customItemsIndexes: _getDividersIndexes(),
                                                 customItemsHeight: 4,*/
                                             customItemsHeight: 1,
-                                            value: selectedCertiType,
+                                            value: bloc.selectedCertificateType,
                                             onChanged: (value) {
                                               setState(() {
-                                                selectedCertiType =
+                                                bloc.selectedCertificateType =
                                                 value as String;
                                               });
                                             },
@@ -2711,11 +2731,11 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                             if (bloc
                                                 .academicCerti !=
                                                 null) {
-                                              titleAcademicCerti =
+                                              titleAcademicCertificate =
                                                   StringUtils
                                                       .fileUploaded;
                                             } else {
-                                              titleAcademicCerti =
+                                              titleAcademicCertificate =
                                                   StringUtils
                                                       .uploadCertification;
                                             }
@@ -2749,7 +2769,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                     .center,
                                                 children: [
                                                   Text(
-                                                    titleAcademicCerti,
+                                                    titleAcademicCertificate,
                                                     maxLines: 2,
                                                     overflow:
                                                     TextOverflow
@@ -2816,18 +2836,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                 isEnabled: false,
                                 content: StringUtils.previous,
                                 onPressed: () {
-                                  if (selectedIndex != 1) {
-                                    selectedIndex--;
-                                    if (selectedIndex != 4) {
-                                      nextButton = StringUtils.next;
-                                    }
-                                    if (selectedIndex == 1) {
-                                      isPersonalDetailsVisible = true;
-                                    }
-                                    setState(() {});
-                                    _keyRPhases.currentState!
-                                        .methodInChild(selectedIndex);
-                                  }
+                                  onBack(true);
                                 },
                               )),
                           Padding(
@@ -2944,14 +2953,18 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
     );
   }
 
-  void onBack() {
+  void onBack(bool previous) {
     if (selectedIndex != 1) {
       selectedIndex--;
       if (selectedIndex != 4) {
         nextButton = StringUtils.next;
       }
+      if (selectedIndex == 1) {
+        isPersonalDetailsVisible = true;
+      }
       setState(() {});
-    } else {
+      _keyRPhases.currentState!.methodInChild(selectedIndex);
+    } else if (!previous) {
       Navigator.pop(context);
     }
   }
@@ -2966,20 +2979,13 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
       setState(() {});
       _keyRPhases.currentState!.methodInChild(selectedIndex);
     } else {
-      /*  if (academicKey.currentState!.validate()) {
-        //bloc.registerPosp(context);
-      }*/
-      AppComponentBase.getInstance()
-          ?.getSharedPreference()
-          .getUserDetail(key: SharedPreference().pospId)
-          .then((value) =>
-          Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) {
-                return Dashboard(pospId: value,);
-              }))
-
-      );
+      if (bloc.selectedCertificateType != null && bloc.academicCerti != null) {
+        bloc.registerPosp(context);
+      }
+      else {
+        CommonToast.getInstance()
+            ?.displayToast(message: StringUtils.uploadAcademicCerti);
+      }
     }
   }
 }

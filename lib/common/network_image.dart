@@ -1,8 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:andapp/common/app_theme.dart';
-import 'package:andapp/common/image_utils.dart';
 
+import 'app_theme.dart';
 import 'shimmer_loading.dart';
 
 ///
@@ -14,8 +13,10 @@ class CustomNetworkImage extends StatelessWidget {
   final BoxFit fit;
   final String image;
   final double radius;
+  final String placeholderImage;
   final String errorImage;
   final BoxFit errorImageFit;
+
   const CustomNetworkImage(
       {Key? key,
       this.width = 150,
@@ -23,14 +24,54 @@ class CustomNetworkImage extends StatelessWidget {
       this.fit = BoxFit.cover,
       this.image = '',
       this.radius = 0,
+      this.placeholderImage = '',
       this.errorImage = '',
       this.errorImageFit = BoxFit.contain})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final _appTheme = AppTheme.of(context);
-    return ClipRRect(
+    final appTheme = AppTheme.of(context);
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: appTheme.primaryColor,
+        borderRadius: BorderRadius.all(Radius.circular(radius)),
+        border: Border.all(
+          color: Colors.white,
+          width: 5.0,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: CachedNetworkImage(
+          imageUrl: image,
+          width: width,
+          height: height,
+          errorWidget: (context, url, error) => Image.asset(
+            placeholderImage,
+            width: width,
+            height: height,
+          ),
+          placeholder: (context, url) => Center(
+            child: SizedBox(
+              width: width,
+              height: height,
+              child: ShimmerLoading(
+                isLoading: true,
+                child: Container(
+                  decoration: BoxDecoration(
+                      image:
+                          DecorationImage(image: AssetImage(placeholderImage))),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    /* ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: CachedNetworkImage(
         imageUrl: image,
@@ -51,13 +92,13 @@ class CustomNetworkImage extends StatelessWidget {
               isLoading: true,
               child: Container(
                 decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage(AssetImages.imagePlaceholder))),
+                    image:
+                        DecorationImage(image: AssetImage(placeholderImage))),
               ),
             ),
           ),
         ),
       ),
-    );
+    );*/
   }
 }

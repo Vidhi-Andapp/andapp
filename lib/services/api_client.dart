@@ -30,8 +30,7 @@ class ApiClient {
   static String trainingTypeLI = "li";
 
   static String token = "$baseUrl/token";
-  static String bearerToken =
-      "s8hftw7L_JY4YTG3D6X3kGkXxmNsVTeB4P3-8HCkjpyESUtGOa_gOuE8ickcTYB8Ds_oSII4_DDMdFoL8PTwN4W7qEfpSCYcFpAAmyE-9Slk1R2aQIpr2DI1Bq4QcYvZlLS5AuMbTcgc-anF9OuKG_V-BPr79kKF-Q0j10yKYLwERYViSqizta_FSPLci5BGKMK71x7ferYMa28NipniUb3ontH8wRm27mnyOS_nxlcrFLovBzcsaoVW9uaBRQlV7x7OQrGYNrWZlLuG8Z9e9OHIPS3bHVQ1y4DMJjLwjgfc6mD1SD_IFiwBTqD9B5Pl_YbAIP3nomdA-Nos4lAUOg";
+  static String bearerToken = "";
   static String getUrls = "$baseUrl/api/mobileApi/GetUrl";
   static String requestACallBack = "$baseUrl/api/mobileApi/RequestcallBack";
   static String registerDevice = "$baseUrl/api/mobileApi/RegisterDevice";
@@ -46,6 +45,7 @@ class ApiClient {
   static String trainingDayURL = "$baseUrl/Mails/";
   static String getDashboard = "$baseUrl/api/mobileApi/GetDashboard";
   static String getProfile = "$baseUrl/api/mobileApi/GetProfile";
+  static String updateProfilePhoto = "$baseUrl/api/mobileApi/UpdateProfilePic";
   static String completeTrainingDay =
       "$baseUrl/api/mobileApi/TrainingDayComplete";
   static String getQuestionAnswerList =
@@ -158,6 +158,72 @@ class ApiClient {
           debugPrint('response body : $bodyBytes');
           return bodyBytes;
         }
+        /*
+        print(response.body);
+        if (response.statusCode != 200) return null;
+        Map<String, dynamic> map = json.decode(response.body);
+        return map;
+        //return List<Map<String, dynamic>>.from(json.decode(response.body));
+        var responseStatus = json.decode(response.body);
+        return responseStatus;*/
+      } catch (exception) {
+        if (isProgressBar) {
+          AppComponentBase.getInstance()?.showProgressDialog(false);
+        }
+        AppComponentBase.getInstance()?.disableWidget(false);
+        var e =
+            exception is String ? exception : StringUtils.someThingWentWrong;
+        if (!isBackground) {
+          CommonToast.getInstance()?.displayToast(message: e);
+        }
+      }
+      if (isProgressBar) {
+        AppComponentBase.getInstance()?.showProgressDialog(false);
+      }
+      AppComponentBase.getInstance()?.disableWidget(false);
+    } else {
+      if (!isBackground) {
+        CommonToast.getInstance()
+            ?.displayToast(message: StringUtils.noInternetContent);
+      }
+      throw StringUtils.noInternetContent;
+    }
+  }
+
+  postsMultipart(http.MultipartRequest request,
+      {Map<String, String>? headers,
+      dynamic body,
+      Encoding? encoding,
+      bool isProgressBar = true,
+      bool isBackground = false}) async {
+    headers ??= getJsonHeader();
+    if (await AppComponentBase.getInstance()
+            ?.getNetworkManager()
+            .isConnected() ??
+        false) {
+      if (isProgressBar) {
+        AppComponentBase.getInstance()?.showProgressDialog(true);
+      }
+      AppComponentBase.getInstance()?.disableWidget(true);
+      try {
+        request
+            .send()
+            .then((result) async {
+              http.Response.fromStream(result).then((response) {
+                if (successResponse.contains(response.statusCode)) {
+                  if (isProgressBar) {
+                    AppComponentBase.getInstance()?.showProgressDialog(false);
+                  }
+                  AppComponentBase.getInstance()?.disableWidget(false);
+
+                  String bodyBytes = utf8.decode(response.bodyBytes);
+                  debugPrint('response body : $bodyBytes');
+                  return bodyBytes;
+                }
+              });
+            })
+            .catchError((err) => print('error : $err'))
+            .whenComplete(() {});
         /*
         print(response.body);
         if (response.statusCode != 200) return null;
