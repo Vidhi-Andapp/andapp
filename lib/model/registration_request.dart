@@ -36,15 +36,15 @@ class PersonalDetails {
   String? pospId;
   String? userName;
   String? firstName;
-  String? middleName;
+  String? middleName = "";
   String? lastName;
-  String? address;
-  String? dateOfBirth;
+  String? address = "";
+  String? dateOfBirth = "";
   String? gender;
   String? emailId;
-  String? state;
-  String? city;
-  String? pincode;
+  String? state = "";
+  String? city = "";
+  String? pincode = "";
   String? referredById;
 
   PersonalDetails(
@@ -102,15 +102,15 @@ class KYC {
   String? mobileNo;
   String? whatsappNo;
   String? accountType;
-  String? panName;
+  String? panName = "";
   String? bankName;
-  String? gSTName;
+  String? gSTName = "";
   String? aadharNo;
   String? panNo;
   String? educationProofType;
   String? bankAccountNo;
-  String? gstNo;
-  String? gstStatus;
+  String? gstNo = "";
+  String? gstStatus = "";
   String? ifsc;
   String? preferenceType;
 

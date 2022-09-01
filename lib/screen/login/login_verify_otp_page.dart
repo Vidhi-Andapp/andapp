@@ -30,7 +30,8 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
   bool isOpened = false;
   late AnimationController _animationController;
   final verifyOTPKey = GlobalKey<FormState>();
-  String signature = "{{ app signature }}";
+
+  //String signature = "{{ app signature }}";
   String? appSignature, _code;
   int? otpToCompare;
 
@@ -43,7 +44,7 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
         setState(() {});
       });
     //getSignature();
-    // listenForCode();
+    //listenForCode();
 
     SmsAutoFill().getAppSignature.then((signature) {
       setState(() {
@@ -63,16 +64,11 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
     isOpened = !isOpened;
   }
 
-  void getSignature() async {
-    signature = await SmsAutoFill().getAppSignature;
-    setState(() {});
-  }
-
   @override
   void codeUpdated() {
-    setState(() {
-      _code = code!;
-    });
+    /*_code = code!;
+    print("inside codeupdated : $code");
+    setState(() {});*/
   }
 
   @override
@@ -117,8 +113,7 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                 child: RichText(
                                     text: TextSpan(children: <TextSpan>[
                                       TextSpan(
-                                        text:
-                                            "Enter the 5 digit number that we have sent to ",
+                                        text: StringUtils.verifyOTPTitle,
                                         style: TextStyle(
                                             color: Theme.of(context)
                                                 .textTheme
@@ -138,7 +133,8 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 8, horizontal: 32),
-                                child: TextFormField(
+                                child:
+                                    /*  TextFormField(
                                   controller: bloc.otp,
                                   decoration: InputDecoration(
                                     labelText: StringUtils.otp,
@@ -167,10 +163,10 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                       return null;
                                     }
                                   },
-                                  /* inputFormatters: <TextInputFormatter>[
+                                  */ /* inputFormatters: <TextInputFormatter>[
                                     FilteringTextInputFormatter.allow(
                                         RegExp("[0-9]")),
-                                  ],*/
+                                  ],*/ /*
                                   maxLength: 5,
                                   keyboardType:
                                       const TextInputType.numberWithOptions(
@@ -180,8 +176,8 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                     fontFamily: "Poppins",
                                     //color: Colors.white
                                   ),
-                                ),
-                                /* TextFieldPinAutoFill(
+                                ),*/
+                                    TextFieldPinAutoFill(
                                   decoration: InputDecoration(
                                     labelText: StringUtils.otp,
                                     labelStyle: TextStyle(
@@ -199,14 +195,22 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                   ),
                                   codeLength: 5,
                                   currentCode: _code,
-                                  onCodeSubmitted: (code) {},
+                                  onCodeSubmitted: (code) {
+                                    _code = code;
+                                    print("inside codesumbmitted : $code");
+                                    setState(() {});
+                                  },
                                   onCodeChanged: (code) {
-                                    */ /* if (code.length == 5) {
+                                    print("codechanged: $code");
+                                    _code = code;
+                                    print("inside codeupdated : $code");
+                                    setState(() {});
+                                    /*if (code.length == 5) {
                                       FocusScope.of(context)
                                           .requestFocus(FocusNode());
-                                    }*/ /*
+                                    }*/
                                   },
-                                ),*/
+                                ),
                               ),
                               TimerButton(
                                 label: "Resend OTP",
@@ -238,7 +242,7 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                           form.save();
                                           //bloc.verifyOTP(context);
                                           if (otpToCompare != null &&
-                                              bloc.otp.text ==
+                                              _code ==
                                                   otpToCompare.toString()) {
                                             bloc.getStatus(
                                                 context, widget.enteredMobNo);

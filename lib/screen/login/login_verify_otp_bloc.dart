@@ -45,7 +45,10 @@ class LoginVerifyOTPBloc extends BlocBase {
           AppComponentBase.getInstance()?.getSharedPreference().setUserDetail(
               key: SharedPreference().pospId,
               value: getStatusData.data?.data?.pospId.toString());
+
           if (getStatusData.data?.data?.pospStatus == 0) {
+            AppComponentBase.getInstance()?.getSharedPreference().setUserDetail(
+                key: SharedPreference().mobileNumber, value: mobileNo);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) {

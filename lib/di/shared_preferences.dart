@@ -2,6 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SharedPreference extends SharedPreferenceRepository {
   final String? deviceId = 'device_id';
+  final String? mobileNumber = 'mobile_num';
   final String? pospId = 'posp_id';
   final String? pospStatus = 'posp_status';
   final String? dashboard = 'dashboard';

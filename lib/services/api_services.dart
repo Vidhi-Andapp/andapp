@@ -216,6 +216,7 @@ class ApiServices extends ApiClient {
         http.MultipartRequest("POST", Uri.parse(ApiClient.registerPosp));
     for (var entry in body.entries) {
       request.fields[entry.key] = entry.value;
+      print(entry.value);
     }
 
     if (addressProof != null) {
@@ -256,9 +257,12 @@ class ApiServices extends ApiClient {
       request.files.add(await http.MultipartFile.fromPath(
         'other',
         other.path ?? "",
-        contentType: MediaType('application', 'application/pdf'),
+        contentType: MediaType(
+            other.extension == "pdf" ? 'application' : 'image',
+            '${other.extension}'),
       ));
     }
+
     var response = await postsMultipart(
       request,
       headers: getJsonHeader(),

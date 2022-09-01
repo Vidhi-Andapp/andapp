@@ -40,9 +40,10 @@ class PospRegistrationBloc extends BlocBase {
   TextEditingController bankAcHolderName = TextEditingController();
   PlatformFile? aadharFront, aadharBack, gst, pan, academicCerti;
   String? selectedSalutation = StringUtils.mr;
+  String? mobileNo;
   String? selectedGender = StringUtils.male;
   String? selectedCertificateType;
-  int? automatedManual;
+  int? automatedManual = 0;
   bool withGSTA = false;
 
   Future<String?> sendAadharOTP(BuildContext context) async {
@@ -167,13 +168,22 @@ class PospRegistrationBloc extends BlocBase {
         personalDetails.firstName = firstName.text;
         personalDetails.middleName = middleName.text;
         personalDetails.lastName = lastName.text;
-        personalDetails.gender = aadharMGender.text;
+
+        if (selectedGender == StringUtils.male) {
+          personalDetails.gender = "M";
+        } else {
+          personalDetails.gender = "F";
+        }
         kyc.preferenceType = "MM";
+        personalDetails.address = "";
+        personalDetails.dateOfBirth = "";
+        personalDetails.state = "";
+        personalDetails.city = "";
+        personalDetails.pincode = "";
       }
       personalDetails.referredById = "0";
       //personalDetails.referredType = "";
-
-      kyc.mobileNo = "";
+      kyc.mobileNo = mobileNo;
       kyc.whatsappNo = whatsappNumber.text;
       if (withGSTA) {
         kyc.accountType = StringUtils.personalWithGST;

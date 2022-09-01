@@ -13,6 +13,8 @@ class StringUtils {
       "You can update your registered mobile number with AndApp if your current mobile number is not working.";
   static const String updateMobileContent =
       "OTP will be sent to the registered Email ID";
+  static const String verifyOTPTitle =
+      "Enter the 5 digit number that we have sent to ";
   static const String regOtpContent =
       "OTP will be sent to aadhar registered mobile number.";
   static const String uploadContent =

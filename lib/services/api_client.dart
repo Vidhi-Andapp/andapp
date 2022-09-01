@@ -155,6 +155,7 @@ class ApiClient {
           AppComponentBase.getInstance()?.disableWidget(false);
 
           String bodyBytes = utf8.decode(response.bodyBytes);
+          debugPrint('request body : $body');
           debugPrint('response body : $bodyBytes');
           return bodyBytes;
         }
@@ -217,6 +218,7 @@ class ApiClient {
                   AppComponentBase.getInstance()?.disableWidget(false);
 
                   String bodyBytes = utf8.decode(response.bodyBytes);
+                  debugPrint('request body : $body');
                   debugPrint('response body : $bodyBytes');
                   return bodyBytes;
                 }
