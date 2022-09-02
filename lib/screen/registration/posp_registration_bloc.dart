@@ -12,6 +12,7 @@ import 'package:andapp/services/api_client.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class PospRegistrationBloc extends BlocBase {
   StreamController mainStreamController = StreamController.broadcast();
@@ -141,14 +142,14 @@ class PospRegistrationBloc extends BlocBase {
   }
 
   Future registerPosp(BuildContext context) async {
-    AppComponentBase.getInstance()
+    await AppComponentBase.getInstance()
         ?.getSharedPreference()
         .getUserDetail(key: SharedPreference().pospId)
-        .then((value) {
+        .then((pospId) async {
       RegistrationRequest registrationRequest = RegistrationRequest();
       PersonalDetails personalDetails = PersonalDetails();
       KYC kyc = KYC();
-      personalDetails.pospId = value;
+      personalDetails.pospId = pospId;
       personalDetails.userName = username.text;
       //personalDetails.salutation = "";
       personalDetails.emailId = email.text;
@@ -159,7 +160,11 @@ class PospRegistrationBloc extends BlocBase {
       personalDetails.lastName = lastName.text;*/
         personalDetails.gender = aadharAGender.text;
         personalDetails.address = aadharAAddress.text;
-        personalDetails.dateOfBirth = aadharABirthDate.text;
+        if (aadharABirthDate.text != null) {
+          DateTime birthDate =
+              DateFormat("yyyy-MM-dd").parse(aadharABirthDate.text);
+          personalDetails.dateOfBirth = birthDate.toString();
+        }
         personalDetails.state = "";
         personalDetails.city = "";
         personalDetails.pincode = " ";
@@ -207,7 +212,7 @@ class PospRegistrationBloc extends BlocBase {
       registrationRequest.kYC = [];
       registrationRequest.personalDetails!.add(personalDetails);
       registrationRequest.kYC!.add(kyc);
-      AppComponentBase.getInstance()
+      await AppComponentBase.getInstance()
           ?.getApiInterface()
           .getApiRepository()
           .registerPosp(
@@ -217,23 +222,35 @@ class PospRegistrationBloc extends BlocBase {
               gst: gst,
               education: academicCerti,
               data: jsonEncode(registrationRequest))
-          .then((registerPospData) {
+          .then((registerPospData) async {
         if (registerPospData != null &&
             registerPospData.resultflag == ApiClient.resultflagSuccess) {
+          /*await AppComponentBase.getInstance()
+              ?.getSharedPreference()
+              .getUserDetail(key: SharedPreference().pospId)
+              .then((value) async {99
+            print("posp_id : $value");
+            return Navigator.push(context,
+                MaterialPageRoute(builder: (context) {
+              return Dashboard(
+                pospId: value,
+              );
+            }));
+          });*/
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) {
+              return Dashboard(
+                pospId: pospId,
+              );
+            }),
+          );
           CommonToast.getInstance()?.displayToast(
               message:
                   registerPospData.messages ?? StringUtils.registerSuccess);
-          AppComponentBase.getInstance()
-              ?.getSharedPreference()
-              .getUserDetail(key: SharedPreference().pospId)
-              .then((value) =>
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return Dashboard(
-                      pospId: value,
-                    );
-                  })));
-          //return registerPospData.resultflag;
-        } else {
+        }
+        //return registerPospData.resultflag;
+        else {
           CommonToast.getInstance()?.displayToast(
               message:
                   registerPospData?.messages ?? StringUtils.someThingWentWrong);

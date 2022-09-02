@@ -100,7 +100,7 @@ class ApiRepositoryIml extends ApiRepository {
   }
 
   @override
-  Future<GetDashboard?> registerPosp(
+  Future<CommonData?> registerPosp(
       {PlatformFile? addressProof,
       PlatformFile? pan,
       PlatformFile? account,
@@ -195,7 +195,7 @@ abstract class ApiRepository {
       required String pospId,
       required List<AnswerList> ansList});
 
-  Future<GetDashboard?> registerPosp(
+  Future<CommonData?> registerPosp(
       {PlatformFile? addressProof,
       PlatformFile? pan,
       PlatformFile? account,

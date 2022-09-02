@@ -42,7 +42,8 @@ num? listElementsSum(List a) {
 class AadharValidator {
   bool validate(String aadharNum) {
     if (aadharNum.length == 12 && RegExp(r'^[0-9]+$').hasMatch(aadharNum)) {
-      try {
+      return true;
+      /*   try {
         i = aadharNum.length;
         j = 0;
         x = 0;
@@ -59,8 +60,9 @@ class AadharValidator {
           return false;
         }
       } on Exception catch (_) {
+        print(_);
         print("Invalid Aadhar Number");
-      }
+      }*/
     }
     return false;
   }

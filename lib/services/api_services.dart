@@ -199,7 +199,7 @@ class ApiServices extends ApiClient {
     return null;
   }
 
-  Future<GetDashboard?> registerPosp(
+  Future<CommonData?> registerPosp(
       {PlatformFile? addressProof,
       PlatformFile? pan,
       PlatformFile? account,
@@ -213,7 +213,7 @@ class ApiServices extends ApiClient {
     };
     //String jsonString = json.encode(body);
     var request =
-        http.MultipartRequest("POST", Uri.parse(ApiClient.registerPosp));
+        http.MultipartRequest("PUT", Uri.parse(ApiClient.registerPosp));
     for (var entry in body.entries) {
       request.fields[entry.key] = entry.value;
       print(entry.value);
@@ -270,7 +270,7 @@ class ApiServices extends ApiClient {
       isBackground: true,
     );
     if (response != null) {
-      var data = GetDashboard.fromJson(json.decode(response));
+      var data = CommonData.fromJson(json.decode(response));
       return data;
     }
     return null;

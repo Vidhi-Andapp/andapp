@@ -57,32 +57,34 @@ class LoginSendOTPBloc extends BlocBase {
       AppComponentBase.getInstance()
           ?.getApiInterface()
           .getApiRepository()
-          .registerDevice(mobileNo: mobNo.text, deviceId: deviceId)
-          .then((commonData) {
-        if (commonData != null &&
-            commonData.resultflag == ApiClient.resultflagSuccess) {
+          .commonSendOTP(mobileNo: mobNo.text)
+          .then((sendOTPDataResponse) {
+        if (sendOTPDataResponse != null &&
+            sendOTPDataResponse.resultflag == ApiClient.resultflagSuccess) {
           AppComponentBase.getInstance()
               ?.getApiInterface()
               .getApiRepository()
-              .commonSendOTP(mobileNo: mobNo.text)
-              .then((sendOTPData) {
-            if (sendOTPData != null &&
-                sendOTPData.resultflag == ApiClient.resultflagSuccess) {
+              .registerDevice(mobileNo: mobNo.text, deviceId: deviceId)
+              .then((commonData) {
+            if (commonData != null &&
+                commonData.resultflag == ApiClient.resultflagSuccess) {
               if (kDebugMode) {
-                print("OTP : ${sendOTPData.data?.oTP}");
+                print("OTP : ${sendOTPDataResponse.data?.oTP}");
               }
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) {
                   return LoginVerifyOTP(
-                      enteredMobNo: mobNo.text, otp: sendOTPData.data?.oTP);
+                      enteredMobNo: mobNo.text,
+                      otp: sendOTPDataResponse.data?.oTP);
                 }),
               );
             }
           });
         } else {
           CommonToast.getInstance()?.displayToast(
-              message: commonData?.messages ?? StringUtils.sendOTPFail);
+              message:
+                  sendOTPDataResponse?.messages ?? StringUtils.sendOTPFail);
         }
       });
     } else {

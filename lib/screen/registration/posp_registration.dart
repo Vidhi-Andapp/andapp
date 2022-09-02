@@ -174,7 +174,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
     AppComponentBase.getInstance()
         ?.getSharedPreference()
         .getUserDetail(key: SharedPreference().mobileNumber)
-        .then((value) => bloc.mobileNo = bloc.whatsappNumber = value);
+        .then((value) => bloc.mobileNo = bloc.whatsappNumber.text = value);
   }
 
   @override
@@ -403,7 +403,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                             )),
                                       ),
                                       SizedBox(
-                                        height: 536,
+                                        height: 564,
                                         child: TabBarView(
                                           children: [
                                             Column(
@@ -840,6 +840,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                               "Poppins",
                                                               //color: Colors.white
                                                             ),
+                                                            maxLines: 2,
                                                             validator: (val) {
                                                               if (val == null ||
                                                                   val.isEmpty) {

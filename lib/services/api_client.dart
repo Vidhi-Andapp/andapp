@@ -20,7 +20,7 @@ class ApiClient {
   final String urlEncodedHeaderValue = 'application/x-www-form-urlencoded';
   final String formHeaderValue =
       'multipart/form-data; boundary=<calculated when request is sent>';
-  var successResponse = [200, 400, 422];
+  var successResponse = [200, 201, 400, 422];
   static String otpTypeSMS = "sms";
   static String otpTypeEmail = "email";
 
@@ -41,7 +41,7 @@ class ApiClient {
   static String getPanData = "$baseUrl/api/mobileApi/GetPandata";
   static String getGstData = "$baseUrl/api/mobileApi/GetGSTdata";
   static String getBankData = "$baseUrl/api/mobileApi/GetBankdata";
-  static String registerPosp = "$baseUrl/api/mobileApi/PUTPospData";
+  static String registerPosp = "$baseUrl/api/APIPospMaster/PUTPospData";
   static String trainingDayURL = "$baseUrl/Mails/";
   static String getDashboard = "$baseUrl/api/mobileApi/GetDashboard";
   static String getProfile = "$baseUrl/api/mobileApi/GetProfile";
@@ -71,6 +71,7 @@ class ApiClient {
   Map<String, String> getFormHeader() {
     var header = <String, String>{};
     header[jsonHeaderName] = formHeaderValue;
+    header[headerAuthorization] = 'Bearer $bearerToken';
     return header;
   }
 
@@ -191,7 +192,7 @@ class ApiClient {
     }
   }
 
-  postsMultipart(http.MultipartRequest request,
+  Future postsMultipart(http.MultipartRequest request,
       {Map<String, String>? headers,
       dynamic body,
       Encoding? encoding,
@@ -207,26 +208,24 @@ class ApiClient {
       }
       AppComponentBase.getInstance()?.disableWidget(true);
       try {
-        request
-            .send()
-            .then((result) async {
-              http.Response.fromStream(result).then((response) {
-                if (successResponse.contains(response.statusCode)) {
-                  if (isProgressBar) {
-                    AppComponentBase.getInstance()?.showProgressDialog(false);
-                  }
-                  AppComponentBase.getInstance()?.disableWidget(false);
-
-                  String bodyBytes = utf8.decode(response.bodyBytes);
-                  debugPrint('request body : $body');
-                  debugPrint('response body : $bodyBytes');
-                  return bodyBytes;
-                }
-              });
-            })
-            .catchError((err) => print('error : $err'))
-            .whenComplete(() {});
-        /*
+        request.headers.addAll(headers);
+        var result = await request.send();
+        var response = await http.Response.fromStream(result);
+        if (successResponse.contains(response.statusCode)) {
+          if (isProgressBar) {
+            AppComponentBase.getInstance()?.showProgressDialog(false);
+          }
+          AppComponentBase.getInstance()?.disableWidget(false);
+          String bodyBytes = utf8.decode(response.bodyBytes);
+          debugPrint('request body : ${request.fields.values}');
+          debugPrint('response body : $bodyBytes');
+          return bodyBytes;
+        }
+        /* .catchError((err) => print('error : $err'))
+            .whenComplete(() {
+              */
+      } //);
+      /*
         print(response.body);
         if (response.statusCode != 200) return null;
         Map<String, dynamic> map = json.decode(response.body);
@@ -234,7 +233,7 @@ class ApiClient {
         //return List<Map<String, dynamic>>.from(json.decode(response.body));
         var responseStatus = json.decode(response.body);
         return responseStatus;*/
-      } catch (exception) {
+      catch (exception) {
         if (isProgressBar) {
           AppComponentBase.getInstance()?.showProgressDialog(false);
         }

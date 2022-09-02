@@ -198,17 +198,12 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                   onCodeSubmitted: (code) {
                                     _code = code;
                                     print("inside codesumbmitted : $code");
-                                    setState(() {});
+
+                                    ///setState(() {});
                                   },
                                   onCodeChanged: (code) {
                                     print("codechanged: $code");
                                     _code = code;
-                                    print("inside codeupdated : $code");
-                                    setState(() {});
-                                    /*if (code.length == 5) {
-                                      FocusScope.of(context)
-                                          .requestFocus(FocusNode());
-                                    }*/
                                   },
                                 ),
                               ),

@@ -174,8 +174,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                     : pospData?.academicDetail == "reject"
                         ? SvgImages.iconReject
                         : SvgImages.iconPending,
-                height: 16,
-                width: 16),
+                height: 30,
+                width: 30),
           ],
         ),
         const SizedBox(
@@ -192,7 +192,10 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
             SizedBox(
                 width: MediaQuery.of(context).size.width * 0.35,
                 child: const Text(StringUtils.iibApproved)),
-            SvgPicture.asset(SvgImages.iconPending, height: 30, width: 30),
+            const SizedBox(
+              width: 6,
+            ),
+            SvgPicture.asset(SvgImages.iconReject, height: 21, width: 21),
           ],
         ),
       ],
