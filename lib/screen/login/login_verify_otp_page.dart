@@ -5,13 +5,12 @@ import 'package:andapp/common/pink_border_button.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/screen/login/login_verify_otp_bloc.dart';
 import 'package:andapp/screen/login/timer_button.dart';
+import 'package:andapp/screen/support/custom_speed_dial.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:sms_autofill/sms_autofill.dart';
-
-import '../support/custom_speed_dial.dart';
 
 class LoginVerifyOTP extends StatefulWidget {
   final String enteredMobNo;
@@ -43,8 +42,6 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
       ..addListener(() {
         setState(() {});
       });
-    //getSignature();
-    //listenForCode();
 
     SmsAutoFill().getAppSignature.then((signature) {
       setState(() {
@@ -197,18 +194,16 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                   currentCode: _code,
                                   onCodeSubmitted: (code) {
                                     _code = code;
-                                    print("inside codesumbmitted : $code");
-
-                                    ///setState(() {});
+                                    //print("inside code submitted : $code");
                                   },
                                   onCodeChanged: (code) {
-                                    print("codechanged: $code");
+                                    //print("code changed: $code");
                                     _code = code;
                                   },
                                 ),
                               ),
                               TimerButton(
-                                label: "Resend OTP",
+                                label: StringUtils.resendOtp,
                                 timeOutInSeconds: 120,
                                 onPressed: () async {
                                   var otp = await bloc.reSendOTP(
@@ -216,6 +211,7 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                   if (otp != null) {
                                     otpToCompare = otp;
                                   }
+                                  setState(() {});
                                 },
                                 disabledColor: appTheme.dtBlackColor,
                                 color: appTheme.dtBlackColor,
@@ -236,6 +232,7 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                         if (form!.validate()) {
                                           form.save();
                                           //bloc.verifyOTP(context);
+                                          print("otpToCompare : $otpToCompare");
                                           if (otpToCompare != null &&
                                               _code ==
                                                   otpToCompare.toString()) {

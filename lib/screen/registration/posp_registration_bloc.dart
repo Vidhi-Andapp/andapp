@@ -7,7 +7,6 @@ import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/di/app_component_base.dart';
 import 'package:andapp/di/shared_preferences.dart';
 import 'package:andapp/model/registration_request.dart';
-import 'package:andapp/screen/dashboard/dashboard.dart';
 import 'package:andapp/services/api_client.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -141,11 +140,11 @@ class PospRegistrationBloc extends BlocBase {
     });
   }
 
-  Future registerPosp(BuildContext context) async {
-    await AppComponentBase.getInstance()
+  Future<String?> registerPosp(BuildContext context) async {
+    var pospId = await AppComponentBase.getInstance()
         ?.getSharedPreference()
-        .getUserDetail(key: SharedPreference().pospId)
-        .then((pospId) async {
+        .getUserDetail(key: SharedPreference().pospId);
+    if (pospId != null) {
       RegistrationRequest registrationRequest = RegistrationRequest();
       PersonalDetails personalDetails = PersonalDetails();
       KYC kyc = KYC();
@@ -160,10 +159,11 @@ class PospRegistrationBloc extends BlocBase {
       personalDetails.lastName = lastName.text;*/
         personalDetails.gender = aadharAGender.text;
         personalDetails.address = aadharAAddress.text;
-        if (aadharABirthDate.text != null) {
+        if (aadharABirthDate.text.isNotEmpty) {
           DateTime birthDate =
-              DateFormat("yyyy-MM-dd").parse(aadharABirthDate.text);
-          personalDetails.dateOfBirth = birthDate.toString();
+              DateFormat("dd-MMM-yyyy").parse(aadharABirthDate.text);
+          var outputFormat = DateFormat('yyyy-MM-dd');
+          personalDetails.dateOfBirth = outputFormat.format(birthDate);
         }
         personalDetails.state = "";
         personalDetails.city = "";
@@ -212,7 +212,7 @@ class PospRegistrationBloc extends BlocBase {
       registrationRequest.kYC = [];
       registrationRequest.personalDetails!.add(personalDetails);
       registrationRequest.kYC!.add(kyc);
-      await AppComponentBase.getInstance()
+      var registerPospData = await AppComponentBase.getInstance()
           ?.getApiInterface()
           .getApiRepository()
           .registerPosp(
@@ -221,43 +221,21 @@ class PospRegistrationBloc extends BlocBase {
               pan: pan,
               gst: gst,
               education: academicCerti,
-              data: jsonEncode(registrationRequest))
-          .then((registerPospData) async {
-        if (registerPospData != null &&
-            registerPospData.resultflag == ApiClient.resultflagSuccess) {
-          /*await AppComponentBase.getInstance()
-              ?.getSharedPreference()
-              .getUserDetail(key: SharedPreference().pospId)
-              .then((value) async {99
-            print("posp_id : $value");
-            return Navigator.push(context,
-                MaterialPageRoute(builder: (context) {
-              return Dashboard(
-                pospId: value,
-              );
-            }));
-          });*/
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) {
-              return Dashboard(
-                pospId: pospId,
-              );
-            }),
-          );
-          CommonToast.getInstance()?.displayToast(
-              message:
-                  registerPospData.messages ?? StringUtils.registerSuccess);
-        }
-        //return registerPospData.resultflag;
-        else {
-          CommonToast.getInstance()?.displayToast(
-              message:
-                  registerPospData?.messages ?? StringUtils.someThingWentWrong);
-        }
-      });
-    });
-    //return null;
+              data: jsonEncode(registrationRequest));
+      if (registerPospData != null &&
+          registerPospData.resultflag == ApiClient.resultflagSuccess) {
+        CommonToast.getInstance()?.displayToast(
+            message: registerPospData.messages ?? StringUtils.registerSuccess);
+      }
+      //return registerPospData.resultflag;
+      else {
+        CommonToast.getInstance()?.displayToast(
+            message:
+                registerPospData?.messages ?? StringUtils.someThingWentWrong);
+        return pospId;
+      }
+    }
+    return null;
   }
 
   @override

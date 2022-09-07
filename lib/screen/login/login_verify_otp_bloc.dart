@@ -15,21 +15,19 @@ class LoginVerifyOTPBloc extends BlocBase {
   Stream get mainStream => mainStreamController.stream;
   TextEditingController otp = TextEditingController();
 
-  Future<int?>? reSendOTP(BuildContext context, String mobNo) {
-    AppComponentBase.getInstance()
+  Future<int?>? reSendOTP(BuildContext context, String mobNo) async {
+    var sendOTPData = await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .commonSendOTP(mobileNo: mobNo)
-        .then((sendOTPData) {
-      if (sendOTPData != null &&
-          sendOTPData.resultflag == ApiClient.resultflagSuccess) {
-        if (kDebugMode) {
-          print("OTP : ${sendOTPData.data?.oTP}");
-          //otp.text = "${sendOTPData.data?.oTP}";
-          return sendOTPData.data?.oTP;
-        }
+        .commonSendOTP(mobileNo: mobNo);
+    if (sendOTPData != null &&
+        sendOTPData.resultflag == ApiClient.resultflagSuccess) {
+      if (kDebugMode) {
+        print("OTP : ${sendOTPData.data?.oTP}");
+        //otp.text = "${sendOTPData.data?.oTP}";
+        return sendOTPData.data?.oTP;
       }
-    });
+    }
     return null;
   }
 
@@ -49,20 +47,17 @@ class LoginVerifyOTPBloc extends BlocBase {
           if (getStatusData.data?.data?.pospStatus == 0) {
             AppComponentBase.getInstance()?.getSharedPreference().setUserDetail(
                 key: SharedPreference().mobileNumber, value: mobileNo);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) {
-                return const DocumentPage();
-              }),
-            );
+
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const DocumentPage()),
+                (Route<dynamic> route) => false);
           } else if (getStatusData.data?.data?.pospStatus == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) {
-                return Dashboard(
-                    pospId: getStatusData.data?.data?.pospId.toString() ?? "");
-              }),
-            );
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    builder: (context) => Dashboard(
+                        pospId:
+                            getStatusData.data?.data?.pospId.toString() ?? "")),
+                (Route<dynamic> route) => false);
           }
         }
       }

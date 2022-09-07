@@ -6,6 +6,7 @@ import 'package:andapp/common/pink_border_button.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/di/app_component_base.dart';
 import 'package:andapp/di/shared_preferences.dart';
+import 'package:andapp/screen/dashboard/dashboard.dart';
 import 'package:andapp/screen/registration/posp_registration_bloc.dart';
 import 'package:andapp/screen/registration/registration_phases.dart';
 import 'package:andapp/services/api_client.dart';
@@ -32,15 +33,16 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
       isAadharOtpEnabled = false;
   String nextButton = StringUtils.next;
   final GlobalKey<RegistrationPhasesState> _keyRPhases = GlobalKey();
-  final sendAadharOTPKey = GlobalKey<FormState>(),
+  final personalDetailsKey = GlobalKey<FormState>(),
+      sendAadharOTPKey = GlobalKey<FormState>(),
       validateAadharOTPKey = GlobalKey<FormState>(),
       panValidateKey = GlobalKey<FormState>(),
       gstValidateKey = GlobalKey<FormState>(),
       bankValidateKey = GlobalKey<FormState>(),
       kycAutomateKey = GlobalKey<FormState>(),
       kycManualKey = GlobalKey<FormState>(),
-      accountAutomateKey = GlobalKey<FormState>(),
-      accountManualKey = GlobalKey<FormState>(),
+  /* accountAutomateKey = GlobalKey<FormState>(),
+      accountManualKey = GlobalKey<FormState>(),*/
       bankKey = GlobalKey<FormState>();
 
   String titleAadharFront = StringUtils.aadharFront,
@@ -157,16 +159,11 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
     }
     if (sizeInMB > 4) {
       CommonToast.getInstance()
-          ?.displayToast(message: "Please select file upto 4 MB only");
+          ?.displayToast(message: StringUtils.uploadContent);
       return null;
     }
     return result.files.first;
   }
-
-  /* AppComponentBase.getInstance()
-      ?.getSharedPreference()
-      .getUserDetail(key: SharedPreference().pospId)
-      .then((value) {*/
 
   @override
   void initState() {
@@ -238,128 +235,145 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             isPersonalDetailsVisible
-                                ? Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 32),
-                                  child: TextFormField(
-                                    controller:
-                                    bloc.username,
-                                    decoration: InputDecoration(
-                                        labelText: StringUtils.userName,
-                                        labelStyle: TextStyle(
-                                            color: Theme
-                                                .of(context)
-                                                .textTheme
-                                                .bodyText2
-                                                ?.color),
-                                        fillColor: Colors.white,
-                                        enabledBorder: Theme
-                                            .of(context)
-                                            .inputDecorationTheme
-                                            .border,
-                                        focusedBorder: Theme
-                                            .of(context)
-                                            .inputDecorationTheme
-                                            .border),
-                                    validator: (val) {
-                                      return null;
-                                    },
-                                    keyboardType: TextInputType.name,
-                                    style: const TextStyle(
-                                      fontFamily: "Poppins",
-                                      //color: Colors.white
+                                ? Form(
+                              key: personalDetailsKey,
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 32),
+                                    child: TextFormField(
+                                      controller:
+                                      bloc.username,
+                                      decoration: InputDecoration(
+                                          labelText: StringUtils.userName,
+                                          labelStyle: TextStyle(
+                                              color: Theme
+                                                  .of(context)
+                                                  .textTheme
+                                                  .bodyText2
+                                                  ?.color),
+                                          fillColor: Colors.white,
+                                          enabledBorder: Theme
+                                              .of(context)
+                                              .inputDecorationTheme
+                                              .border,
+                                          focusedBorder: Theme
+                                              .of(context)
+                                              .inputDecorationTheme
+                                              .border),
+                                      validator: (val) {
+                                        String pattern =
+                                            r'^[a-zA-Z0-9]([._](?![._])|[a-zA-Z0-9]){6,18}[a-zA-Z0-9]$';
+                                        RegExp regExp = RegExp(pattern);
+                                        if (val == null || val.isEmpty) {
+                                          return StringUtils
+                                              .valEmptyUsername;
+                                        } else if (
+                                        !regExp.hasMatch(val)) {
+                                          return StringUtils
+                                              .valValidUsername;
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      keyboardType: TextInputType.name,
+                                      style: const TextStyle(
+                                        fontFamily: "Poppins",
+                                        //color: Colors.white
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 32),
-                                  child: TextFormField(
-                                    controller:
-                                    bloc.email,
-                                    decoration: InputDecoration(
-                                        labelText: StringUtils.emailID,
-                                        labelStyle: TextStyle(
-                                            color: Theme
-                                                .of(context)
-                                                .textTheme
-                                                .bodyText2
-                                                ?.color),
-                                        fillColor: Colors.white,
-                                        enabledBorder: Theme
-                                            .of(context)
-                                            .inputDecorationTheme
-                                            .border,
-                                        focusedBorder: Theme
-                                            .of(context)
-                                            .inputDecorationTheme
-                                            .border),
-                                    validator: (val) {
-                                      if (val == null || val.isEmpty) {
-                                        return "Please enter email Id";
-                                      } else if (!EmailValidator.validate(
-                                          val, true)) {
-                                        return "Please enter valid email Id";
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                    keyboardType:
-                                    TextInputType.emailAddress,
-                                    style: const TextStyle(
-                                      fontFamily: "Poppins",
-                                      //color: Colors.white
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 32),
+                                    child: TextFormField(
+                                      controller:
+                                      bloc.email,
+                                      decoration: InputDecoration(
+                                          labelText: StringUtils.emailID,
+                                          labelStyle: TextStyle(
+                                              color: Theme
+                                                  .of(context)
+                                                  .textTheme
+                                                  .bodyText2
+                                                  ?.color),
+                                          fillColor: Colors.white,
+                                          enabledBorder: Theme
+                                              .of(context)
+                                              .inputDecorationTheme
+                                              .border,
+                                          focusedBorder: Theme
+                                              .of(context)
+                                              .inputDecorationTheme
+                                              .border),
+                                      validator: (val) {
+                                        if (val == null || val.isEmpty) {
+                                          return StringUtils.valEmptyEmailId;
+                                        } else if (!EmailValidator.validate(
+                                            val, true)) {
+                                          return StringUtils.valValidEmailId;
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      keyboardType:
+                                      TextInputType.emailAddress,
+                                      style: const TextStyle(
+                                        fontFamily: "Poppins",
+                                        //color: Colors.white
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 32),
-                                  child: TextFormField(
-                                    controller:
-                                    bloc.whatsappNumber,
-                                    decoration: InputDecoration(
-                                        labelText:
-                                        StringUtils.whatsappNumber,
-                                        labelStyle: TextStyle(
-                                            color: Theme
-                                                .of(context)
-                                                .textTheme
-                                                .bodyText2
-                                                ?.color),
-                                        fillColor: Colors.white,
-                                        enabledBorder: Theme
-                                            .of(context)
-                                            .inputDecorationTheme
-                                            .border,
-                                        focusedBorder: Theme
-                                            .of(context)
-                                            .inputDecorationTheme
-                                            .border),
-                                    validator: (val) {
-                                      String pattern =
-                                          r'(^(?:[+0]9)?[0-9]{10,12}$)';
-                                      RegExp regExp = RegExp(pattern);
-                                      if (val == null || val.isEmpty) {
-                                        return "Please enter whatsapp number";
-                                      } else if (val.length != 10 ||
-                                          !regExp.hasMatch(val)) {
-                                        return "Please enter valid whatsapp number";
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                    maxLength: 10,
-                                    keyboardType: TextInputType.phone,
-                                    style: const TextStyle(
-                                      fontFamily: "Poppins",
-                                      //color: Colors.white
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 32),
+                                    child: TextFormField(
+                                      controller:
+                                      bloc.whatsappNumber,
+                                      decoration: InputDecoration(
+                                          labelText:
+                                          StringUtils.whatsappNumber,
+                                          labelStyle: TextStyle(
+                                              color: Theme
+                                                  .of(context)
+                                                  .textTheme
+                                                  .bodyText2
+                                                  ?.color),
+                                          fillColor: Colors.white,
+                                          enabledBorder: Theme
+                                              .of(context)
+                                              .inputDecorationTheme
+                                              .border,
+                                          focusedBorder: Theme
+                                              .of(context)
+                                              .inputDecorationTheme
+                                              .border),
+                                      validator: (val) {
+                                        String pattern =
+                                            r'(^(?:[+0]9)?[0-9]{10,12}$)';
+                                        RegExp regExp = RegExp(pattern);
+                                        if (val == null || val.isEmpty) {
+                                          return StringUtils
+                                              .valEmptyWhatsappNumber;
+                                        } else if (val.length != 10 ||
+                                            !regExp.hasMatch(val)) {
+                                          return StringUtils
+                                              .valValidWhatsappNumber;
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      maxLength: 10,
+                                      keyboardType: TextInputType.phone,
+                                      style: const TextStyle(
+                                        fontFamily: "Poppins",
+                                        //color: Colors.white
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             )
                                 : Container(),
                             RegistrationPhases(
@@ -419,6 +433,15 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                       controller:
                                                       bloc.aadharNumber,
                                                       onEditingComplete: () {
+                                                        bloc.otp.clear();
+                                                        bloc.aadharAName
+                                                            .clear();
+                                                        bloc.aadharAGender
+                                                            .clear();
+                                                        bloc.aadharABirthDate
+                                                            .clear();
+                                                        bloc.aadharAAddress
+                                                            .clear();
                                                         isAadharOtpEnabled =
                                                         false;
                                                         setState(() {
@@ -495,13 +518,15 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                         AadharValidator();
                                                         if (val == null ||
                                                             val.isEmpty) {
-                                                          return "Please enter aadhar number";
+                                                          return StringUtils
+                                                              .valEmptyAadharNumber;
                                                         } else if (val.length <
                                                             12 ||
                                                             !aadharValidator
                                                                 .validate(
                                                                 val)) {
-                                                          return "Please enter valid aadhar number";
+                                                          return StringUtils
+                                                              .valValidAadharNumber;
                                                         } else {
                                                           return null;
                                                         }
@@ -584,13 +609,32 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                               .inputDecorationTheme
                                                               .border),
                                                       validator: (val) {
-                                                        // ignore: prefer_is_empty
-                                                        if (val?.length == 0 &&
-                                                            val?.length != 6) {
-                                                          return "Please enter valid otp";
+                                                        String pattern = r"^[0-9]{6}$";
+                                                        RegExp regExp = RegExp(
+                                                            pattern);
+                                                        if (val == null || val
+                                                            .isEmpty) {
+                                                          return StringUtils
+                                                              .valEmptyOtp;
+                                                        } else if (
+                                                        !regExp.hasMatch(
+                                                            val)) {
+                                                          return StringUtils
+                                                              .valValidOtp;
                                                         } else {
                                                           return null;
                                                         }
+                                                      },
+                                                      onFieldSubmitted: (
+                                                          value) {
+                                                        bloc.aadharAName
+                                                            .clear();
+                                                        bloc.aadharAGender
+                                                            .clear();
+                                                        bloc.aadharABirthDate
+                                                            .clear();
+                                                        bloc.aadharAAddress
+                                                            .clear();
                                                       },
                                                       maxLength: 6,
                                                       keyboardType:
@@ -676,13 +720,11 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                 val.isEmpty) {
                                                               return StringUtils
                                                                   .valEmptyAadharDetails;
-                                                            } else if (val
-                                                                .length !=
-                                                                5 ||
-                                                                !ApiClient
-                                                                    .nameRegExp
-                                                                    .hasMatch(
-                                                                    val)) {
+                                                            } else if (
+                                                            !ApiClient
+                                                                .nameRegExp
+                                                                .hasMatch(
+                                                                val)) {
                                                               return StringUtils
                                                                   .valEmptyAadharDetails;
                                                             } else {
@@ -733,13 +775,11 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                   val.isEmpty) {
                                                                 return StringUtils
                                                                     .valEmptyAadharDetails;
-                                                              } else if (val
-                                                                  .length !=
-                                                                  5 ||
-                                                                  !ApiClient
-                                                                      .nameRegExp
-                                                                      .hasMatch(
-                                                                      val)) {
+                                                              } else if (
+                                                              !ApiClient
+                                                                  .nameRegExp
+                                                                  .hasMatch(
+                                                                  val)) {
                                                                 return StringUtils
                                                                     .valEmptyAadharDetails;
                                                               } else {
@@ -789,13 +829,11 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                   val.isEmpty) {
                                                                 return StringUtils
                                                                     .valEmptyAadharDetails;
-                                                              } else if (val
-                                                                  .length !=
-                                                                  5 ||
-                                                                  !ApiClient
-                                                                      .nameRegExp
-                                                                      .hasMatch(
-                                                                      val)) {
+                                                              } else if (
+                                                              !ApiClient
+                                                                  .nameRegExp
+                                                                  .hasMatch(
+                                                                  val)) {
                                                                 return StringUtils
                                                                     .valEmptyAadharDetails;
                                                               } else {
@@ -846,13 +884,11 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                   val.isEmpty) {
                                                                 return StringUtils
                                                                     .valEmptyAadharDetails;
-                                                              } else if (val
-                                                                  .length !=
-                                                                  5 ||
-                                                                  !ApiClient
-                                                                      .nameRegExp
-                                                                      .hasMatch(
-                                                                      val)) {
+                                                              } else if (
+                                                              !ApiClient
+                                                                  .nameRegExp
+                                                                  .hasMatch(
+                                                                  val)) {
                                                                 return StringUtils
                                                                     .valEmptyAadharDetails;
                                                               } else {
@@ -869,48 +905,6 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                               key: kycManualKey,
                                               child: Column(
                                                 children: [
-                                                  /* Padding(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        vertical: 8,
-                                                        horizontal: 32),
-                                                    child: TextFormField(
-                                                      decoration: InputDecoration(
-                                                          labelText: StringUtils
-                                                              .salutation,
-                                                          labelStyle: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .bodyText2
-                                                                  ?.color),
-                                                          fillColor:
-                                                              Colors.white,
-                                                          enabledBorder: Theme
-                                                                  .of(context)
-                                                              .inputDecorationTheme
-                                                              .border,
-                                                          focusedBorder: Theme
-                                                                  .of(context)
-                                                              .inputDecorationTheme
-                                                              .border),
-                                                      validator: (val) {
-                                                        // ignore: prefer_is_empty
-                                                        if (val?.length == 0 &&
-                                                            val?.length != 10) {
-                                                          return "Please enter valid salutation";
-                                                        } else {
-                                                          return null;
-                                                        }
-                                                      },
-                                                      keyboardType:
-                                                          TextInputType.text,
-                                                      style: const TextStyle(
-                                                        fontFamily: "Poppins",
-                                                        //color: Colors.white
-                                                      ),
-                                                    ),
-                                                  ),*/
                                                   Padding(
                                                     padding: const EdgeInsets
                                                         .symmetric(
@@ -1108,7 +1102,20 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                               .of(context)
                                                               .inputDecorationTheme
                                                               .border),
-                                                      validator: (val) {},
+                                                      validator: (val) {
+                                                        if (val == null ||
+                                                            val.isEmpty) {
+                                                          return StringUtils
+                                                              .valEmptyFirstName;
+                                                        } else if (!ApiClient
+                                                            .nameRegExp
+                                                            .hasMatch(
+                                                            val)) {
+                                                          return StringUtils
+                                                              .valValidFirstName;
+                                                        }
+                                                        return null;
+                                                      },
                                                       keyboardType:
                                                       TextInputType.name,
                                                       style: const TextStyle(
@@ -1145,7 +1152,20 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                               .of(context)
                                                               .inputDecorationTheme
                                                               .border),
-                                                      validator: (val) {},
+                                                      validator: (val) {
+                                                        if (val == null ||
+                                                            val.isEmpty) {
+                                                          return StringUtils
+                                                              .valEmptyMiddleName;
+                                                        } else if (!ApiClient
+                                                            .nameRegExp
+                                                            .hasMatch(
+                                                            val)) {
+                                                          return StringUtils
+                                                              .valValidMiddleName;
+                                                        }
+                                                        return null;
+                                                      },
                                                       keyboardType:
                                                       TextInputType.name,
                                                       style: const TextStyle(
@@ -1182,7 +1202,20 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                               .of(context)
                                                               .inputDecorationTheme
                                                               .border),
-                                                      validator: (val) {},
+                                                      validator: (val) {
+                                                        if (val == null ||
+                                                            val.isEmpty) {
+                                                          return StringUtils
+                                                              .valEmptyLastName;
+                                                        } else if (!ApiClient
+                                                            .nameRegExp
+                                                            .hasMatch(
+                                                            val)) {
+                                                          return StringUtils
+                                                              .valValidLastName;
+                                                        }
+                                                        return null;
+                                                      },
                                                       keyboardType:
                                                       TextInputType.name,
                                                       style: const TextStyle(
@@ -1191,41 +1224,6 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                       ),
                                                     ),
                                                   ),
-                                                  /* Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        vertical: 8,
-                                                        horizontal: 32),
-                                                    child: TextFormField(
-                                                      decoration: InputDecoration(
-                                                          labelText: StringUtils
-                                                              .gender,
-                                                          labelStyle: TextStyle(
-                                                              color: Theme
-                                                                  .of(
-                                                                  context)
-                                                                  .textTheme
-                                                                  .bodyText2
-                                                                  ?.color),
-                                                          fillColor:
-                                                          Colors.white,
-                                                          enabledBorder: Theme
-                                                              .of(context)
-                                                              .inputDecorationTheme
-                                                              .border,
-                                                          focusedBorder: Theme
-                                                              .of(context)
-                                                              .inputDecorationTheme
-                                                              .border),
-                                                      validator: (val) {},
-                                                      keyboardType:
-                                                      TextInputType.text,
-                                                      style: const TextStyle(
-                                                        fontFamily: "Poppins",
-                                                        //color: Colors.white
-                                                      ),
-                                                    ),
-                                                  ),*/
                                                   Padding(
                                                     padding: const EdgeInsets
                                                         .symmetric(
@@ -1626,30 +1624,33 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                         child: SizedBox(
                                             height: 50,
                                             child: TabBar(
-                                              indicatorColor:
-                                              appTheme.primaryColor,
-                                              labelColor:
-                                              appTheme.primaryColor,
-                                              indicatorPadding:
-                                              const EdgeInsets
-                                                  .symmetric(
-                                                  horizontal: 16),
-                                              isScrollable: true,
-                                              unselectedLabelColor:
-                                              Colors.white,
-                                              labelStyle: const TextStyle(
-                                                  fontSize: 16),
-                                              unselectedLabelStyle:
-                                              const TextStyle(
-                                                  fontSize: 16),
-                                              tabs: const [
-                                                Tab(text: "Automated"),
-                                                Tab(text: "Manual"),
-                                              ],
+                                                indicatorColor:
+                                                appTheme.primaryColor,
+                                                labelColor:
+                                                appTheme.primaryColor,
+                                                indicatorPadding:
+                                                const EdgeInsets
+                                                    .symmetric(
+                                                    horizontal: 16),
+                                                isScrollable: true,
+                                                unselectedLabelColor:
+                                                Colors.white,
+                                                labelStyle: const TextStyle(
+                                                    fontSize: 16),
+                                                unselectedLabelStyle:
+                                                const TextStyle(
+                                                    fontSize: 16),
+                                                tabs: const [
+                                                  Tab(text: "Automated"),
+                                                  Tab(text: "Manual"),
+                                                ],
+                                                onTap: (int? value) {
+                                                  bloc.automatedManual = value;
+                                                }
                                             )),
                                       ),
                                       SizedBox(
-                                        height: 300,
+                                        height: 320,
                                         child: TabBarView(
                                           children: [
                                             Column(
@@ -1764,18 +1765,26 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                               if (val ==
                                                                   null ||
                                                                   val.isEmpty) {
-                                                                return "Please enter GST number";
-                                                              } else
-                                                              if (val.length <
-                                                                  15 ||
-                                                                  !gstValidator
-                                                                      .validate(
-                                                                      val)) {
-                                                                return "Please enter valid GST number";
+                                                                return StringUtils
+                                                                    .valEmptyGstDetails;
+                                                              } else if (
+                                                              !gstValidator
+                                                                  .validate(
+                                                                  val)) {
+                                                                return StringUtils
+                                                                    .valValidGSTNumber;
                                                               } else {
                                                                 return null;
                                                               }
                                                             },
+                                                            onFieldSubmitted: (
+                                                                value) {
+                                                              bloc.gstName
+                                                                  .clear();
+                                                              bloc.gstPanNumber
+                                                                  .clear();
+                                                            },
+                                                            maxLength: 15,
                                                             keyboardType:
                                                             TextInputType
                                                                 .text,
@@ -1824,15 +1833,19 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                           ),
                                                           validator:
                                                               (val) {
-                                                            // ignore: prefer_is_empty
-                                                            if (val?.length ==
-                                                                0 &&
-                                                                val?.length !=
-                                                                    10) {
-                                                              return "Please enter valid mobile number";
-                                                            } else {
-                                                              return null;
+                                                            if (val == null ||
+                                                                val.isEmpty) {
+                                                              return StringUtils
+                                                                  .valEmptyGSTName;
+                                                            } else
+                                                            if (!ApiClient
+                                                                .nameRegExp
+                                                                .hasMatch(
+                                                                val)) {
+                                                              return StringUtils
+                                                                  .valValidGSTName;
                                                             }
+                                                            return null;
                                                           },
                                                           keyboardType:
                                                           TextInputType
@@ -1887,17 +1900,22 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                             if (val ==
                                                                 null ||
                                                                 val.isEmpty) {
-                                                              return "Please enter PAN number";
-                                                            } else if (val
-                                                                .length <
-                                                                10 ||
-                                                                !panValidator
-                                                                    .validate(
-                                                                    val)) {
-                                                              return "Please enter valid PAN number";
+                                                              return StringUtils
+                                                                  .valEmptyPANNumber;
+                                                            } else if (
+                                                            !panValidator
+                                                                .validate(
+                                                                val)) {
+                                                              return StringUtils
+                                                                  .valValidPANNumber;
                                                             } else {
                                                               return null;
                                                             }
+                                                          },
+                                                          onFieldSubmitted: (
+                                                              value) {
+                                                            bloc.panNumber
+                                                                .clear();
                                                           },
                                                           keyboardType:
                                                           TextInputType
@@ -1978,12 +1996,20 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                     .border),
                                                             validator:
                                                                 (val) {
-                                                              // ignore: prefer_is_empty
-                                                              if (val?.length ==
-                                                                  0 &&
-                                                                  val?.length !=
-                                                                      10) {
-                                                                return "Please enter valid mobile number";
+                                                              PANValidator
+                                                              panValidator =
+                                                              PANValidator();
+                                                              if (val ==
+                                                                  null ||
+                                                                  val.isEmpty) {
+                                                                return StringUtils
+                                                                    .valEmptyPANNumber;
+                                                              } else if (
+                                                              !panValidator
+                                                                  .validate(
+                                                                  val)) {
+                                                                return StringUtils
+                                                                    .valValidPANNumber;
                                                               } else {
                                                                 return null;
                                                               }
@@ -2037,15 +2063,19 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                           ),
                                                           validator:
                                                               (val) {
-                                                            // ignore: prefer_is_empty
-                                                            if (val?.length ==
-                                                                0 &&
-                                                                val?.length !=
-                                                                    10) {
-                                                              return "Please enter valid mobile number";
-                                                            } else {
-                                                              return null;
+                                                            if (val == null ||
+                                                                val.isEmpty) {
+                                                              return StringUtils
+                                                                  .valEmptyPANName;
+                                                            } else
+                                                            if (!ApiClient
+                                                                .nameRegExp
+                                                                .hasMatch(
+                                                                val)) {
+                                                              return StringUtils
+                                                                  .valValidPANName;
                                                             }
+                                                            return null;
                                                           },
                                                           keyboardType:
                                                           TextInputType
@@ -2188,7 +2218,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                           ),
                                                         ),
                                                         const SizedBox(
-                                                          height: 8,
+                                                          height: 16,
                                                         ),
                                                       ],
                                                     )
@@ -2438,14 +2468,16 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                   RegExp(pattern);
                                                   if (val == null ||
                                                       val.isEmpty) {
-                                                    return "Please enter Bank Account Number";
+                                                    return StringUtils
+                                                        .valEmptyBankAcNumber;
                                                   } else if (val
                                                       .length <
                                                       9 ||
                                                       !regExp
                                                           .hasMatch(
                                                           val)) {
-                                                    return "Please enter valid Bank Account Number";
+                                                    return StringUtils
+                                                        .valValidBankAcNumber;
                                                   } else {
                                                     return null;
                                                   }
@@ -2529,17 +2561,22 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                   RegExp(pattern);
                                                   if (val == null ||
                                                       val.isEmpty) {
-                                                    return "Please enter IFSC Code";
+                                                    return StringUtils
+                                                        .valEmptyIFSCCode;
                                                   } else if (val
                                                       .length !=
                                                       11 ||
                                                       regExp
                                                           .hasMatch(
                                                           val)) {
-                                                    return "Please enter valid IFSC Code";
+                                                    return StringUtils
+                                                        .valValidIFSCCode;
                                                   } else {
                                                     return null;
                                                   }
+                                                },
+                                                onFieldSubmitted: (value) {
+                                                  bloc.bankAcHolderName.clear();
                                                 },
                                                 maxLength: 11,
                                                 keyboardType:
@@ -2580,7 +2617,20 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                 .speedDialLabelBgDT,
                                             filled: true,
                                           ),
-                                          validator: (val) {},
+                                          validator: (val) {
+                                            if (val == null ||
+                                                val.isEmpty) {
+                                              return StringUtils
+                                                  .valEmptyACHolderName;
+                                            } else if (!ApiClient
+                                                .nameRegExp
+                                                .hasMatch(
+                                                val)) {
+                                              return StringUtils
+                                                  .valValidACHolderName;
+                                            }
+                                            return null;
+                                          },
                                           keyboardType:
                                           TextInputType.name,
                                           style: const TextStyle(
@@ -2998,18 +3048,139 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
     }
   }
 
-  void goNext(BuildContext context) {
+  void goNext(BuildContext context) async {
     if (selectedIndex != 4) {
-      selectedIndex++;
-      isPersonalDetailsVisible = false;
-      if (selectedIndex == 4) {
-        nextButton = StringUtils.submit;
+      switch (selectedIndex) {
+        case 1:
+          {
+            if (bloc.automatedManual == 0) {
+              if (!(personalDetailsKey
+                  .currentState
+                  ?.validate() ??
+                  false)) {
+                return;
+              }
+              else if (!((sendAadharOTPKey.currentState?.validate() ?? false) &&
+                  (validateAadharOTPKey.currentState?.validate() ?? false)) ||
+                  bloc.aadharAName.text.isEmpty) {
+                CommonToast.getInstance()
+                    ?.displayToast(
+                    message: StringUtils.valEmptyAadharDetails);
+                return;
+              }
+            }
+            else {
+              if (!(kycManualKey
+                  .currentState
+                  ?.validate() ??
+                  false)) {
+                return;
+              }
+              else if (bloc.aadharFront == null || bloc.aadharBack == null) {
+                CommonToast.getInstance()
+                    ?.displayToast(
+                    message: StringUtils.valUploadAadharDetails);
+                return;
+              }
+            }
+            selectedIndex++;
+            isPersonalDetailsVisible = false;
+            setState(() {});
+            _keyRPhases.currentState!.methodInChild(selectedIndex);
+          }
+          break;
+
+        case 2:
+          {
+            if (bloc.automatedManual == 0) {
+              if (bloc.withGSTA) {
+                if (!(gstValidateKey
+                    .currentState
+                    ?.validate() ??
+                    false)) {
+                  return;
+                }
+                else if (bloc.gstName.text.isEmpty) {
+                  CommonToast.getInstance()
+                      ?.displayToast(
+                      message: StringUtils.valEmptyGstDetails);
+                  return;
+                }
+              }
+              else if (bloc.withGSTA) {
+                if (!(panValidateKey
+                    .currentState
+                    ?.validate() ??
+                    false)) {
+                  return;
+                }
+                else if (bloc.panName.text.isEmpty) {
+                  CommonToast.getInstance()
+                      ?.displayToast(
+                      message: StringUtils.valEmptyPanDetails);
+                  return;
+                }
+              }
+            }
+            else {
+              if (bloc.withGSTA && bloc.gst == null) {
+                CommonToast.getInstance()
+                    ?.displayToast(
+                    message: StringUtils.valUploadGSTDetails);
+                return;
+              }
+              else if (bloc.pan == null) {
+                CommonToast.getInstance()
+                    ?.displayToast(
+                    message: StringUtils.valUploadPanDetails);
+                return;
+              }
+            }
+            selectedIndex++;
+            isPersonalDetailsVisible = false;
+            setState(() {});
+            _keyRPhases.currentState!.methodInChild(selectedIndex);
+          }
+          break;
+        case 3:
+          {
+            if (!(bankValidateKey
+                .currentState
+                ?.validate() ??
+                false)) {
+              return;
+            }
+            else if (bloc.bankAcHolderName.text.isEmpty) {
+              CommonToast.getInstance()
+                  ?.displayToast(
+                  message: StringUtils.valEmptyGstDetails);
+              return;
+            }
+            selectedIndex++;
+            isPersonalDetailsVisible = false;
+            /* if (selectedIndex == 4) {*/
+            nextButton = StringUtils.submit;
+            //}
+            setState(() {});
+            _keyRPhases.currentState!.methodInChild(selectedIndex);
+          }
+          break;
+
+        default:
+          {
+            //statements;
+          }
+          break;
       }
-      setState(() {});
-      _keyRPhases.currentState!.methodInChild(selectedIndex);
     } else {
       if (bloc.selectedCertificateType != null && bloc.academicCerti != null) {
-        bloc.registerPosp(context);
+        var pospId = await bloc.registerPosp(context);
+        if (pospId != null) {
+          // ignore: use_build_context_synchronously
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) =>
+                  Dashboard(pospId: pospId)), (Route<dynamic> route) => false);
+        }
       }
       else {
         CommonToast.getInstance()

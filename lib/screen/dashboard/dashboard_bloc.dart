@@ -33,7 +33,7 @@ class DashboardBloc extends BlocBase {
     AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .getDashboard(id: pospId)
+        .getDashboard(id: "5")
         .then((getDashboard) {
       if (getDashboard != null &&
           getDashboard.resultflag == ApiClient.resultflagSuccess &&

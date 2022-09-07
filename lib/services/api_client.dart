@@ -95,7 +95,6 @@ class ApiClient {
             AppComponentBase.getInstance()?.showProgressDialog(false);
           }
           AppComponentBase.getInstance()?.disableWidget(false);
-
           String bodyBytes = utf8.decode(response.bodyBytes);
           logPrint(requestData: bodyBytes, response: response);
           return bodyBytes;

@@ -41,7 +41,9 @@ num? listElementsSum(List a) {
 
 class AadharValidator {
   bool validate(String aadharNum) {
-    if (aadharNum.length == 12 && RegExp(r'^[0-9]+$').hasMatch(aadharNum)) {
+    //it will be RegExp(r'^[2-9]{1}[0-9]{3}\\s[0-9]{4}\\s[0-9]{4}$') if space is added
+    if (aadharNum.length == 12 &&
+        RegExp(r'^[2-9]{1}[0-9]{3}[0-9]{4}[0-9]{4}$').hasMatch(aadharNum)) {
       return true;
       /*   try {
         i = aadharNum.length;
@@ -91,7 +93,26 @@ class PANValidator {
 
 class GSTValidator {
   bool validate(String gstNum) {
-    var check, lmo, gst, csum;
+    String? validMatch;
+    RegExp re =
+        RegExp(r"^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$");
+    if (gstNum.length == 15) {
+      Iterable<Match> match = re.allMatches(gstNum);
+      if (match.isNotEmpty) {
+        for (Match m in match) {
+          validMatch = m.group(0);
+        }
+        if ((validMatch ?? "").isNotEmpty) {
+          return true;
+        }
+        return false;
+      }
+      return false;
+    }
+    return false;
+
+//older code
+/*var check, lmo, gst, csum;
     check = reverseString(gstNum)[0];
     lmo = gstNum.substring(0, 14);
     List l = [], m = [], n = [];
@@ -114,6 +135,6 @@ class GSTValidator {
     csum = 36 - sum! % 36;
     csum = csum < 10 ? csum.toString() : String.fromCharCode(csum + 55);
     bool val = csum == check ? true : false;
-    return val;
+    return val;*/
   }
 }

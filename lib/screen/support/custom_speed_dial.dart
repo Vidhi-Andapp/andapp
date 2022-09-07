@@ -23,7 +23,7 @@ class CustomSpeedDialState extends State<CustomSpeedDial>
   late AnimationController _animationController;
   late Animation<double> _animateIcon;
   Animation<double>? _translateButton;
-  final Curve _curve = Curves.easeOut;
+  final Curve _curve = Curves.fastLinearToSlowEaseIn;
 
   // this is needed to know how much to "translate"
   // when the menu is closed, we remove elevation to prevent

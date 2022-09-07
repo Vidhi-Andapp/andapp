@@ -1,4 +1,3 @@
-import 'package:andapp/common/app_theme.dart';
 import 'package:andapp/common/common_toast.dart';
 import 'package:andapp/common/image_utils.dart';
 import 'package:andapp/common/pink_border_button.dart';
@@ -66,139 +65,152 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   Widget pospReg(BuildContext context, GetDashboardData? dashboardData) {
     var pospData = dashboardData?.data?.pospRegistration;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
-            const SizedBox(
-              width: 10,
-            ),
-            SizedBox(
-                width: MediaQuery.of(context).size.width * 0.35,
-                child: const Text(StringUtils.kycDetails)),
-            //const SizedBox(width: 56,),
-
-            SvgPicture.asset(
-                pospData?.kycDetail == "approve"
-                    ? SvgImages.iconApprove
-                    : pospData?.kycDetail == "reject"
-                        ? SvgImages.iconReject
-                        : SvgImages.iconPending,
-                height: 16,
-                width: 16),
-          ],
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
-            const SizedBox(
-              width: 10,
-            ),
-            SizedBox(
-                width: MediaQuery.of(context).size.width * 0.35,
-                child: const Text(StringUtils.acDetails)),
-            //const SizedBox(width: 28,),
-            SvgPicture.asset(
-                (pospData?.panDetail == "approve" &&
-                        pospData?.gstDetail == "approve")
-                    ? SvgImages.iconApprove
-                    : ((pospData?.panDetail == "reject" &&
-                            pospData?.gstDetail == "reject"))
-                        ? SvgImages.iconReject
-                        : SvgImages.iconPending,
-                height: 16,
-                width: 16),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 16, top: 4.0, bottom: 8),
-          child: PinkBorderButton(
-            isEnabled: true,
-            content: "Re-Fill",
-            onPressed: () {
-              MaterialPageRoute(builder: (context) {
-                return const PoSPRegistration();
-              });
-            },
+    return Padding(
+      padding: const EdgeInsets.only(left: 12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
+              const SizedBox(
+                width: 10,
+              ),
+              SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  child: const Text(StringUtils.kycDetails)),
+              SvgPicture.asset(
+                  pospData?.kycDetail == "approve"
+                      ? SvgImages.iconApprove
+                      : pospData?.kycDetail == "reject"
+                          ? SvgImages.iconReject
+                          : SvgImages.iconPending,
+                  height: 16,
+                  width: 16),
+            ],
           ),
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
-            const SizedBox(
-              width: 10,
-            ),
-            SizedBox(
-                width: MediaQuery.of(context).size.width * 0.35,
-                child: const Text(StringUtils.bankDetails)),
-            //const SizedBox(width: 42,),
-            SvgPicture.asset(
-                pospData?.bankDetail == "approve"
-                    ? SvgImages.iconApprove
-                    : pospData?.kycDetail == "reject"
-                        ? SvgImages.iconReject
-                        : SvgImages.iconPending,
-                height: 16,
-                width: 16),
-          ],
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
-            const SizedBox(
-              width: 10,
-            ),
-            SizedBox(
-                width: MediaQuery.of(context).size.width * 0.35,
-                child: const Text(StringUtils.academicDetails)),
-            //const SizedBox(width: 14),
-            SvgPicture.asset(
-                pospData?.kycDetail == "approve"
-                    ? SvgImages.iconApprove
-                    : pospData?.academicDetail == "reject"
-                        ? SvgImages.iconReject
-                        : SvgImages.iconPending,
-                height: 30,
-                width: 30),
-          ],
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
-            const SizedBox(
-              width: 10,
-            ),
-            SizedBox(
-                width: MediaQuery.of(context).size.width * 0.35,
-                child: const Text(StringUtils.iibApproved)),
-            const SizedBox(
-              width: 6,
-            ),
-            SvgPicture.asset(SvgImages.iconReject, height: 21, width: 21),
-          ],
-        ),
-      ],
+          pospData?.kycDetail == "reject"
+              ? displayRefillButton(context, pospData)
+              : const SizedBox(
+                  height: 10,
+                ),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
+              const SizedBox(
+                width: 10,
+              ),
+              SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  child: const Text(StringUtils.acDetails)),
+              //const SizedBox(width: 28,),
+              SvgPicture.asset(
+                  (pospData?.panDetail == "approve" &&
+                          pospData?.gstDetail == "approve")
+                      ? SvgImages.iconApprove
+                      : ((pospData?.panDetail == "reject" &&
+                              pospData?.gstDetail == "reject"))
+                          ? SvgImages.iconReject
+                          : SvgImages.iconPending,
+                  height: 16,
+                  width: 16),
+            ],
+          ),
+          (pospData?.kycDetail != "reject" &&
+                  (pospData?.panDetail == "reject" ||
+                      pospData?.gstDetail == "reject"))
+              ? displayRefillButton(context, pospData)
+              : const SizedBox(
+                  height: 10,
+                ),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
+              const SizedBox(
+                width: 10,
+              ),
+              SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  child: const Text(StringUtils.bankDetails)),
+              //const SizedBox(width: 42,),
+              SvgPicture.asset(
+                  pospData?.bankDetail == "approve"
+                      ? SvgImages.iconApprove
+                      : pospData?.kycDetail == "reject"
+                          ? SvgImages.iconReject
+                          : SvgImages.iconPending,
+                  height: 16,
+                  width: 16),
+            ],
+          ),
+          (pospData?.kycDetail != "reject" &&
+                  pospData?.panDetail != "reject" &&
+                  pospData?.gstDetail != "reject" &&
+                  pospData?.bankDetail == "reject")
+              ? displayRefillButton(context, pospData)
+              : const SizedBox(
+                  height: 10,
+                ),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
+              const SizedBox(
+                width: 10,
+              ),
+              SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  child: const Text(StringUtils.academicDetails)),
+              //const SizedBox(width: 14),
+              SvgPicture.asset(
+                  pospData?.kycDetail == "approve"
+                      ? SvgImages.iconApprove
+                      : pospData?.academicDetail == "reject"
+                          ? SvgImages.iconReject
+                          : SvgImages.iconPending,
+                  height: 16,
+                  width: 16),
+            ],
+          ),
+          (pospData?.kycDetail != "reject" &&
+                  pospData?.panDetail != "reject" &&
+                  pospData?.gstDetail != "reject" &&
+                  pospData?.bankDetail != "reject" &&
+                  pospData?.academicDetail == "reject")
+              ? displayRefillButton(context, pospData)
+              : const SizedBox(
+                  height: 10,
+                ),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgPicture.asset(SvgImages.dashboardBullet, height: 6, width: 6),
+              const SizedBox(
+                width: 10,
+              ),
+              SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  child: const Text(StringUtils.iibApproved)),
+              SvgPicture.asset(
+                  pospData?.iib == "approve"
+                      ? SvgImages.iconApprove
+                      : pospData?.academicDetail == "reject"
+                          ? SvgImages.iconReject
+                          : SvgImages.iconPending,
+                  height: 16,
+                  width: 16),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -590,6 +602,14 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   Widget buildStepperCustom(
       BuildContext context, GetDashboardData? dashboardData) {
+    var pospData = dashboardData?.data;
+    if (pospData?.pospRegistrationStatus == "true") {
+      tuples[1] = const Tuple3(
+        Icons.add,
+        StringUtils.pospReg,
+        StepState.complete,
+      );
+    }
     return EnhanceStepper(
         stepIconSize: 30,
         type: _type,
@@ -652,6 +672,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    //final appTheme = AppTheme.of(context);
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
@@ -659,7 +680,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
             title: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Dashboard",
+                StringUtils.dashboard,
                 textAlign: TextAlign.left,
                 style: Theme.of(context).appBarTheme.titleTextStyle,
               ),
@@ -730,50 +751,76 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                       textAlign: TextAlign.center),
                                 ),
                                 const SizedBox(
-                                  height: 24,
+                                  height: 48,
+                                ),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: Container(
+                                    //height: secondHeight,
+                                    width: MediaQuery.of(context).size.width,
+                                    margin: const EdgeInsets.only(top: 4.0),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 28),
+                                    decoration: BoxDecoration(
+                                        boxShadow: const [
+                                          BoxShadow(
+                                            blurRadius: 4.0,
+                                            spreadRadius: 2,
+                                            offset: Offset(3.0, -10),
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                        borderRadius:
+                                            const BorderRadius.vertical(
+                                                top: Radius.circular(16.0)),
+                                        color: Theme.of(context)
+                                            .scaffoldBackgroundColor),
+                                    alignment: Alignment.center,
+                                    child: buildStepperCustom(
+                                        context, dashboardData),
+                                  ),
                                 ),
                               ],
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: AppThemeState().greyColor,
-                                  borderRadius: const BorderRadius.only(
-                                      topRight: Radius.circular(18.0),
-                                      topLeft: Radius.circular(18.0)),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppThemeState().separatorColor,
-                                      spreadRadius: 2,
-                                      blurRadius: 2,
-                                      //offset: Offset(0, 0),
-                                    )
-                                  ]),
-                              child: Container(
-                                //elevation: 2,
-                                margin: const EdgeInsetsDirectional.only(
-                                    start: 1, end: 1, top: 1),
-                                decoration: BoxDecoration(
-                                  color:
-                                      Theme.of(context).scaffoldBackgroundColor,
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(18.0),
-                                    topRight: Radius.circular(18.0),
-                                  ), // BorderRadius
-                                ),
-                                //Wrap with IntrinsicHeight
-                                child:
-                                    buildStepperCustom(context, dashboardData),
-                                /*StreamBuilder(
-                                    stream: bloc.resultStream,
-                                    builder: (context, snapshot) {
-                                      if (snapshot.hasData) {
-                                        DownloadCertificate dc = snapshot.data
-                                            as DownloadCertificate;
-                                        return getImagenBase64(
-                                            dc.data?.data?.image ?? "");
-                                      }
-                                      return Container();
-                                    }),*/
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                children: [
+                                  (dashboardData
+                                              ?.data?.pospRegistrationStatus ==
+                                          "false")
+                                      ? SvgPicture.asset(
+                                          SvgImages.iconSecurity,
+                                          height: 25,
+                                          width: 20,
+                                        )
+                                      : SvgPicture.asset(
+                                          SvgImages.menuTraining,
+                                          height: 25,
+                                          width: 20,
+                                        ),
+
+                                  //SvgImages.menuTraining
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
+                                      child: Text(
+                                        (dashboardData?.data
+                                                    ?.pospRegistrationStatus ==
+                                                "false")
+                                            ? StringUtils.dashboardRegContent
+                                            : StringUtils
+                                                .dashboardTrainingContent,
+                                        style: const TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w400),
+                                        maxLines: 3,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ]);
@@ -789,6 +836,21 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
             return Container();
           },
         ),*/
+      ),
+    );
+  }
+
+  Widget displayRefillButton(BuildContext context, PospRegistration? pospData) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, top: 4.0, bottom: 8),
+      child: PinkBorderButton(
+        isEnabled: true,
+        content: "Re-Fill",
+        onPressed: () {
+          MaterialPageRoute(builder: (context) {
+            return const PoSPRegistration();
+          });
+        },
       ),
     );
   }

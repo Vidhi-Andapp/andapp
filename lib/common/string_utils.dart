@@ -24,7 +24,10 @@ class StringUtils {
   static const String welcome = "Welcome!";
   static const String dashboardTitle =
       "Complete the following steps to become a PoSP advisor with AndApp";
-
+  static const String dashboardRegContent =
+      "IRDAI requires above details to register. This details are secured mand will be used for application process only.";
+  static const String dashboardTrainingContent =
+      "Training certification is required to start earning with AndApp.";
   static const String kycDetails = "KYC Details";
   static const String acDetails = "Account Details";
   static const String bankDetails = "Bank Details";
@@ -40,6 +43,7 @@ class StringUtils {
 
   static const String mobileNumber = "Mobile Number ";
   static const String otp = "OTP";
+  static const String resendOtp = "Resend OTP";
   static const String verify = "Verify";
   static const String userName = "Username";
   static const String emailID = "Email ID";
@@ -109,6 +113,7 @@ class StringUtils {
   static const String menuMail = "Mail";
   static const String menuCopy = "Copy";
   static const String menuLogout = "Logout";
+  static const String dashboard = "Dashboard";
 
   static const String ansA = "a";
   static const String ansB = "b";
@@ -154,8 +159,45 @@ class StringUtils {
   static const String totalQue = "Total Questions";
   static const String totalAns = "Total Correct Answers";
 
+  static const String valEmptyUsername = "Please enter Username";
+  static const String valValidUsername = "Please enter valid Username";
+  static const String valEmptyEmailId = "Please enter email Id";
+  static const String valValidEmailId = "Please enter valid email Id";
+  static const String valEmptyWhatsappNumber = "Please enter whatsapp number";
+  static const String valValidWhatsappNumber =
+      "Please enter valid whatsapp number";
+  static const String valEmptyAadharNumber = "Please enter aadhar number";
+  static const String valValidAadharNumber = "Please enter valid aadhar number";
+  static const String valEmptyOtp = "Please enter otp";
+  static const String valValidOtp = "Please enter valid otp";
+  static const String valEmptyFirstName = "Please enter first name";
+  static const String valValidFirstName = "Please enter valid first name";
+  static const String valEmptyMiddleName = "Please enter middle name";
+  static const String valValidMiddleName = "Please enter valid middle name";
+  static const String valEmptyLastName = "Please enter last name";
+  static const String valValidLastName = "Please enter valid last name";
+  static const String valEmptyGSTNumber = "Please enter GST number";
+  static const String valValidGSTNumber = "Please enter valid GST number";
+  static const String valEmptyGSTName = "Please enter GST name";
+  static const String valValidGSTName = "Please enter valid GST name";
+  static const String valEmptyPANNumber = "Please enter PAN number";
+  static const String valValidPANNumber = "Please enter valid PAN number";
+  static const String valEmptyPANName = "Please enter PAN name";
+  static const String valValidPANName = "Please enter valid PAN name";
   static const String valEmptyAadharDetails = "Please validate aadhar otp";
   static const String valUploadAadharDetails = "Please upload aadhar images";
+  static const String valEmptyPanDetails = "Please validate PAN Number";
+  static const String valEmptyGstDetails = "Please validate GST Number";
+  static const String valUploadPanDetails = "Please upload PAN card";
+  static const String valUploadGSTDetails = "Please upload GST Certification";
+  static const String valEmptyACHolderName = "Please enter AC Holder name";
+  static const String valValidACHolderName =
+      "Please enter valid AC Holder name";
+  static const String valEmptyBankAcNumber = "Please enter Bank Account number";
+  static const String valValidBankAcNumber =
+      "Please enter valid Bank Account number";
+  static const String valEmptyIFSCCode = "Please enter IFSC Code";
+  static const String valValidIFSCCode = "Please enter valid IFSC Code";
   static const String trainingDayMsg = "Please come tomorrow for training";
   static const String uploadAcademicCerti =
       "Please select and upload certificate";
@@ -526,7 +568,7 @@ class StringUtils {
                     </p>
 
                     <p>
-                        •	To faithfully perform all duties required hereunder, to cooperate with the Company in all matters pertaining to the issuance of policies, cancellations, claims and to promote the best interest of the Company.\
+                        •	To faithfully perform all duties required hereunder, to cooperate with the Company in all matters pertaining to the issuance of policies, cancellations, claims and to promote the best interest of the Company.
                     </p>
 
                     <p>
