@@ -5,6 +5,8 @@ import 'package:andapp/common/image_utils.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/di/app_component_base.dart';
 import 'package:andapp/di/shared_preferences.dart';
+import 'package:andapp/model/get_profile.dart';
+import 'package:andapp/screen/dashboard/dashboard_bloc.dart';
 import 'package:andapp/screen/profile/my_profile.dart';
 import 'package:andapp/screen/support/support.dart';
 import 'package:andapp/screen/training/training_dashboard_gi.dart';
@@ -20,6 +22,7 @@ class NavBar extends StatefulWidget {
 }
 
 class _NavBarState extends State<NavBar> {
+  final DashboardBloc bloc = DashboardBloc();
   List<Item>? _menu;
   String? pospId;
 
@@ -194,7 +197,10 @@ class _NavBarState extends State<NavBar> {
     AppComponentBase.getInstance()
         ?.getSharedPreference()
         .getUserDetail(key: SharedPreference().pospId)
-        .then((value) => pospId = value);
+        .then((value) {
+      pospId = value;
+      bloc.getProfile(value);
+    });
   }
 
   @override
@@ -205,45 +211,54 @@ class _NavBarState extends State<NavBar> {
       width: 300,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: SizedBox(
-        child: ListView(
-          // Remove padding
-          padding: EdgeInsets.zero,
-          children: [
-            CustomUserAccountsDrawerHeader(
-              accountName: const Text(
-                'Vidhi Shah',
-                style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                    fontFamily: "Poppins"),
-              ),
-              accountEmail: const Text(
-                'P123456789',
-                style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    fontFamily: "Poppins"),
-              ),
-              currentAccountPicture: CircleAvatar(
-                radius: 100,
-                backgroundColor: Colors.white,
-                child: CircleAvatar(
-                  radius: 48,
-                  backgroundColor: appTheme.primaryColor,
-                  child: ClipOval(
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    child: Image.asset(AssetImages.profileAvatarFemale,
-                        height: 100, width: 100),
-                  ),
-                ),
-              ),
-              decoration: BoxDecoration(
-                color: appTheme.primaryColor,
-              ),
-            ),
-            _buildPanel(),
-          ],
-        ),
+        child: StreamBuilder<ProfileData?>(
+            stream: bloc.profileStream,
+            builder:
+                (BuildContext context, AsyncSnapshot<ProfileData?> snapshot) {
+              if (snapshot.hasData && snapshot.data != null) {
+                var profileData = snapshot.data;
+                return ListView(
+                  // Remove padding
+                  padding: EdgeInsets.zero,
+                  children: [
+                    CustomUserAccountsDrawerHeader(
+                      accountName: Text(
+                        profileData?.personalDetails?.pospName ?? "",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                            fontFamily: "Poppins"),
+                      ),
+                      accountEmail: Text(
+                        profileData?.personalDetails?.pospCode ?? "",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            fontFamily: "Poppins"),
+                      ),
+                      currentAccountPicture: CircleAvatar(
+                        radius: 100,
+                        backgroundColor: Colors.white,
+                        child: CircleAvatar(
+                          radius: 48,
+                          backgroundColor: appTheme.primaryColor,
+                          child: ClipOval(
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            child: Image.asset(AssetImages.profileAvatarFemale,
+                                height: 100, width: 100),
+                          ),
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        color: appTheme.primaryColor,
+                      ),
+                    ),
+                    _buildPanel(),
+                  ],
+                );
+              }
+              return Container();
+            }),
       ),
     );
   }

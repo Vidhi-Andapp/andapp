@@ -16,6 +16,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class PoSPRegistration extends StatefulWidget {
@@ -168,10 +169,14 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
   @override
   void initState() {
     super.initState();
-    AppComponentBase.getInstance()
+    assignValues();
+  }
+
+  void assignValues() async {
+    bloc.mobileNo = bloc.whatsappNumber.text =
+    await AppComponentBase.getInstance()
         ?.getSharedPreference()
-        .getUserDetail(key: SharedPreference().mobileNumber)
-        .then((value) => bloc.mobileNo = bloc.whatsappNumber.text = value);
+        .getUserDetail(key: SharedPreference().mobileNumber);
   }
 
   @override
@@ -264,7 +269,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                               .border),
                                       validator: (val) {
                                         String pattern =
-                                            r'^[a-zA-Z0-9]([._](?![._])|[a-zA-Z0-9]){6,18}[a-zA-Z0-9]$';
+                                            r'^[a-zA-Z0-9]([._](?![._])|[a-zA-Z0-9]){0,15}[a-zA-Z0-9]$';
                                         RegExp regExp = RegExp(pattern);
                                         if (val == null || val.isEmpty) {
                                           return StringUtils
@@ -278,6 +283,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                         }
                                       },
                                       keyboardType: TextInputType.name,
+                                      maxLength: 15,
                                       style: const TextStyle(
                                         fontFamily: "Poppins",
                                         //color: Colors.white
@@ -483,22 +489,18 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                     ?.validate() ??
                                                                     false) {
                                                                   form?.save();
-                                                                  await bloc
+                                                                  var value = await bloc
                                                                       .sendAadharOTP(
-                                                                      context)
-                                                                      .then(
-                                                                          (
-                                                                          value) {
-                                                                        if (value ==
-                                                                            ApiClient
-                                                                                .resultflagSuccess) {
-                                                                          isAadharOtpEnabled =
-                                                                          true;
-                                                                          setState(() {
+                                                                      context);
+                                                                  if (value ==
+                                                                      ApiClient
+                                                                          .resultflagSuccess) {
+                                                                    isAadharOtpEnabled =
+                                                                    true;
+                                                                    setState(() {
 
-                                                                          });
-                                                                        }
-                                                                      });
+                                                                    });
+                                                                  }
                                                                 }
                                                               },
                                                             ),
@@ -1777,6 +1779,9 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                 return null;
                                                               }
                                                             },
+                                                            inputFormatters: [
+                                                              UpperCaseTextFormatter(),
+                                                            ],
                                                             onFieldSubmitted: (
                                                                 value) {
                                                               bloc.gstName
@@ -1912,6 +1917,9 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                               return null;
                                                             }
                                                           },
+                                                          inputFormatters: [
+                                                            UpperCaseTextFormatter(),
+                                                          ],
                                                           onFieldSubmitted: (
                                                               value) {
                                                             bloc.panNumber
@@ -2014,6 +2022,9 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                                 return null;
                                                               }
                                                             },
+                                                            inputFormatters: [
+                                                              UpperCaseTextFormatter(),
+                                                            ],
                                                             maxLength: 10,
                                                             keyboardType:
                                                             TextInputType
@@ -2575,6 +2586,9 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                     return null;
                                                   }
                                                 },
+                                                inputFormatters: [
+                                                  UpperCaseTextFormatter(),
+                                                ],
                                                 onFieldSubmitted: (value) {
                                                   bloc.bankAcHolderName.clear();
                                                 },
@@ -2805,10 +2819,10 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                             horizontal: 32),
                                         child: GestureDetector(
                                           onTap: () async {
-                                            bloc.academicCerti =
+                                            bloc.academicCertificate =
                                             await _pickFile();
                                             if (bloc
-                                                .academicCerti !=
+                                                .academicCertificate !=
                                                 null) {
                                               titleAcademicCertificate =
                                                   StringUtils
@@ -3016,9 +3030,12 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                         ],
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  )
+                  ,
+                ]
+                ,
+              )
+              ,
             );
           }),
           /*StreamBuilder(
@@ -3107,7 +3124,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                   return;
                 }
               }
-              else if (bloc.withGSTA) {
+              else {
                 if (!(panValidateKey
                     .currentState
                     ?.validate() ??
@@ -3173,7 +3190,8 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
           break;
       }
     } else {
-      if (bloc.selectedCertificateType != null && bloc.academicCerti != null) {
+      if (bloc.selectedCertificateType != null &&
+          bloc.academicCertificate != null) {
         var pospId = await bloc.registerPosp(context);
         if (pospId != null) {
           // ignore: use_build_context_synchronously
@@ -3187,5 +3205,17 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
             ?.displayToast(message: StringUtils.uploadAcademicCerti);
       }
     }
+  }
+
+}
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue,
+      TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
   }
 }

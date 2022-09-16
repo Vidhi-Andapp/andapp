@@ -20,7 +20,7 @@ class ApiClient {
   final String urlEncodedHeaderValue = 'application/x-www-form-urlencoded';
   final String formHeaderValue =
       'multipart/form-data; boundary=<calculated when request is sent>';
-  var successResponse = [200, 201, 400, 422];
+  var successResponse = [200, 201, 400, 401, 422];
   static String otpTypeSMS = "sms";
   static String otpTypeEmail = "email";
 

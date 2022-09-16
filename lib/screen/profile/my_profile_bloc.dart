@@ -27,7 +27,7 @@ class MyProfileBloc extends BlocBase {
     await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .getProfile(id: "29")
+        .getProfile(id: "101")
         .then((getProfile) {
       if (getProfile != null &&
           getProfile.resultflag == ApiClient.resultflagSuccess &&

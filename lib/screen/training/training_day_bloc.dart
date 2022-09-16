@@ -20,14 +20,14 @@ class TrainingDayBloc extends BlocBase {
                         ? ApiClient.trainingTypeGI
                         : ApiClient.trainingTypeLI,
                     day: day,
-                    pospId: value)
+                    pospId: "73")
                 .then((commonData) {
               if (commonData != null &&
                   commonData.resultflag == ApiClient.resultflagSuccess &&
                   commonData.data != null) {
                 /* CommonToast.getInstance()
                     ?.displayToast(message: commonData.data ?? "");*/
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) {
                     return TrainingNavigator(

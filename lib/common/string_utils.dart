@@ -98,7 +98,8 @@ class StringUtils {
   static const String pospReg = "PoSP Registration";
   static const String training = "Training";
   static const String startEarning = "Start Earning";
-  static const String iibApproved = "IIB/IRDA Approved";
+  static const String iibApproved = "IIB Approved";
+  static const String irdaApproved = "IRDA Approved";
   static const String generalInsurance = "General Insurance";
   static const String lifeInsurance = "Life Insurance";
   static const String day1 = "Day 1";
@@ -114,7 +115,17 @@ class StringUtils {
   static const String menuCopy = "Copy";
   static const String menuLogout = "Logout";
   static const String dashboard = "Dashboard";
-
+  static const String videoTutorials = "Video Tutorials";
+  static const String unlimitedAccess = "Unlimited access";
+  static const String recognisedCertification = "Recognised certification";
+  static const String abtThisCourse = "About This Course";
+  static const String abtThisCourseContentGI =
+      "This is an online training to enhance your knowledge of insurance, which will enable you to pursue your career as a PoSP. This module covers: Fundamentals of the general insurance industry with knowledge on different POS products of general insurance.";
+  static const String abtThisCourseContentLI =
+      "E-Learning training to enhance your knowledge of insurance, which will enable you to pursue your career as PoSP. Module covers: Fundamental of general insurance industry with knowledge on different products of general insurance.";
+  static const String howItWorks = "How does it work?";
+  static const String howItWorksGI =
+      "E-Learning module will be of 15 hours. There are 3 modules to be completed in 3 days. Each module will be of 5 hours duration. New module will only be available after completion of previous module.At the end of 15 hours training, there will be self assessment online test of 30 questions. Minimum criteria to clear examination is 40% (atleast 12 correct answers). There is no negative marking.";
   static const String ansA = "a";
   static const String ansB = "b";
   static const String ansC = "c";
@@ -140,6 +151,8 @@ class StringUtils {
       "Invalid OTP.Please try with latest valid OTP";
   static const String trainingSuccessTitle = "Congratulations...!!";
   static const String trainingDaysSuccessTitle = "Superb...!!";
+  static const String registrationPendingMsg =
+      "We will reach back to you within 48 hours with your verification status. You can access your training module once you’re successfully verified.";
   static const String trainingDay1CompleteSuccess =
       "Your 1st Day Training was completed. Please come back tomorrow for 2nd Day Training";
   static const String trainingDay2CompleteSuccess =

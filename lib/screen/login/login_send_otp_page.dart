@@ -41,7 +41,8 @@ class _LoginSendOTPState extends State<LoginSendOTP>
   void initState() {
     super.initState();
     //loadHtmlFromAssets();
-    bloc.getToken(context);
+/*
+    bloc.getToken(context, mounted);*/
   }
 
   Future<String> decodeStringFromAssets(String path) async {
@@ -136,6 +137,7 @@ class _LoginSendOTPState extends State<LoginSendOTP>
                                           final form = sendOTPKey.currentState;
                                           if (form?.validate() ?? false) {
                                             form?.save();
+                                            SmsAutoFill().getAppSignature;
                                             SmsAutoFill().listenForCode;
                                             bloc.sendOTP(context);
                                           }

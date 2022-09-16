@@ -19,7 +19,7 @@ class SharedPreference extends SharedPreferenceRepository {
   Future getUserDetail({String? key}) async {
     storage ??= initPreference();
     // Read all values
-    Map<String, String> allValues = await storage!.readAll();
+    //Map<String, String> allValues = await storage!.readAll();
     String? value = await storage!.read(key: key ?? "");
     return value;
   }

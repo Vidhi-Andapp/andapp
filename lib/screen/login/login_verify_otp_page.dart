@@ -64,7 +64,7 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
   @override
   void codeUpdated() {
     /*_code = code!;
-    print("inside codeupdated : $code");
+    print("inside code updated : $code");
     setState(() {});*/
   }
 
@@ -205,6 +205,7 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                               TimerButton(
                                 label: StringUtils.resendOtp,
                                 timeOutInSeconds: 120,
+                                onTimeExpired: () {},
                                 onPressed: () async {
                                   var otp = await bloc.reSendOTP(
                                       context, widget.enteredMobNo);

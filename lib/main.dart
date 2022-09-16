@@ -8,6 +8,7 @@ import 'package:andapp/di/shared_preferences.dart';
 import 'package:andapp/screen/dashboard/dashboard.dart';
 import 'package:andapp/screen/dashboard/document_page.dart';
 import 'package:andapp/screen/login/login_send_otp_page.dart';
+import 'package:andapp/services/api_client.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/foundation.dart';
@@ -49,13 +50,89 @@ Future<void> main() async {
   if (kDebugMode) {
     //print("decrypted base 64 : $decrypted64");
   }
+  //bool isLoggedIn = false;
+  WidgetsFlutterBinding.ensureInitialized();
+  String? pospId;
+  String page = "0";
+  await getToken();
+  page = await getStatus();
+  pospId = await AppComponentBase.getInstance()
+      ?.getSharedPreference()
+      .getUserDetail(key: SharedPreference().pospId);
+  runApp(MyApp(
+    page: page,
+    pospId: pospId,
+  ));
+}
 
-  runApp(const MyApp());
-  //runApp(const MaterialApp(home: MyApp()));
+Future<String> getStatus() async {
+  var mobileNo = await AppComponentBase.getInstance()
+      ?.getSharedPreference()
+      .getUserDetail(key: SharedPreference().mobileNumber);
+  if (mobileNo != null && mobileNo!.isNotEmpty) {
+    var getStatusData = await AppComponentBase.getInstance()
+        ?.getApiInterface()
+        .getApiRepository()
+        .getStatus(mobileNo: mobileNo); //verify otp here
+    if (getStatusData != null &&
+        getStatusData.resultflag == ApiClient.resultflagSuccess) {
+      if (getStatusData.data != null && getStatusData.data?.data != null) {
+        var pospId = getStatusData.data?.data?.pospId.toString(),
+            pospStatus = getStatusData.data?.data?.pospStatus.toString();
+        await AppComponentBase.getInstance()
+            ?.getSharedPreference()
+            .setUserDetail(key: SharedPreference().pospId, value: pospId);
+        await AppComponentBase.getInstance()
+            ?.getSharedPreference()
+            .setUserDetail(
+                key: SharedPreference().pospStatus, value: pospStatus);
+
+        if (pospId != null && pospId.isNotEmpty) {
+          if (pospStatus == "1") {
+            return "1";
+          } else {
+            return "2";
+            //page = const PoSPRegistration();
+          }
+        } else {
+          return "3";
+        }
+      }
+    }
+  }
+
+  return "0";
+}
+
+Future getToken() async {
+  var tokenValue = await AppComponentBase.getInstance()
+      ?.getApiInterface()
+      .getApiRepository()
+      .token();
+  if (tokenValue != null && tokenValue.accessToken != null) {
+    if (tokenValue.accessToken!.isNotEmpty) {
+      ApiClient.bearerToken = tokenValue.accessToken!;
+      await getURLs();
+    }
+  }
+}
+
+Future getURLs() async {
+  var getURls = await AppComponentBase.getInstance()
+      ?.getApiInterface()
+      .getApiRepository()
+      .getURls();
+  if (getURls != null && getURls.resultflag == ApiClient.resultflagSuccess) {
+    ApiClient.freshDeskUrl = getURls.data?.freshdeskurl ?? "";
+    ApiClient.userManualUrl = getURls.data?.usermanualurl ?? "";
+  }
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final String? page;
+  final String? pospId;
+
+  const MyApp({Key? key, this.page, this.pospId}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -65,8 +142,7 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
   final AppThemeState _appTheme = AppThemeState();
-  bool isLoggedIn = false;
-  String? pospId, pospStatus;
+
   final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
 
   //Map<String, dynamic> _deviceData = <String, dynamic>{};
@@ -85,18 +161,7 @@ class MyAppState extends State<MyApp> {
           ?.getSharedPreference()
           .setUserDetail(key: SharedPreference().deviceId, value: value);
     });
-    AppComponentBase.getInstance()
-        ?.getSharedPreference()
-        .getUserDetail(key: SharedPreference().pospId)
-        .then((value) => setState(() {
-              pospId = value;
-            }));
-    AppComponentBase.getInstance()
-        ?.getSharedPreference()
-        .getUserDetail(key: SharedPreference().pospStatus)
-        .then((value) => setState(() {
-              pospStatus = value;
-            }));
+
     /* encryptData("123456789012","YNBWNYIRHGFPZZFD");
     decryptData("+UNNp6GSYgdZSzSNblgeOZdv3yadw33U6iQzPsfBSw0=","YNBWNYIRHGFPZZFD");*/
   }
@@ -299,30 +364,27 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    Widget page = const LoginSendOTP();
-    if (pospId != null && pospId!.isNotEmpty) {
-      if (pospStatus == "1") {
-        page = Dashboard(
-          pospId: pospId ?? "",
-        );
-      } else {
-        page = const DocumentPage();
-        //page = const PoSPRegistration();
-      }
-    } else {
-      page = const LoginSendOTP();
-    }
-    //page = const MyProfile(); // to be deleted
     return ValueListenableBuilder<ThemeMode>(
         valueListenable: theme,
         builder: (context, value, child) {
+          Widget? defaultPage;
+          if (widget.page == "1") {
+            defaultPage = Dashboard(
+              pospId: widget.pospId ?? "",
+            );
+          } else if (widget.page == "2") {
+            defaultPage = const DocumentPage();
+            //page = const PoSPRegistration();
+          } else {
+            defaultPage = const LoginSendOTP();
+          }
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: StringUtils.appName,
             theme: lightThemeData(context),
             darkTheme: darkThemeData(context),
             themeMode: ThemeMode.dark,
-            home: page,
+            home: defaultPage,
             builder: (context, widget) {
               return Scaffold(
                 resizeToAvoidBottomInset: false,

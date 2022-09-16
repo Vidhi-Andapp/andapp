@@ -55,11 +55,13 @@ class TimerButton extends StatefulWidget {
 
   ///If resetTimerOnPressed is true reset the timer when the button is pressed : default to true
   final bool resetTimerOnPressed;
+  final Function onTimeExpired;
 
   const TimerButton({
     Key? key,
     required this.label,
     required this.onPressed,
+    required this.onTimeExpired,
     required this.timeOutInSeconds,
     this.secPostFix = _secPostFix,
     this.color = Colors.blue,
@@ -74,13 +76,13 @@ class TimerButton extends StatefulWidget {
   _TimerButtonState createState() => _TimerButtonState();
 }
 
-
 class _TimerButtonState extends State<TimerButton> {
   bool timeUpFlag = false;
   int timeCounter = 0;
 
   //String get _timerText => '$timeCounter${widget.secPostFix}';
   String get _timerText => '$timeCounter';
+
   @override
   void initState() {
     super.initState();
@@ -90,6 +92,7 @@ class _TimerButtonState extends State<TimerButton> {
 
   _timerUpdate() {
     Timer(const Duration(seconds: aSec), () async {
+      if (!mounted) return;
       setState(() {
         timeCounter--;
       });
@@ -102,7 +105,7 @@ class _TimerButtonState extends State<TimerButton> {
   }
 
   Widget _buildChild() {
-    final _appTheme = AppTheme.of(context);
+    final appTheme = AppTheme.of(context);
     TextStyle? activeTextStyle;
     if (widget.activeTextStyle == null) {
       if (widget.buttonType == ButtonType.OutlinedButton ||
@@ -120,24 +123,24 @@ class _TimerButtonState extends State<TimerButton> {
               widget.label,
               style: activeTextStyle,
             )
-          :
-      RichText(text: TextSpan(children: <TextSpan>[
-        TextSpan(
-            text: "Resend OTP in ",
-            style: widget.disabledTextStyle,
-          /*TextStyle(
+          : RichText(
+              text: TextSpan(children: <TextSpan>[
+              TextSpan(
+                text: "Resend OTP in ",
+                style: widget.disabledTextStyle,
+                /*TextStyle(
                 color: Theme
                     .of(context)
                     .textTheme
                     .bodyText2
                     ?.color,fontSize: 14)*/
-        ),
-        TextSpan(text: _timerText,
-          style: TextStyle(
-              color: _appTheme.primaryColor,fontSize: 16),
-        )
-      ])),
-    /*
+              ),
+              TextSpan(
+                text: _timerText,
+                style: TextStyle(color: appTheme.primaryColor, fontSize: 16),
+              )
+            ])),
+      /*
 
       Text(
               widget.label + labelSplitter + _timerText,
@@ -188,12 +191,11 @@ class _TimerButtonState extends State<TimerButton> {
       case ButtonType.OutlineButton:
         // ignore: deprecated_member_use
         return OutlinedButton(
-          onPressed: _onPressed,
-          child: _buildChild(),
+            onPressed: _onPressed,
+            child: _buildChild(),
             style: ElevatedButton.styleFrom(
               primary: timeUpFlag ? widget.color : widget.disabledColor,
-            )
-        );
+            ));
       case ButtonType.ElevatedButton:
         return ElevatedButton(
             onPressed: _onPressed,

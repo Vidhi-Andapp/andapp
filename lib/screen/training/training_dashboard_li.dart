@@ -28,7 +28,7 @@ class TrainingDashboardLI extends StatefulWidget {
 class _TrainingDashboardLIState extends State<TrainingDashboardLI>
     with TickerProviderStateMixin {
   final DashboardBloc bloc = DashboardBloc.getInstance();
-  int groupValue = 0, module = 3;
+  int groupValue = 0, module = 3, hours = 15, video = 6;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   //final LocalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -276,7 +276,7 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                                         width: 12,
                                                       ),
                                                       Text(
-                                                        "Hours : $module",
+                                                        "Hours : $hours",
                                                         style: TextStyle(
                                                             color: Theme.of(
                                                                     context)
@@ -309,7 +309,7 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                                         width: 12,
                                                       ),
                                                       Text(
-                                                        "Videos : $module",
+                                                        "Videos : $video",
                                                         style: TextStyle(
                                                             color: Theme.of(
                                                                     context)
@@ -406,7 +406,8 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                                         width: 12,
                                                       ),
                                                       Text(
-                                                        "Video Tutorials",
+                                                        StringUtils
+                                                            .videoTutorials,
                                                         style: TextStyle(
                                                             color: Theme.of(
                                                                     context)
@@ -437,7 +438,8 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                                         width: 12,
                                                       ),
                                                       Text(
-                                                        "Unlimited Access",
+                                                        StringUtils
+                                                            .unlimitedAccess,
                                                         style: TextStyle(
                                                             color: Theme.of(
                                                                     context)
@@ -469,7 +471,8 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                                       ),
                                                       Expanded(
                                                         child: Text(
-                                                          "Recognised Certificate",
+                                                          StringUtils
+                                                              .recognisedCertification,
                                                           style: TextStyle(
                                                               color: Theme.of(
                                                                       context)
@@ -525,7 +528,7 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                             alignment: Alignment.centerLeft,
                                             child: Row(
                                               children: const [
-                                                Text('About This Course',
+                                                Text(StringUtils.abtThisCourse,
                                                     style: TextStyle(
                                                         fontSize: 12,
                                                         fontWeight:
@@ -550,7 +553,7 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                                   appTheme.trainingCardBgColor),
                                           alignment: Alignment.centerLeft,
                                           child: const Text(
-                                            'iAND Insurance Broker Private Limited, a company incorporated under the provisions of Companies Act, 2013 and having its principal place of business at 1106, 11th floor, D & C Dynasty building, C G Road, Near Sardar Patel Stadium Cross roads, Navrangpura, Ahmedabad-380009 (herein after referred to as “the Company”, which expression shall D & C Dynasty building, C G Road, Near Sardar Patel Stadium Cross roads, Navrangpura, Ahmedabad-380009',
+                                            StringUtils.abtThisCourseContentLI,
                                             style: TextStyle(
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w300),
@@ -598,7 +601,7 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                             alignment: Alignment.centerLeft,
                                             child: Row(
                                               children: const [
-                                                Text('How does it work?',
+                                                Text(StringUtils.howItWorks,
                                                     style: TextStyle(
                                                         fontSize: 12,
                                                         fontWeight:
@@ -623,7 +626,7 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                                   appTheme.trainingCardBgColor),
                                           alignment: Alignment.centerLeft,
                                           child: const Text(
-                                            'iAND Insurance Broker Private Limited, a company incorporated under the provisions of Companies Act, 2013 and having its principal place of business at 1106, 11th floor, D & C Dynasty building, C G Road, Near Sardar Patel Stadium Cross roads, Navrangpura, Ahmedabad-380009 (herein after referred to as “the Company”, which expression shall D & C Dynasty building, C G Road, Near Sardar Patel Stadium Cross roads, Navrangpura, Ahmedabad-380009 iAND Insurance Broker Private Limited, a company incorporated under the provisions of Companies Act, 2013 and having its principal place of business at 1106, 11th floor, D & C Dynasty building, C G Road, Near Sardar Patel Stadium Cross roads, Navrangpura, Ahmedabad-380009 (herein after referred to as “the Company”, which expression shall D & C Dynasty building, C G Road, Near Sardar Patel Stadium Cross roads, Navrangpura, Ahmedabad-380009',
+                                            StringUtils.howItWorksGI,
                                             style: TextStyle(
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w300),
@@ -650,7 +653,7 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                   onPressed: () {
                                     if (liDay.isNotEmpty) {
                                       if (allowLiDay) {
-                                        Navigator.push(
+                                        Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(builder: (context) {
                                             return TrainingDays(
@@ -658,20 +661,22 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                                     StringUtils.lifeInsurance,
                                                 day: liDay);
                                           }),
-                                        );
+                                        ).then((value) => bloc.getDashboard(
+                                            context, widget.pospId));
                                       } else {
                                         CommonToast.getInstance()?.displayToast(
                                             message:
                                                 StringUtils.trainingDayMsg);
                                       }
                                     } else {
-                                      Navigator.push(
+                                      Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(builder: (context) {
                                           return const TrainingExam(
                                               title: StringUtils.lifeInsurance);
                                         }),
-                                      );
+                                      ).then((value) => bloc.getDashboard(
+                                          context, widget.pospId));
                                     }
                                   },
                                 ),

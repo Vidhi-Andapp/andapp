@@ -31,37 +31,42 @@ class LoginVerifyOTPBloc extends BlocBase {
     return null;
   }
 
-  void getStatus(BuildContext context, String mobileNo) {
-    AppComponentBase.getInstance()
+  void getStatus(BuildContext context, String mobileNo) async {
+    await AppComponentBase.getInstance()
+        ?.getSharedPreference()
+        .setUserDetail(key: SharedPreference().mobileNumber, value: mobileNo);
+
+    var getStatusData = await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .getStatus(mobileNo: mobileNo) //verify otp here
-        .then((getStatusData) {
-      if (getStatusData != null &&
-          getStatusData.resultflag == ApiClient.resultflagSuccess) {
-        if (getStatusData.data != null && getStatusData.data?.data != null) {
-          AppComponentBase.getInstance()?.getSharedPreference().setUserDetail(
-              key: SharedPreference().pospId,
-              value: getStatusData.data?.data?.pospId.toString());
-
-          if (getStatusData.data?.data?.pospStatus == 0) {
-            AppComponentBase.getInstance()?.getSharedPreference().setUserDetail(
-                key: SharedPreference().mobileNumber, value: mobileNo);
-
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const DocumentPage()),
-                (Route<dynamic> route) => false);
-          } else if (getStatusData.data?.data?.pospStatus == 1) {
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                    builder: (context) => Dashboard(
-                        pospId:
-                            getStatusData.data?.data?.pospId.toString() ?? "")),
-                (Route<dynamic> route) => false);
-          }
+        .getStatus(mobileNo: mobileNo); //verify otp here
+    if (getStatusData != null &&
+        getStatusData.resultflag == ApiClient.resultflagSuccess) {
+      if (getStatusData.data != null && getStatusData.data?.data != null) {
+        await AppComponentBase.getInstance()
+            ?.getSharedPreference()
+            .setUserDetail(
+                key: SharedPreference().pospId,
+                value: getStatusData.data?.data?.pospId.toString());
+        await AppComponentBase.getInstance()
+            ?.getSharedPreference()
+            .setUserDetail(
+                key: SharedPreference().pospStatus,
+                value: getStatusData.data?.data?.pospStatus.toString());
+        if (getStatusData.data?.data?.pospStatus == 0) {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const DocumentPage()),
+              (Route<dynamic> route) => false);
+        } else if (getStatusData.data?.data?.pospStatus == 1) {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (context) => Dashboard(
+                      pospId:
+                          getStatusData.data?.data?.pospId.toString() ?? "")),
+              (Route<dynamic> route) => false);
         }
       }
-    });
+    }
   }
 
 /*

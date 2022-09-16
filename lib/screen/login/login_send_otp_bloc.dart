@@ -20,33 +20,15 @@ class LoginSendOTPBloc extends BlocBase {
   TextEditingController otp = TextEditingController();
   String? updateMobOtp;
 
-  void getToken(BuildContext context) {
-    AppComponentBase.getInstance()
+  Future getURLs(BuildContext context) async {
+    var getURls = await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .token()
-        .then((tokenValue) {
-      if (tokenValue != null && tokenValue.accessToken != null) {
-        if (tokenValue.accessToken!.isNotEmpty) {
-          ApiClient.bearerToken = tokenValue.accessToken!;
-          getURLs(context);
-        }
-      }
-    });
-  }
-
-  void getURLs(BuildContext context) {
-    AppComponentBase.getInstance()
-        ?.getApiInterface()
-        .getApiRepository()
-        .getURls()
-        .then((getURls) {
-      if (getURls != null &&
-          getURls.resultflag == ApiClient.resultflagSuccess) {
-        ApiClient.freshDeskUrl = getURls.data?.freshdeskurl ?? "";
-        ApiClient.userManualUrl = getURls.data?.usermanualurl ?? "";
-      }
-    });
+        .getURls();
+    if (getURls != null && getURls.resultflag == ApiClient.resultflagSuccess) {
+      ApiClient.freshDeskUrl = getURls.data?.freshdeskurl ?? "";
+      ApiClient.userManualUrl = getURls.data?.usermanualurl ?? "";
+    }
   }
 
   void sendOTP(BuildContext context) async {
@@ -54,39 +36,39 @@ class LoginSendOTPBloc extends BlocBase {
       var deviceId = await AppComponentBase.getInstance()
           ?.getSharedPreference()
           .getUserDetail(key: SharedPreference().deviceId);
-      AppComponentBase.getInstance()
+      var sendOTPDataResponse = await AppComponentBase.getInstance()
           ?.getApiInterface()
           .getApiRepository()
-          .commonSendOTP(mobileNo: mobNo.text)
-          .then((sendOTPDataResponse) {
-        if (sendOTPDataResponse != null &&
-            sendOTPDataResponse.resultflag == ApiClient.resultflagSuccess) {
-          AppComponentBase.getInstance()
-              ?.getApiInterface()
-              .getApiRepository()
-              .registerDevice(mobileNo: mobNo.text, deviceId: deviceId)
-              .then((commonData) {
-            if (commonData != null &&
-                commonData.resultflag == ApiClient.resultflagSuccess) {
-              if (kDebugMode) {
-                print("OTP : ${sendOTPDataResponse.data?.oTP}");
-              }
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) {
-                  return LoginVerifyOTP(
-                      enteredMobNo: mobNo.text,
-                      otp: sendOTPDataResponse.data?.oTP);
-                }),
-              );
+          .commonSendOTP(mobileNo: mobNo.text);
+      if (sendOTPDataResponse != null &&
+          sendOTPDataResponse.resultflag == ApiClient.resultflagSuccess) {
+        AppComponentBase.getInstance()
+            ?.getApiInterface()
+            .getApiRepository()
+            .registerDevice(mobileNo: mobNo.text, deviceId: deviceId)
+            .then((commonData) {
+          if (commonData != null &&
+              commonData.resultflag == ApiClient.resultflagSuccess) {
+            if (kDebugMode) {
+              print("OTP : ${sendOTPDataResponse.data?.oTP}");
             }
-          });
-        } else {
-          CommonToast.getInstance()?.displayToast(
-              message:
-                  sendOTPDataResponse?.messages ?? StringUtils.sendOTPFail);
-        }
-      });
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return LoginVerifyOTP(
+                    enteredMobNo: mobNo.text,
+                    otp: sendOTPDataResponse.data?.oTP);
+              }),
+            );
+          } else {
+            CommonToast.getInstance()?.displayToast(
+                message: commonData?.messages ?? StringUtils.sendOTPFail);
+          }
+        });
+      } else {
+        CommonToast.getInstance()?.displayToast(
+            message: sendOTPDataResponse?.messages ?? StringUtils.sendOTPFail);
+      }
     } else {
       CommonToast.getInstance()
           ?.displayToast(message: StringUtils.someThingWentWrong);
@@ -94,47 +76,46 @@ class LoginSendOTPBloc extends BlocBase {
   }
 
   Future sendOTPUpdateMobile(BuildContext context) async {
-    await AppComponentBase.getInstance()
+    var sendOTPData = await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .commonSendOTP(email: email.text, type: ApiClient.otpTypeEmail)
-        .then((sendOTPData) {
-      if (sendOTPData != null &&
-          sendOTPData.resultflag == ApiClient.resultflagSuccess) {
-        if (kDebugMode) {
-          print("OTP : ${sendOTPData.data?.oTP}");
-        }
-        updateMobOtp = "${sendOTPData.data?.oTP}";
+        .commonSendOTP(email: email.text, type: ApiClient.otpTypeEmail);
+    if (sendOTPData != null &&
+        sendOTPData.resultflag == ApiClient.resultflagSuccess) {
+      if (kDebugMode) {
+        print("OTP : ${sendOTPData.data?.oTP}");
       }
-    });
+      updateMobOtp = "${sendOTPData.data?.oTP}";
+    } else {
+      CommonToast.getInstance()?.displayToast(
+          message: sendOTPData?.messages ?? StringUtils.sendOTPFail);
+    }
   }
 
-  void verifyOTPUpdateMobile(BuildContext context) {
-    AppComponentBase.getInstance()
+  void verifyOTPUpdateMobile(BuildContext context) async {
+    var sendOTPData = await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .commonSendOTP(email: email.text, type: ApiClient.otpTypeEmail)
-        .then((sendOTPData) {
-      if (sendOTPData != null &&
-          sendOTPData.resultflag == ApiClient.resultflagSuccess) {
+        .commonSendOTP(email: email.text, type: ApiClient.otpTypeEmail);
+    if (sendOTPData != null &&
+        sendOTPData.resultflag == ApiClient.resultflagSuccess) {
+      if (kDebugMode) {
         print("OTP : ${sendOTPData.data?.oTP}");
-        otp.text = "${sendOTPData.data?.oTP}";
       }
-    });
+      otp.text = "${sendOTPData.data?.oTP}";
+    }
   }
 
   Future updateMobile(BuildContext context) async {
-    await AppComponentBase.getInstance()
+    var commonData = await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .updateMobile()
-        .then((commonData) {
-      if (commonData != null &&
-          commonData.resultflag == ApiClient.resultflagSuccess) {
-        CommonToast.getInstance()?.displayToast(
-            message: commonData.messages ?? StringUtils.updateMobSuccess);
-      }
-    });
+        .updateMobile();
+    if (commonData != null &&
+        commonData.resultflag == ApiClient.resultflagSuccess) {
+      CommonToast.getInstance()?.displayToast(
+          message: commonData.messages ?? StringUtils.updateMobSuccess);
+    }
   }
 
 /*

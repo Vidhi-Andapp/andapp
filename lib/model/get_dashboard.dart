@@ -53,15 +53,21 @@ class GetDashboardData {
 class DashboardData {
   String? pospRegistrationStatus;
   String? trainingStatus;
+  String? iib;
   PospRegistration? pospRegistration;
   Training? training;
 
   DashboardData(
-      {this.pospRegistrationStatus, this.trainingStatus, this.training});
+      {this.pospRegistrationStatus,
+      this.trainingStatus,
+      this.iib,
+      this.pospRegistration,
+      this.training});
 
   DashboardData.fromJson(Map<String, dynamic> json) {
     pospRegistrationStatus = json['posp_registration_status'];
     trainingStatus = json['training_status'];
+    iib = json['iib'];
     pospRegistration = json['posp_registration'] != null
         ? PospRegistration.fromJson(json['posp_registration'])
         : null;
@@ -73,6 +79,7 @@ class DashboardData {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['posp_registration_status'] = pospRegistrationStatus;
     data['training_status'] = trainingStatus;
+    data['iib'] = iib;
     if (pospRegistration != null) {
       data['posp_registration'] = pospRegistration!.toJson();
     }
@@ -89,8 +96,8 @@ class PospRegistration {
   String? gstDetail;
   String? bankDetail;
   String? academicDetail;
-  String? iib;
-  PersonalDetail? presonalDetail;
+  String? irdaDetail;
+  PersonalDetail? personalDetail;
   KYCDetails? kYCDetails;
   PanDetails? panDetails;
   GstDetails? gstDetails;
@@ -103,8 +110,8 @@ class PospRegistration {
       this.gstDetail,
       this.bankDetail,
       this.academicDetail,
-      this.iib,
-      this.presonalDetail,
+      this.personalDetail,
+      this.irdaDetail,
       this.kYCDetails,
       this.panDetails,
       this.gstDetails,
@@ -117,8 +124,8 @@ class PospRegistration {
     gstDetail = json['gst_details'];
     bankDetail = json['bank_details'];
     academicDetail = json['academic_details'];
-    iib = json['iib'];
-    presonalDetail = json['PresonalDetail'] != null
+    irdaDetail = json['irda_details'];
+    personalDetail = json['PresonalDetail'] != null
         ? PersonalDetail.fromJson(json['PresonalDetail'])
         : null;
     kYCDetails = json['KYC_details'] != null
@@ -145,9 +152,9 @@ class PospRegistration {
     data['gst_details'] = gstDetail;
     data['bank_details'] = bankDetail;
     data['academic_details'] = academicDetail;
-    data['iib'] = iib;
-    if (presonalDetail != null) {
-      data['PresonalDetail'] = presonalDetail!.toJson();
+    data['irda_details'] = irdaDetail;
+    if (personalDetail != null) {
+      data['PresonalDetail'] = personalDetail!.toJson();
     }
     if (kYCDetails != null) {
       data['KYC_details'] = kYCDetails!.toJson();
