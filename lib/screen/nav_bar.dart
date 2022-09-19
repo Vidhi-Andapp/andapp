@@ -2,6 +2,7 @@ import 'package:andapp/common/app_theme.dart';
 import 'package:andapp/common/custom_expansion.dart';
 import 'package:andapp/common/custom_user_account_drawer_header.dart';
 import 'package:andapp/common/image_utils.dart';
+import 'package:andapp/common/network_image.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/di/app_component_base.dart';
 import 'package:andapp/di/shared_preferences.dart';
@@ -29,16 +30,19 @@ class _NavBarState extends State<NavBar> {
   List<Item> addItems() {
     List<Item> data = [];
     data.add(Item(
+      index: 0,
       headerValue: StringUtils.menuProfile,
       leadingIcon: SvgImages.menuProfile,
       /*trailingIcon: const Icon(Icons.keyboard_arrow_down_outlined,size: 30,),*/
     ));
     data.add(Item(
+      index: 1,
       leadingIcon: SvgImages.menuSupport,
       headerValue: StringUtils.menuSupport,
       //expandedValue: null,
     ));
     data.add(Item(
+        index: 2,
         headerValue: StringUtils.menuReferral,
         leadingIcon: SvgImages.menuReferral,
         trailingIcon: const Icon(
@@ -48,6 +52,7 @@ class _NavBarState extends State<NavBar> {
         expandedValue: [StringUtils.menuMail, StringUtils.menuCopy],
         isExpanded: false));
     data.add(Item(
+        index: 3,
         headerValue: StringUtils.training,
         leadingIcon: SvgImages.menuTraining,
         trailingIcon: const Icon(
@@ -60,6 +65,7 @@ class _NavBarState extends State<NavBar> {
         ],
         isExpanded: false));
     data.add(Item(
+      index: 4,
       headerValue: StringUtils.menuLogout,
       leadingIcon: SvgImages.menuLogout,
       /*trailingIcon: const Icon(Icons.keyboard_arrow_down_outlined,size: 30,),*/
@@ -74,38 +80,34 @@ class _NavBarState extends State<NavBar> {
       expandedHeaderPadding: EdgeInsets.zero,
       dividerColor: Colors.transparent,
       expansionCallback: (int index, bool isExpanded) {
-        setState(() {
-          for (int i = 0; i < _menu!.length; i++) {
-            if (i != index) {
-              _menu![i].isExpanded = false;
-            }
-          }
-          bool newValue = !_menu![index].isExpanded;
-          _menu![index].isExpanded = newValue;
-          isExpanded = newValue;
-        });
+        expansionCallBack(index, isExpanded);
       },
       children: _menu!.map<CustomExpansionPanel>((Item item) {
         return CustomExpansionPanel(
           canTapOnHeader: true,
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          backgroundColor: Theme
+              .of(context)
+              .scaffoldBackgroundColor,
           headerBuilder: (BuildContext context, bool isExpanded) {
             return ListTile(
               onTap: () {
                 if (item.headerValue == StringUtils.menuProfile) {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) {
-                      return const MyProfile();
+                      return MyProfile(pospId: pospId!);
                     }),
                   );
                 } else if (item.headerValue == StringUtils.menuSupport) {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) {
                       return const SupportPage();
                     }),
                   );
+                }
+                else {
+                  expansionCallBack(item.index, !item.isExpanded);
                 }
               },
               leading: SvgPicture.asset(
@@ -127,33 +129,34 @@ class _NavBarState extends State<NavBar> {
           hasIcon: item.trailingIcon == null ? false : true,
           body: (item.expandedValue != null)
               ? ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(0),
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) => ListTile(
-                        onTap: () {
-                          if (item.expandedValue![index] ==
-                                  StringUtils.generalInsurance &&
-                              pospId != null) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) {
-                                return TrainingDashboardGI(pospId: pospId!);
-                              }),
-                            );
-                          } else if (item.expandedValue![index] ==
-                                  StringUtils.lifeInsurance &&
-                              pospId != null) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) {
-                                return TrainingDashboardLI(pospId: pospId!);
-                              }),
-                            );
-                          }
-                          /* else if (item.expandedValue![index] ==
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(0),
+              shrinkWrap: true,
+              itemBuilder: (context, index) =>
+                  ListTile(
+                    onTap: () {
+                      if (item.expandedValue![index] ==
+                          StringUtils.generalInsurance &&
+                          pospId != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) {
+                            return TrainingDashboardGI(pospId: pospId!);
+                          }),
+                        );
+                      } else if (item.expandedValue![index] ==
+                          StringUtils.lifeInsurance &&
+                          pospId != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) {
+                            return TrainingDashboardLI(pospId: pospId!);
+                          }),
+                        );
+                      }
+                      /* else if (item.expandedValue![index] ==
                           StringUtils.menuMail) {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) {
@@ -163,7 +166,7 @@ class _NavBarState extends State<NavBar> {
                       }
                       else if (item.expandedValue![index] ==
                           StringUtils.menuCopy) {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) {
@@ -171,19 +174,19 @@ class _NavBarState extends State<NavBar> {
                               }),
                         );
                       }*/
-                        },
-                        tileColor: const Color(0x20DADADA),
-                        leading: SvgPicture.asset(
-                          item.leadingIcon,
-                          height: 22,
-                          width: 22,
-                          color: Colors.transparent,
-                        ),
-                        title: Text(item.expandedValue![index]),
-                        dense: true,
-                        //trailing: item.trailingIcon,
-                      ),
-                  itemCount: item.expandedValue?.length)
+                    },
+                    tileColor: const Color(0x20DADADA),
+                    leading: SvgPicture.asset(
+                      item.leadingIcon,
+                      height: 22,
+                      width: 22,
+                      color: Colors.transparent,
+                    ),
+                    title: Text(item.expandedValue![index]),
+                    dense: true,
+                    //trailing: item.trailingIcon,
+                  ),
+              itemCount: item.expandedValue?.length)
               : Container(),
           isExpanded: item.isExpanded,
         );
@@ -209,7 +212,9 @@ class _NavBarState extends State<NavBar> {
     _menu ??= addItems();
     return Drawer(
       width: 300,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme
+          .of(context)
+          .scaffoldBackgroundColor,
       child: SizedBox(
         child: StreamBuilder<ProfileData?>(
             stream: bloc.profileStream,
@@ -236,7 +241,15 @@ class _NavBarState extends State<NavBar> {
                             fontSize: 14,
                             fontFamily: "Poppins"),
                       ),
-                      currentAccountPicture: CircleAvatar(
+                      currentAccountPicture: CustomNetworkImage(
+                        radius: 54, //as current picture size is 108
+                        placeholderImage:
+                        profileData?.personalDetails?.gender == "M"
+                            ? AssetImages.profileAvatarMale
+                            : AssetImages.profileAvatarFemale,
+                        image: profileData?.personalDetails?.pospPhoto ?? "",
+                      ),
+                      /* CircleAvatar(
                         radius: 100,
                         backgroundColor: Colors.white,
                         child: CircleAvatar(
@@ -248,7 +261,7 @@ class _NavBarState extends State<NavBar> {
                                 height: 100, width: 100),
                           ),
                         ),
-                      ),
+                      ),*/
                       decoration: BoxDecoration(
                         color: appTheme.primaryColor,
                       ),
@@ -262,11 +275,25 @@ class _NavBarState extends State<NavBar> {
       ),
     );
   }
+
+  void expansionCallBack(int index, bool isExpanded) {
+    setState(() {
+      for (int i = 0; i < _menu!.length; i++) {
+        if (i != index) {
+          _menu![i].isExpanded = false;
+        }
+      }
+      bool newValue = !_menu![index].isExpanded;
+      _menu![index].isExpanded = newValue;
+      isExpanded = newValue;
+    });
+  }
 }
 
 // stores ExpansionPanel state information
 class Item {
   Item({
+    required this.index,
     this.expandedValue,
     required this.leadingIcon,
     this.trailingIcon,
@@ -274,6 +301,7 @@ class Item {
     this.isExpanded = false,
   });
 
+  int index;
   String leadingIcon;
   Widget? trailingIcon;
   String? headerValue;

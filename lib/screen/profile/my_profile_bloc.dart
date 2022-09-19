@@ -23,11 +23,11 @@ class MyProfileBloc extends BlocBase {
 
   //PlatformFile? profilePhoto;
 
-  Future getProfile(BuildContext context) async {
+  Future getProfile(BuildContext context, String pospId) async {
     await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .getProfile(id: "101")
+        .getProfile(id: pospId)
         .then((getProfile) {
       if (getProfile != null &&
           getProfile.resultflag == ApiClient.resultflagSuccess &&

@@ -8,39 +8,40 @@ import 'package:andapp/services/api_client.dart';
 import 'package:flutter/material.dart';
 
 class TrainingDayBloc extends BlocBase {
-  void completeDay(BuildContext context, String trainingType, String day) {
-    AppComponentBase.getInstance()
+  Future completeDay(BuildContext context, bool mounted, String trainingType,
+      String day) async {
+    var pospId = await AppComponentBase.getInstance()
         ?.getSharedPreference()
-        .getUserDetail(key: SharedPreference().pospId)
-        .then((value) => AppComponentBase.getInstance()
-                ?.getApiInterface()
-                .getApiRepository()
-                .completeTrainingDay(
-                    trainingType: trainingType == StringUtils.generalInsurance
-                        ? ApiClient.trainingTypeGI
-                        : ApiClient.trainingTypeLI,
-                    day: day,
-                    pospId: "73")
-                .then((commonData) {
-              if (commonData != null &&
-                  commonData.resultflag == ApiClient.resultflagSuccess &&
-                  commonData.data != null) {
-                /* CommonToast.getInstance()
-                    ?.displayToast(message: commonData.data ?? "");*/
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return TrainingNavigator(
-                      day: day,
-                      title: trainingType,
-                    );
-                  }),
-                );
-              } else if (commonData != null && commonData.messages != null) {
-                CommonToast.getInstance()
-                    ?.displayToast(message: commonData.messages ?? "");
-              }
-            }));
+        .getUserDetail(key: SharedPreference().pospId);
+    if (pospId != null) {
+      var commonData = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .completeTrainingDay(
+              trainingType: trainingType == StringUtils.generalInsurance
+                  ? ApiClient.trainingTypeGI
+                  : ApiClient.trainingTypeLI,
+              day: day,
+              pospId: pospId!);
+      if (commonData != null &&
+          commonData.resultflag == ApiClient.resultflagSuccess &&
+          commonData.data != null) {
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) {
+              return TrainingNavigator(
+                day: day,
+                title: trainingType,
+              );
+            }),
+          );
+        }
+      } else if (commonData != null && commonData.messages != null) {
+        CommonToast.getInstance()
+            ?.displayToast(message: commonData.messages ?? "");
+      }
+    }
   }
 
   @override

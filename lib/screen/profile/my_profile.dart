@@ -13,7 +13,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class MyProfile extends StatefulWidget {
-  const MyProfile({Key? key}) : super(key: key);
+  final String pospId;
+
+  const MyProfile({Key? key, required this.pospId}) : super(key: key);
 
   @override
   State<MyProfile> createState() => _MyProfileState();
@@ -21,14 +23,14 @@ class MyProfile extends StatefulWidget {
 
 class _MyProfileState extends State<MyProfile> {
   final MyProfileBloc bloc = MyProfileBloc();
-  static int selectedIndex = 1;
+  static int selectedIndex = 0;
   final PageController _pageController =
       PageController(initialPage: 0, viewportFraction: 1);
 
   @override
   void initState() {
     super.initState();
-    bloc.getProfile(context);
+    bloc.getProfile(context, widget.pospId);
   }
 
   Future<PlatformFile?> _pickFile() async {
@@ -65,7 +67,6 @@ class _MyProfileState extends State<MyProfile> {
     var iconSize = (MediaQuery.of(context).size.width - 64) / 12;
     var firstHeight = MediaQuery.of(context).size.height * 3 / 10;
     var secondHeight = MediaQuery.of(context).size.height * 2.2 / 10;
-    selectedIndex = 4;
     return Scaffold(
       appBar: AppBar(
           title: Align(
@@ -246,14 +247,16 @@ class _MyProfileState extends State<MyProfile> {
                                               elevation: 0.0,
                                               heroTag: UniqueKey(),
                                               backgroundColor:
-                                                  selectedIndex == 1
+                                                  selectedIndex == 0
                                                       ? appTheme.primaryColor
                                                       : Colors.white,
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                _pageController.jumpToPage(0);
+                                              },
                                               shape: CircleBorder(
                                                   side: BorderSide(
                                                 width: 2,
-                                                color: selectedIndex == 1
+                                                color: selectedIndex == 0
                                                     ? appTheme.primaryColor
                                                     : Colors.white,
                                               )),
@@ -263,7 +266,7 @@ class _MyProfileState extends State<MyProfile> {
                                                           .iconPersonalDetails,
                                                       height: iconSize,
                                                       width: iconSize,
-                                                      color: selectedIndex == 1
+                                                      color: selectedIndex == 0
                                                           ? Colors.white
                                                           : appTheme
                                                               .primaryColor))),
@@ -292,14 +295,16 @@ class _MyProfileState extends State<MyProfile> {
                                               elevation: 0.0,
                                               heroTag: UniqueKey(),
                                               backgroundColor:
-                                                  selectedIndex == 2
+                                                  selectedIndex == 1
                                                       ? appTheme.primaryColor
                                                       : Colors.white,
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                _pageController.jumpToPage(1);
+                                              },
                                               shape: CircleBorder(
                                                   side: BorderSide(
                                                 width: 2,
-                                                color: selectedIndex == 2
+                                                color: selectedIndex == 1
                                                     ? appTheme.primaryColor
                                                     : Colors.white,
                                               )),
@@ -308,7 +313,7 @@ class _MyProfileState extends State<MyProfile> {
                                                       SvgImages.iconKYCDetails,
                                                       height: iconSize,
                                                       width: iconSize,
-                                                      color: selectedIndex == 2
+                                                      color: selectedIndex == 1
                                                           ? Colors.white
                                                           : appTheme
                                                               .primaryColor))),
@@ -341,14 +346,16 @@ class _MyProfileState extends State<MyProfile> {
                                               elevation: 0.0,
                                               heroTag: UniqueKey(),
                                               backgroundColor:
-                                                  selectedIndex == 3
+                                                  selectedIndex == 2
                                                       ? appTheme.primaryColor
                                                       : Colors.white,
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                _pageController.jumpToPage(2);
+                                              },
                                               shape: CircleBorder(
                                                   side: BorderSide(
                                                 width: 2,
-                                                color: selectedIndex == 3
+                                                color: selectedIndex == 2
                                                     ? appTheme.primaryColor
                                                     : Colors.white,
                                               )),
@@ -358,7 +365,7 @@ class _MyProfileState extends State<MyProfile> {
                                                           .iconProfileBankDetails,
                                                       height: iconSize,
                                                       width: iconSize,
-                                                      color: selectedIndex == 3
+                                                      color: selectedIndex == 2
                                                           ? Colors.white
                                                           : appTheme
                                                               .primaryColor))),
@@ -391,14 +398,16 @@ class _MyProfileState extends State<MyProfile> {
                                               elevation: 0.0,
                                               heroTag: UniqueKey(),
                                               backgroundColor:
-                                                  selectedIndex == 4
+                                                  selectedIndex == 3
                                                       ? appTheme.primaryColor
                                                       : Colors.white,
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                _pageController.jumpToPage(3);
+                                              },
                                               shape: CircleBorder(
                                                   side: BorderSide(
                                                 width: 2,
-                                                color: selectedIndex == 4
+                                                color: selectedIndex == 3
                                                     ? appTheme.primaryColor
                                                     : Colors.white,
                                               )),
@@ -417,7 +426,7 @@ class _MyProfileState extends State<MyProfile> {
                                                                       .width -
                                                                   64) /
                                                               16,
-                                                      color: selectedIndex == 4
+                                                      color: selectedIndex == 3
                                                           ? Colors.white
                                                           : appTheme
                                                               .primaryColor))),
@@ -487,7 +496,12 @@ class _MyProfileState extends State<MyProfile> {
                             child: ExpandablePageView.builder(
                               controller: _pageController,
                               itemCount: 4,
+                              onPageChanged: (int? page) {
+                                selectedIndex = page ?? 0;
+                                setState(() {});
+                              },
                               itemBuilder: (context, position) {
+                                selectedIndex = position;
                                 return position == 0
                                     ? Column(
                                         mainAxisAlignment:
@@ -767,9 +781,6 @@ class _MyProfileState extends State<MyProfile> {
                                                     ],
                                                   )
                                                 : Container();
-                              },
-                              onPageChanged: (int? page) {
-                                //selectIndex(page, scrollController);
                               },
                             ),
                           ),

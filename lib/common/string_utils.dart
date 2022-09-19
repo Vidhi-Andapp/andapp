@@ -1,5 +1,6 @@
 class StringUtils {
   static String appName = '';
+  static String dateFormat = "MM/dd/yyyy hh:mm:ss";
   static const String noInternet = 'No Internet';
   static const String noInternetContent =
       'You must be connected to the internet to complete this action .';
@@ -18,7 +19,7 @@ class StringUtils {
   static const String regOtpContent =
       "OTP will be sent to aadhar registered mobile number.";
   static const String uploadContent =
-      "Upload image (.jpg, .png, jpeg) or pdf file upto 4 MB only.";
+      "Upload image (.jpg, .png, .jpeg) or pdf file upto 4 MB only.";
   static const String getReady = "Get Ready";
   static const String withDoc = "With Your Documents";
   static const String welcome = "Welcome!";
@@ -99,6 +100,8 @@ class StringUtils {
   static const String training = "Training";
   static const String startEarning = "Start Earning";
   static const String iibApproved = "IIB Approved";
+  static const String iibPending = "IIB Approval Pending";
+  static const String iibRejected = "IIB Rejected";
   static const String irdaApproved = "IRDA Approved";
   static const String generalInsurance = "General Insurance";
   static const String lifeInsurance = "Life Insurance";
@@ -149,6 +152,8 @@ class StringUtils {
       "Please enter valid mobile number Or mobile number not found";
   static const String verifyOTPFail =
       "Invalid OTP.Please try with latest valid OTP";
+  static const String verifyOTPExpired =
+      "Your OTP is expired.Please Send again and try with latest valid OTP";
   static const String trainingSuccessTitle = "Congratulations...!!";
   static const String trainingDaysSuccessTitle = "Superb...!!";
   static const String registrationPendingMsg =
@@ -212,7 +217,9 @@ class StringUtils {
   static const String valEmptyIFSCCode = "Please enter IFSC Code";
   static const String valValidIFSCCode = "Please enter valid IFSC Code";
   static const String trainingDayMsg = "Please come tomorrow for training";
-  static const String uploadAcademicCerti =
+  static const String iibPendingRejectedMsg =
+      "Your IIB is {0} so you may not download your certificate";
+  static const String uploadAcademicCertificate =
       "Please select and upload certificate";
 
   static const String htmlTerms = """

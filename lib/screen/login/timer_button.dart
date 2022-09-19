@@ -100,6 +100,7 @@ class _TimerButtonState extends State<TimerButton> {
         _timerUpdate();
       } else {
         timeUpFlag = true;
+        widget.onTimeExpired();
       }
     });
   }

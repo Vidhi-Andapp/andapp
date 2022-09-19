@@ -120,9 +120,10 @@ class _TrainingDaysState extends State<TrainingDays> {
             child: PinkBorderButton(
               isEnabled: true,
               content: StringUtils.submit,
-              onPressed: () {
-                bloc.completeDay(
+              onPressed: () async {
+                await bloc.completeDay(
                   context,
+                  mounted,
                   widget.title,
                   widget.day,
                 );

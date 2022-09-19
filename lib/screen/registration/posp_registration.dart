@@ -3202,7 +3202,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
       }
       else {
         CommonToast.getInstance()
-            ?.displayToast(message: StringUtils.uploadAcademicCerti);
+            ?.displayToast(message: StringUtils.uploadAcademicCertificate);
       }
     }
   }

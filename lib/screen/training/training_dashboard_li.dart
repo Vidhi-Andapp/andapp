@@ -30,9 +30,6 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
   final DashboardBloc bloc = DashboardBloc.getInstance();
   int groupValue = 0, module = 3, hours = 15, video = 6;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  //final LocalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   bool expandedCourse = false, expandedCourseWorks = false;
 
   @override
@@ -64,9 +61,9 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
             leading: Builder(
               builder: (BuildContext context) {
                 return IconButton(
-                  icon: const Icon(Icons.menu, color: Colors.white),
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
                   onPressed: () {
-                    _scaffoldKey.currentState?.openDrawer();
+                    Navigator.of(context).pop();
                   },
                   iconSize: 30,
                   tooltip: MaterialLocalizations.of(context).showMenuTooltip,
@@ -91,7 +88,7 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                       String liDay = "";
                       if (liTime != null && liTime.isNotEmpty) {
                         DateTime liDate =
-                            DateFormat("MM/dd/yyyy hh:mm:ss").parse(liTime);
+                            DateFormat(StringUtils.dateFormat).parse(liTime);
                         if (now.day - liDate.day >= 1) {
                           allowLiDay = true;
                         }

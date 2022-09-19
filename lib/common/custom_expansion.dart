@@ -86,7 +86,8 @@ class CustomExpansionPanel {
     this.isExpanded = false,
     this.canTapOnHeader = false,
     this.backgroundColor,
-  }) : assert(headerBuilder != null),
+  })
+      : assert(headerBuilder != null),
         assert(body != null),
         assert(isExpanded != null),
         assert(canTapOnHeader != null);
@@ -139,7 +140,8 @@ class ExpansionPanelRadio extends CustomExpansionPanel {
     required Widget body,
     bool canTapOnHeader = false,
     Color? backgroundColor,
-  }) : assert(value != null),
+  })
+      : assert(value != null),
         super(
         body: body,
         hasIcon: true,
@@ -183,7 +185,8 @@ class CustomExpansionPanelList extends StatefulWidget {
     this.expandedHeaderPadding = _kPanelHeaderExpandedDefaultPadding,
     this.dividerColor,
     this.elevation = 2,
-  }) : assert(children != null),
+  })
+      : assert(children != null),
         assert(animationDuration != null),
         _allowOnlyOnePanelOpen = false,
         initialOpenPanelValue = null,
@@ -211,7 +214,8 @@ class CustomExpansionPanelList extends StatefulWidget {
     this.expandedHeaderPadding = _kPanelHeaderExpandedDefaultPadding,
     this.dividerColor,
     this.elevation = 2,
-  }) : assert(children != null),
+  })
+      : assert(children != null),
         assert(animationDuration != null),
         _allowOnlyOnePanelOpen = true,
         super(key: key);
@@ -280,7 +284,8 @@ class _CustomExpansionPanelListState extends State<CustomExpansionPanelList> {
       assert(_allIdentifiersUnique(), 'All ExpansionPanelRadio identifier values must be unique.');
       if (widget.initialOpenPanelValue != null) {
         _currentOpenPanel =
-            searchPanelByValue(widget.children.cast<ExpansionPanelRadio>(), widget.initialOpenPanelValue);
+            searchPanelByValue(widget.children.cast<ExpansionPanelRadio>(),
+                widget.initialOpenPanelValue);
       }
     }
   }
@@ -295,7 +300,8 @@ class _CustomExpansionPanelListState extends State<CustomExpansionPanelList> {
       // open panel to widget.initialOpenPanelValue
       if (!oldWidget._allowOnlyOnePanelOpen) {
         _currentOpenPanel =
-            searchPanelByValue(widget.children.cast<ExpansionPanelRadio>(), widget.initialOpenPanelValue);
+            searchPanelByValue(widget.children.cast<ExpansionPanelRadio>(),
+                widget.initialOpenPanelValue);
       }
     } else {
       _currentOpenPanel = null;
@@ -304,7 +310,8 @@ class _CustomExpansionPanelListState extends State<CustomExpansionPanelList> {
 
   bool _allIdentifiersUnique() {
     final Map<Object, bool> identifierMap = <Object, bool>{};
-    for (final ExpansionPanelRadio child in widget.children.cast<ExpansionPanelRadio>()) {
+    for (final ExpansionPanelRadio child in widget.children.cast<
+        ExpansionPanelRadio>()) {
       identifierMap[child.value] = true;
     }
     return identifierMap.length == widget.children.length;
@@ -312,7 +319,8 @@ class _CustomExpansionPanelListState extends State<CustomExpansionPanelList> {
 
   bool _isChildExpanded(int index) {
     if (widget._allowOnlyOnePanelOpen) {
-      final ExpansionPanelRadio radioWidget = widget.children[index] as ExpansionPanelRadio;
+      final ExpansionPanelRadio radioWidget = widget
+          .children[index] as ExpansionPanelRadio;
       return _currentOpenPanel?.value == radioWidget.value;
     }
     return widget.children[index].isExpanded;
@@ -322,12 +330,15 @@ class _CustomExpansionPanelListState extends State<CustomExpansionPanelList> {
     widget.expansionCallback?.call(index, isExpanded);
 
     if (widget._allowOnlyOnePanelOpen) {
-      final ExpansionPanelRadio pressedChild = widget.children[index] as ExpansionPanelRadio;
+      final ExpansionPanelRadio pressedChild = widget
+          .children[index] as ExpansionPanelRadio;
 
       // If another ExpansionPanelRadio was already open, apply its
       // expansionCallback (if any) to false, because it's closing.
-      for (int childIndex = 0; childIndex < widget.children.length; childIndex += 1) {
-        final ExpansionPanelRadio child = widget.children[childIndex] as ExpansionPanelRadio;
+      for (int childIndex = 0; childIndex < widget.children.length;
+      childIndex += 1) {
+        final ExpansionPanelRadio child = widget
+            .children[childIndex] as ExpansionPanelRadio;
         if (widget.expansionCallback != null &&
             childIndex != index &&
             child.value == _currentOpenPanel?.value) {
@@ -341,7 +352,8 @@ class _CustomExpansionPanelListState extends State<CustomExpansionPanelList> {
     }
   }
 
-  ExpansionPanelRadio? searchPanelByValue(List<ExpansionPanelRadio> panels, Object? value)  {
+  ExpansionPanelRadio? searchPanelByValue(List<ExpansionPanelRadio> panels,
+      Object? value) {
     for (final ExpansionPanelRadio panel in panels) {
       if (panel.value == value)
         return panel;
@@ -376,29 +388,33 @@ class _CustomExpansionPanelListState extends State<CustomExpansionPanelList> {
             colorScheme: const ColorScheme.light(
               primary: Colors.white,
             ), // here for open state in replacement of deprecated accentColor
-            dividerColor: Colors.transparent, // if you want to remove the border
+            dividerColor: Colors
+                .transparent, // if you want to remove the border
           ),
           child: ExpandIcon(
             /*color: Theme.of(context).brightness == Brightness.light ? Colors.white : Colors.white,
             expandedColor:Theme.of(context).brightness == Brightness.light ? Colors.white : Colors.white,*/
             isExpanded: _isChildExpanded(index),
             //padding: const EdgeInsets.all(16.0),
-            onPressed: !child.canTapOnHeader
+            onPressed: !child.hasIcon!
                 ? (bool isExpanded) => _handlePressed(isExpanded, index)
                 : null,
           ),
         ),
       );
-      if (!child.canTapOnHeader) {
-        final MaterialLocalizations localizations = MaterialLocalizations.of(context);
+      if (!child.hasIcon!) {
+        final MaterialLocalizations localizations = MaterialLocalizations.of(
+            context);
         expandIconContainer = Semantics(
-          label: _isChildExpanded(index)? localizations.expandedIconTapHint : localizations.collapsedIconTapHint,
+          label: _isChildExpanded(index)
+              ? localizations.expandedIconTapHint
+              : localizations.collapsedIconTapHint,
           container: true,
           child: expandIconContainer,
         );
       }
 
-     /* Widget header = Row(
+      /* Widget header = Row(
         children: <Widget>[
           Expanded(
             child: AnimatedContainer(
@@ -422,15 +438,18 @@ class _CustomExpansionPanelListState extends State<CustomExpansionPanelList> {
             child: AnimatedContainer(
               duration: widget.animationDuration,
               curve: Curves.fastOutSlowIn,
-              margin: _isChildExpanded(index) ? widget.expandedHeaderPadding : EdgeInsets.zero,
+              margin: _isChildExpanded(index)
+                  ? widget.expandedHeaderPadding
+                  : EdgeInsets.zero,
               child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: _kPanelHeaderCollapsedHeight),
+                constraints: const BoxConstraints(
+                    minHeight: _kPanelHeaderCollapsedHeight),
                 child: headerWidget,
               ),
             ),
           ),
           Container(
-            child: child.hasIcon == true ? expandIconContainer:null,
+            child: child.hasIcon == true ? expandIconContainer : null,
           ),
         ],
       );
@@ -452,10 +471,13 @@ class _CustomExpansionPanelListState extends State<CustomExpansionPanelList> {
               AnimatedCrossFade(
                 firstChild: Container(height: 0.0),
                 secondChild: child.body,
-                firstCurve: const Interval(0.0, 0.6, curve: Curves.fastOutSlowIn),
-                secondCurve: const Interval(0.4, 1.0, curve: Curves.fastOutSlowIn),
+                firstCurve: const Interval(
+                    0.0, 0.6, curve: Curves.fastOutSlowIn),
+                secondCurve: const Interval(
+                    0.4, 1.0, curve: Curves.fastOutSlowIn),
                 sizeCurve: Curves.fastOutSlowIn,
-                crossFadeState: _isChildExpanded(index) ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                crossFadeState: _isChildExpanded(index) ? CrossFadeState
+                    .showSecond : CrossFadeState.showFirst,
                 duration: widget.animationDuration,
               ),
             ],

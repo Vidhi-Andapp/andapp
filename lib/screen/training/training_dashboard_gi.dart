@@ -62,9 +62,9 @@ class _TrainingDashboardGIState extends State<TrainingDashboardGI>
             leading: Builder(
               builder: (BuildContext context) {
                 return IconButton(
-                  icon: const Icon(Icons.menu, color: Colors.white),
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
                   onPressed: () {
-                    _scaffoldKey.currentState?.openDrawer();
+                    Navigator.of(context).pop();
                   },
                   iconSize: 30,
                   tooltip: MaterialLocalizations.of(context).showMenuTooltip,
@@ -89,7 +89,7 @@ class _TrainingDashboardGIState extends State<TrainingDashboardGI>
                       bool allowGIDay = false;
                       if (giTime != null && giTime.isNotEmpty) {
                         DateTime giDate =
-                            DateFormat("MM/dd/yyyy hh:mm:ss").parse(giTime);
+                            DateFormat(StringUtils.dateFormat).parse(giTime);
                         if (now.day - giDate.day >= 1) {
                           allowGIDay = true;
                         }

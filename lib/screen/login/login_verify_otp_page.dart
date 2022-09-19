@@ -8,6 +8,7 @@ import 'package:andapp/screen/login/timer_button.dart';
 import 'package:andapp/screen/support/custom_speed_dial.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:sms_autofill/sms_autofill.dart';
@@ -29,8 +30,6 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
   bool isOpened = false;
   late AnimationController _animationController;
   final verifyOTPKey = GlobalKey<FormState>();
-
-  //String signature = "{{ app signature }}";
   String? appSignature, _code;
   int? otpToCompare;
 
@@ -190,6 +189,23 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                         .inputDecorationTheme
                                         .border,
                                   ),
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp("[0-9]")),
+                                  ],
+                                  /*validator: (val) {
+                                        String pattern =
+                                            r'(^(?:[+0]9)?[0-9]{10,12}$)';
+                                        RegExp regExp = RegExp(pattern);
+                                        if (val == null || val.isEmpty) {
+                                          return "Please enter mobile number";
+                                        } else if (val.length != 10 ||
+                                            !regExp.hasMatch(val)) {
+                                          return "Please enter valid mobile number";
+                                        } else {
+                                          return null;
+                                        }
+                                      },*/
                                   codeLength: 5,
                                   currentCode: _code,
                                   onCodeSubmitted: (code) {
@@ -205,7 +221,10 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                               TimerButton(
                                 label: StringUtils.resendOtp,
                                 timeOutInSeconds: 120,
-                                onTimeExpired: () {},
+                                onTimeExpired: () {
+                                  otpToCompare = int.tryParse("");
+                                  setState(() {});
+                                },
                                 onPressed: () async {
                                   var otp = await bloc.reSendOTP(
                                       context, widget.enteredMobNo);
@@ -231,14 +250,30 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                       onPressed: () {
                                         final form = verifyOTPKey.currentState;
                                         if (form!.validate()) {
-                                          form.save();
+                                          //form.save();
                                           //bloc.verifyOTP(context);
                                           print("otpToCompare : $otpToCompare");
-                                          if (otpToCompare != null &&
-                                              _code ==
-                                                  otpToCompare.toString()) {
-                                            bloc.getStatus(
-                                                context, widget.enteredMobNo);
+                                          String pattern = r"^[0-9]{5}$";
+                                          RegExp regExp = RegExp(pattern);
+                                          if (_code == null || _code!.isEmpty) {
+                                            CommonToast.getInstance()
+                                                ?.displayToast(
+                                                    message: StringUtils
+                                                        .valEmptyOtp);
+                                          } else if (!regExp.hasMatch(_code!)) {
+                                            CommonToast.getInstance()
+                                                ?.displayToast(
+                                                    message: StringUtils
+                                                        .valValidOtp);
+                                          } else if (otpToCompare == null) {
+                                            CommonToast.getInstance()
+                                                ?.displayToast(
+                                                    message: StringUtils
+                                                        .verifyOTPExpired);
+                                          } else if (_code ==
+                                              otpToCompare.toString()) {
+                                            bloc.getStatus(context, mounted,
+                                                widget.enteredMobNo);
                                           } else {
                                             CommonToast.getInstance()
                                                 ?.displayToast(

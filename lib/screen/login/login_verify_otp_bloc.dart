@@ -31,7 +31,7 @@ class LoginVerifyOTPBloc extends BlocBase {
     return null;
   }
 
-  void getStatus(BuildContext context, String mobileNo) async {
+  void getStatus(BuildContext context, bool mounted, String mobileNo) async {
     await AppComponentBase.getInstance()
         ?.getSharedPreference()
         .setUserDetail(key: SharedPreference().mobileNumber, value: mobileNo);
@@ -54,16 +54,20 @@ class LoginVerifyOTPBloc extends BlocBase {
                 key: SharedPreference().pospStatus,
                 value: getStatusData.data?.data?.pospStatus.toString());
         if (getStatusData.data?.data?.pospStatus == 0) {
-          Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const DocumentPage()),
-              (Route<dynamic> route) => false);
+          if (mounted) {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const DocumentPage()),
+                (Route<dynamic> route) => false);
+          }
         } else if (getStatusData.data?.data?.pospStatus == 1) {
-          Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                  builder: (context) => Dashboard(
-                      pospId:
-                          getStatusData.data?.data?.pospId.toString() ?? "")),
-              (Route<dynamic> route) => false);
+          if (mounted) {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    builder: (context) => Dashboard(
+                        pospId:
+                            getStatusData.data?.data?.pospId.toString() ?? "")),
+                (Route<dynamic> route) => false);
+          }
         }
       }
     }

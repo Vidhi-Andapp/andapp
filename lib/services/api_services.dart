@@ -292,9 +292,9 @@ class ApiServices extends ApiClient {
       await AppComponentBase.getInstance()
           ?.getSharedPreference()
           .setUserDetail(key: SharedPreference().dashboard, value: response);
-      //var data = GetDashboard.fromJson(json.decode(response));
-      var data = GetDashboard.fromJson(json.decode(
-          '{"resultflag":"Success","Messages":"Success","Data":{"data":{"posp_registration_status":"true","training_status":"true","iib":"true","posp_registration":{"kyc_details":"true","pan_details":"pending","gst_details":"","bank_details":"true","academic_details":"pending","irda_details":"pending","PresonalDetail":{"user_name":"meet","first_name":"m","middel_name":"a","last_name":"p","address":"Address","date_of_birth":null,"gender":"Male","email_id":"meet@andapp.in","state":null,"city":null,"pincode":"380063","referred_by_Id":0},"KYC_details":{"address_proff_name":null,"mobile_no":"9408878267","whatsapp_no":"9408878267","aadhar_no":"242374327327","preferred_type":"M"},"Pan_details":{"account_type":"Personal","pan_name":"","pan_no":""},"Gst_detail":{"GST_Name":null,"gst_no":null,"gst_status":null},"Bank_detail":{"bank_name":"MUNNA BHAIYA","bank_account_no":"234567890987654323","ifsc":"HASM1222222"},"Academic_details":{"education_proof_type":"Graduation"}}},"status_code":"200","message":"","success":true}}'));
+      var data = GetDashboard.fromJson(json.decode(response));
+      /*var data = GetDashboard.fromJson(json.decode(
+          '{"resultflag":"Success","Messages":"Success","Data":{"data":{"posp_registration_status":"true","training_status":"true","iib":"false","posp_registration":{"kyc_details":"true","pan_details":"pending","gst_details":"","bank_details":"true","academic_details":"pending","irda_details":"pending","PresonalDetail":{"user_name":"meet","first_name":"m","middel_name":"a","last_name":"p","address":"Address","date_of_birth":null,"gender":"Male","email_id":"meet@andapp.in","state":null,"city":null,"pincode":"380063","referred_by_Id":0},"KYC_details":{"address_proff_name":null,"mobile_no":"9408878267","whatsapp_no":"9408878267","aadhar_no":"242374327327","preferred_type":"M"},"Pan_details":{"account_type":"Personal","pan_name":"","pan_no":""},"Gst_detail":{"GST_Name":null,"gst_no":null,"gst_status":null},"Bank_detail":{"bank_name":"MUNNA BHAIYA","bank_account_no":"234567890987654323","ifsc":"HASM1222222"},"Academic_details":{"education_proof_type":"Graduation"}}},"status_code":"200","message":"","success":true}}'));*/
       return data;
     }
     return null;
