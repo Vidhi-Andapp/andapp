@@ -123,7 +123,6 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
   }
 
 /*
-
   List<int> _getDividersIndexes() {
     List<int> dividersIndexes = [];
     for (var i = 0; i < (items.length * 2) - 1; i++) {
@@ -1046,7 +1045,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                 }).toList(),
                                                 customItemsIndexes: _getDividersIndexes(),
                                                 customItemsHeight: 4,*/
-                                                        customItemsHeight: 1,
+                                                        //customItemsHeight: 1,
                                                         value:
                                                         bloc.selectedSalutation,
                                                         onChanged: (value) {
@@ -1365,7 +1364,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                 }).toList(),
                                                 customItemsIndexes: _getDividersIndexes(),
                                                 customItemsHeight: 4,*/
-                                                        customItemsHeight: 1,
+                                                        //customItemsHeight: 1,
                                                         value: bloc
                                                             .selectedGender,
                                                         onChanged: (value) {
@@ -2788,7 +2787,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                 }).toList(),
                                                 customItemsIndexes: _getDividersIndexes(),
                                                 customItemsHeight: 4,*/
-                                            customItemsHeight: 1,
+                                            //customItemsHeight: 1,
                                             value: bloc.selectedCertificateType,
                                             onChanged: (value) {
                                               setState(() {

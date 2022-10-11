@@ -284,12 +284,12 @@ class MyAppState extends State<MyApp> {
     final ThemeData base = ThemeData.dark();
     return base.copyWith(
       visualDensity: VisualDensity.adaptivePlatformDensity,
-      brightness: Brightness.light,
+      brightness: Brightness.dark,
       colorScheme: const ColorScheme.dark(primary: Colors.grey)
           .copyWith(secondary: Colors.grey),
       appBarTheme: Theme.of(context).appBarTheme.copyWith(
           systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarIconBrightness: Brightness.light,
+            statusBarIconBrightness: Brightness.dark,
           ),
           titleTextStyle: const TextStyle(
               fontSize: 22,

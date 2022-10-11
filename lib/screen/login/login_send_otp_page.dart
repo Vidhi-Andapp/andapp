@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:andapp/common/app_theme.dart';
 import 'package:andapp/common/image_utils.dart';
 import 'package:andapp/common/pink_border_button.dart';
@@ -7,12 +6,13 @@ import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/screen/login/login_send_otp_bloc.dart';
 import 'package:andapp/screen/support/custom_speed_dial.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:sms_autofill/sms_autofill.dart';
+//import 'package:sms_autofill/sms_autofill.dart';
 
 class LoginSendOTP extends StatefulWidget {
   const LoginSendOTP({Key? key}) : super(key: key);
@@ -41,8 +41,6 @@ class _LoginSendOTPState extends State<LoginSendOTP>
   void initState() {
     super.initState();
     //loadHtmlFromAssets();
-/*
-    bloc.getToken(context, mounted);*/
   }
 
   Future<String> decodeStringFromAssets(String path) async {
@@ -137,9 +135,11 @@ class _LoginSendOTPState extends State<LoginSendOTP>
                                           final form = sendOTPKey.currentState;
                                           if (form?.validate() ?? false) {
                                             form?.save();
-                                            SmsAutoFill().getAppSignature;
-                                            SmsAutoFill().listenForCode;
-                                            bloc.sendOTP(context);
+                                           /* final String signature = await SmsAutoFill().getAppSignature;
+                                            print("Signature: $signature");*/
+                                            if(mounted) {
+                                              await bloc.sendOTP(context,mounted);
+                                            }
                                           }
                                         },
                                       )),
@@ -504,7 +504,6 @@ class _LoginSendOTPState extends State<LoginSendOTP>
                                                       }
                                                       return null;
                                                     },
-
                                                     // these callbacks are called when a complicated element is loading
                                                     // or failed to render allowing the app to render progress indicator
                                                     // and fallback widget

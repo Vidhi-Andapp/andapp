@@ -1,3 +1,4 @@
+/*
 import 'dart:async';
 
 import 'package:andapp/common/bloc_provider.dart';
@@ -31,4 +32,4 @@ class TrainingResultBloc extends BlocBase {
 
   @override
   void dispose() {}
-}
+}*/

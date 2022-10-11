@@ -121,13 +121,13 @@ class ApiRepositoryIml extends ApiRepository {
   }
 
   @override
-  Future<GetDashboard?> getDashboard({String? id}) {
-    return _apiServices.getDashboard(id ?? "");
+  Future<GetDashboard?> getDashboard({String? id,required bool isProgressBar}) {
+    return _apiServices.getDashboard(id ?? "",isProgressBar);
   }
 
   @override
-  Future<GetProfile?> getProfile({String? id}) {
-    return _apiServices.getProfile(id ?? "");
+  Future<GetProfile?> getProfile({String? id,required bool isProgressBar}) {
+    return _apiServices.getProfile(id ?? "",isProgressBar);
   }
 
   @override
@@ -205,9 +205,9 @@ abstract class ApiRepository {
       PlatformFile? profile,
       String? data});
 
-  Future<GetDashboard?> getDashboard({String? id});
+  Future<GetDashboard?> getDashboard({String? id,required bool isProgressBar});
 
-  Future<GetProfile?> getProfile({String? id});
+  Future<GetProfile?> getProfile({String? id,required bool isProgressBar});
 
   Future<CommonData?> updateProfilePhoto(
       {String? id, required PlatformFile profilePhoto});

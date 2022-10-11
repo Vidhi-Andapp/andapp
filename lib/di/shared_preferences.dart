@@ -6,6 +6,7 @@ class SharedPreference extends SharedPreferenceRepository {
   final String? pospId = 'posp_id';
   final String? pospStatus = 'posp_status';
   final String? dashboard = 'dashboard';
+  final String? profile = 'profile';
   FlutterSecureStorage? storage;
 
   FlutterSecureStorage initPreference() {
@@ -36,6 +37,13 @@ class SharedPreference extends SharedPreferenceRepository {
     return true;
   }
 
+  Future<bool?> clearDataOnLogout() async {
+    await storage!.delete(key: mobileNumber ?? "");
+    await storage!.delete(key: pospId ?? "");
+    await storage!.delete(key: pospStatus ?? "");
+    await storage!.delete(key: dashboard ?? "");
+    return true;
+  }
 // Delete value
 
 // Delete all

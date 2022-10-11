@@ -22,7 +22,7 @@ class TrainingDayBloc extends BlocBase {
                   ? ApiClient.trainingTypeGI
                   : ApiClient.trainingTypeLI,
               day: day,
-              pospId: pospId!);
+              pospId: pospId);
       if (commonData != null &&
           commonData.resultflag == ApiClient.resultflagSuccess &&
           commonData.data != null) {
@@ -33,6 +33,7 @@ class TrainingDayBloc extends BlocBase {
               return TrainingNavigator(
                 day: day,
                 title: trainingType,
+                  pospId: pospId,
               );
             }),
           );

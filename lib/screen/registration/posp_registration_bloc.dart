@@ -145,10 +145,15 @@ class PospRegistrationBloc extends BlocBase {
       personalDetails.emailId = email.text;
       if (automatedManual == 0) {
         personalDetails.firstName = aadharAName.text;
+        kyc.aadharNo = aadharNumber.text;
         kyc.addressProofName = aadharAName.text;
         /*personalDetails.middleName = middleName.text;
       personalDetails.lastName = lastName.text;*/
-        personalDetails.gender = aadharAGender.text;
+        if (aadharAGender.text == StringUtils.male) {
+          personalDetails.gender = "M";
+        } else {
+          personalDetails.gender = "F";
+        }
         personalDetails.address = aadharAAddress.text;
         if (aadharABirthDate.text.isNotEmpty) {
           DateTime birthDate =
@@ -159,6 +164,17 @@ class PospRegistrationBloc extends BlocBase {
         personalDetails.state = "";
         personalDetails.city = "";
         personalDetails.pincode = " ";
+        if (withGSTA) {
+          kyc.accountType = StringUtils.personalWithGST;
+          kyc.panNo = gstPanNumber.text;
+          kyc.gSTName = gstName.text;
+          kyc.gstNo = gstNumber.text;
+          kyc.gstStatus = "";
+        } else {
+          kyc.accountType = StringUtils.personal;
+          kyc.panNo = panNumber.text;
+          kyc.panName = panName.text;
+        }
         kyc.preferenceType = "A";
       } else {
         personalDetails.firstName = firstName.text;
@@ -170,31 +186,24 @@ class PospRegistrationBloc extends BlocBase {
         } else {
           personalDetails.gender = "F";
         }
-        kyc.preferenceType = "M";
         personalDetails.address = "";
         personalDetails.dateOfBirth = "";
         personalDetails.state = "";
         personalDetails.city = "";
         personalDetails.pincode = "";
+        if (withGSTA) {
+          kyc.accountType = StringUtils.personalWithGST;
+        } else {
+          kyc.accountType = StringUtils.personal;
+        }
+        kyc.preferenceType = "M";
       }
+
       personalDetails.referredById = "0";
       //personalDetails.referredType = "";
       kyc.mobileNo = mobileNo;
       kyc.whatsappNo = whatsappNumber.text;
-      if (withGSTA) {
-        kyc.accountType = StringUtils.personalWithGST;
-        kyc.panNo = gstPanNumber.text;
-        kyc.gSTName = gstName.text;
-        kyc.gstNo = gstNumber.text;
-        kyc.gstStatus = "";
-      } else {
-        kyc.accountType = StringUtils.personal;
-        kyc.panNo = panNumber.text;
-        kyc.panName = panName.text;
-      }
-
       kyc.bankName = bankAcHolderName.text;
-      kyc.aadharNo = aadharNumber.text;
       kyc.educationProofType = selectedCertificateType;
       kyc.bankAccountNo = bankAcNo.text;
       kyc.ifsc = ifscCode.text;

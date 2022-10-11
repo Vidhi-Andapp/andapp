@@ -4,6 +4,7 @@ import 'package:andapp/common/pink_border_button.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/model/get_question_answer_list.dart';
 import 'package:andapp/screen/training/training_exam_bloc.dart';
+import 'package:andapp/screen/training/training_result.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +12,8 @@ import 'package:flutter_svg/svg.dart';
 
 class TrainingExam extends StatefulWidget {
   final String title;
-
-  const TrainingExam({Key? key, required this.title}) : super(key: key);
+final String pospId;
+  const TrainingExam({Key? key,required this.pospId, required this.title}) : super(key: key);
 
   @override
   State<TrainingExam> createState() => _TrainingExamState();
@@ -542,8 +543,20 @@ class _TrainingExamState extends State<TrainingExam>
                                     content: nextButton,
                                     onPressed: () async {
                                       if (nextButton == StringUtils.submit) {
-                                        await bloc.submitAnswers(context,
+                                        var submitAnswer = await bloc.submitAnswers(context,
                                             widget.title, listQuestion);
+                                        if(submitAnswer != null && mounted) {
+                                          Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(builder: (context) {
+                                            return TrainingResult(
+                                              title: widget.title,
+                                              pospId: widget.pospId,
+                                              answerData: submitAnswer,
+                                            );
+                                          }),
+                                        );
+                                        }
                                       } else {
                                         if (current < listQuestion.length - 1) {
                                           if (current + 1 ==

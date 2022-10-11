@@ -31,8 +31,17 @@ class LoginSendOTPBloc extends BlocBase {
     }
   }
 
-  void sendOTP(BuildContext context) async {
-    if (ApiClient.bearerToken.isNotEmpty) {
+  Future sendOTP(BuildContext context, bool mounted) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+    }}
       var deviceId = await AppComponentBase.getInstance()
           ?.getSharedPreference()
           .getUserDetail(key: SharedPreference().deviceId);
@@ -42,16 +51,16 @@ class LoginSendOTPBloc extends BlocBase {
           .commonSendOTP(mobileNo: mobNo.text);
       if (sendOTPDataResponse != null &&
           sendOTPDataResponse.resultflag == ApiClient.resultflagSuccess) {
-        AppComponentBase.getInstance()
+        var commonData = await AppComponentBase.getInstance()
             ?.getApiInterface()
             .getApiRepository()
-            .registerDevice(mobileNo: mobNo.text, deviceId: deviceId)
-            .then((commonData) {
+            .registerDevice(mobileNo: mobNo.text, deviceId: deviceId);
           if (commonData != null &&
               commonData.resultflag == ApiClient.resultflagSuccess) {
             if (kDebugMode) {
               print("OTP : ${sendOTPDataResponse.data?.oTP}");
             }
+            if (!mounted) return;
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) {
@@ -64,17 +73,12 @@ class LoginSendOTPBloc extends BlocBase {
             CommonToast.getInstance()?.displayToast(
                 message: commonData?.messages ?? StringUtils.sendOTPFail);
           }
-        });
       } else {
         CommonToast.getInstance()?.displayToast(
             message: sendOTPDataResponse?.messages ?? StringUtils.sendOTPFail);
       }
-    } else {
-      CommonToast.getInstance()
-          ?.displayToast(message: StringUtils.someThingWentWrong);
-    }
-  }
 
+  }
   Future sendOTPUpdateMobile(BuildContext context) async {
     var sendOTPData = await AppComponentBase.getInstance()
         ?.getApiInterface()
@@ -118,17 +122,6 @@ class LoginSendOTPBloc extends BlocBase {
     }
   }
 
-/*
-  createPdf() async {
-    var bytes = base64Decode(widget.base64String.replaceAll('\n', ''));
-    final output = await getTemporaryDirectory();
-    final file = File("${output.path}/example.pdf");
-    await file.writeAsBytes(bytes.buffer.asUint8List());
-
-    print("${output.path}/example.pdf");
-    await OpenFile.open("${output.path}/example.pdf");
-    setState(() {});
-  }*/
 
   @override
   void dispose() {}

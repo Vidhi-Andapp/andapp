@@ -170,7 +170,7 @@ class _TimerButtonState extends State<TimerButton> {
   Widget build(BuildContext context) {
     switch (widget.buttonType) {
       //RaisedButton is deprecated, use ElevatedButton instead
-      case ButtonType.RaisedButton:
+     /* case ButtonType.RaisedButton:
         //TODO: (Ajay) Remove deprecated members
         // ignore: deprecated_member_use
         return RaisedButton(
@@ -196,14 +196,14 @@ class _TimerButtonState extends State<TimerButton> {
             child: _buildChild(),
             style: ElevatedButton.styleFrom(
               primary: timeUpFlag ? widget.color : widget.disabledColor,
-            ));
+            ));*/
       case ButtonType.ElevatedButton:
         return ElevatedButton(
             onPressed: _onPressed,
-            child: _buildChild(),
             style: ElevatedButton.styleFrom(
-              primary: timeUpFlag ? widget.color : widget.disabledColor,
-            ));
+              backgroundColor: timeUpFlag ? widget.color : widget.disabledColor,
+            ),
+            child: _buildChild());
       case ButtonType.TextButton:
         return TextButton(
             onPressed: _onPressed,

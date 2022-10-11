@@ -388,6 +388,7 @@ class _TrainingDashboardGIState extends State<TrainingDashboardGI>
                                                         fontWeight:
                                                             FontWeight.bold))),
                                             Column(
+                                              crossAxisAlignment: CrossAxisAlignment.stretch,
                                               children: [
                                                 Padding(
                                                   padding:
@@ -403,51 +404,21 @@ class _TrainingDashboardGIState extends State<TrainingDashboardGI>
                                                       const SizedBox(
                                                         width: 12,
                                                       ),
-                                                      Text(
-                                                        StringUtils
-                                                            .videoTutorials,
-                                                        style: TextStyle(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyText1
-                                                                ?.color,
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      horizontal: 16.0,
-                                                      vertical: 8),
-                                                  child: Row(
-                                                    children: [
-                                                      SvgPicture.asset(
-                                                        SvgImages.iconApprove,
-                                                        height: 16,
-                                                        width: 16,
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 12,
-                                                      ),
-                                                      Text(
-                                                        StringUtils
-                                                            .unlimitedAccess,
-                                                        style: TextStyle(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyText1
-                                                                ?.color,
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400),
+                                                      Expanded(
+                                                        child: Text(
+                                                          StringUtils
+                                                              .videoTutorials,
+                                                          style: TextStyle(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodyText1
+                                                                  ?.color,
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400),
+                                                        ),
                                                       ),
                                                     ],
                                                   ),
@@ -468,6 +439,42 @@ class _TrainingDashboardGIState extends State<TrainingDashboardGI>
                                                         width: 12,
                                                       ),
                                                       Expanded(
+                                                        //flex: 2,
+                                                        child: Text(
+                                                          StringUtils
+                                                              .unlimitedAccess,
+                                                          style: TextStyle(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodyText1
+                                                                  ?.color,
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 16.0,
+                                                      vertical: 8),
+                                                  child: Row(
+                                                    children: [
+                                                      SvgPicture.asset(
+                                                        SvgImages.iconApprove,
+                                                        height: 16,
+                                                        width: 16,
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 12,
+                                                      ),
+                                                      Expanded(
+                                                        //flex: 2,
                                                         child: Text(
                                                           StringUtils
                                                               .recognisedCertification,
@@ -660,7 +667,7 @@ class _TrainingDashboardGIState extends State<TrainingDashboardGI>
                                                 day: giDay);
                                           }),
                                         ).then((value) => bloc.getDashboard(
-                                            context, widget.pospId));
+                                            context, widget.pospId,isProgressBar: false));
                                       } else {
                                         CommonToast.getInstance()?.displayToast(
                                             message:
@@ -670,12 +677,12 @@ class _TrainingDashboardGIState extends State<TrainingDashboardGI>
                                       Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(builder: (context) {
-                                          return const TrainingExam(
+                                          return TrainingExam(
                                               title:
-                                                  StringUtils.generalInsurance);
+                                                  StringUtils.generalInsurance,pospId: widget.pospId);
                                         }),
                                       ).then((value) => bloc.getDashboard(
-                                          context, widget.pospId));
+                                          context, widget.pospId,isProgressBar: false));
                                     }
                                   },
                                 ),

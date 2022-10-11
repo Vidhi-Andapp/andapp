@@ -11,7 +11,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:sms_autofill/sms_autofill.dart';
+import 'package:otp_text_field/otp_field.dart';
+import 'package:otp_text_field/otp_text_field.dart';
+import 'package:otp_text_field/style.dart';
+//import 'package:sms_autofill/sms_autofill.dart';
+import 'package:telephony/telephony.dart';
+import 'package:andapp/screen/dashboard/dashboard.dart';
+import 'package:andapp/screen/dashboard/document_page.dart';
 
 class LoginVerifyOTP extends StatefulWidget {
   final String enteredMobNo;
@@ -25,13 +31,18 @@ class LoginVerifyOTP extends StatefulWidget {
 }
 
 class _LoginVerifyOTPState extends State<LoginVerifyOTP>
-    with CodeAutoFill, TickerProviderStateMixin {
+ with TickerProviderStateMixin  {
   final LoginVerifyOTPBloc bloc = LoginVerifyOTPBloc();
   bool isOpened = false;
   late AnimationController _animationController;
   final verifyOTPKey = GlobalKey<FormState>();
   String? appSignature, _code;
   int? otpToCompare;
+  bool _enableButton = false;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final intRegex = RegExp(r'\d+', multiLine: true);
+  Telephony telephony = Telephony.instance;
+  OtpFieldController otpBox = OtpFieldController();
 
   @override
   void initState() {
@@ -41,16 +52,58 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
       ..addListener(() {
         setState(() {});
       });
+    telephony.listenIncomingSms(
+      onNewMessage: (SmsMessage message) {
+        print(message.address); //+977981******67, sender nubmer
+        print(message.body); //Your OTP code is 34567
+        print(message.date); //1659690242000, timestamp
 
-    SmsAutoFill().getAppSignature.then((signature) {
-      setState(() {
-        appSignature = signature;
-      });
-    });
+        String sms = message.body.toString(); //get the message
+
+        if(message.address != null && message.address!.contains("ANDAPP")){
+          //verify SMS is sent for OTP with sender number
+          String otpcode = sms.replaceAll(RegExp(r'[^0-9]'),'');
+          //prase code from the OTP sms
+          otpBox.set(otpcode.split(""));
+          //split otp code to list of number
+          //and populate to otb boxes
+
+          setState(() {
+            //refresh UI
+          });
+
+        }else{
+          print("Normal message.");
+        }
+      },
+      listenInBackground: false,
+    );
 
     super.initState();
   }
+/*
+  @override
+  void codeUpdated() {
+    setState(() {
+      _code = code!;
+    });
+  }*/
 
+
+  _onOtpCallBack(String otpCode, bool isAutofill) async{
+      _code = otpCode;
+      if (otpCode.length == 5 && isAutofill) {
+        _enableButton = false;
+        await _verifyOtpCode();
+      } else if (otpCode.length == 5 && !isAutofill) {
+        _enableButton = true;
+      } else {
+        _enableButton = false;
+      }
+      setState(() {
+
+      });
+  }
   void animate() {
     if (!isOpened) {
       _animationController.forward();
@@ -61,15 +114,9 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
   }
 
   @override
-  void codeUpdated() {
-    /*_code = code!;
-    print("inside code updated : $code");
-    setState(() {});*/
-  }
-
-  @override
   void dispose() {
     _animationController.dispose();
+    //SmsAutoFill().unregisterListener();
     super.dispose();
   }
 
@@ -130,50 +177,33 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 8, horizontal: 32),
                                 child:
-                                    /*  TextFormField(
-                                  controller: bloc.otp,
-                                  decoration: InputDecoration(
-                                    labelText: StringUtils.otp,
-                                    labelStyle: TextStyle(
-                                        color: Theme.of(context)
-                                            .textTheme
-                                            .bodyText2
-                                            ?.color),
-                                    fillColor: Colors.white,
-                                    enabledBorder: Theme.of(context)
-                                        .inputDecorationTheme
-                                        .border,
-                                    focusedBorder: Theme.of(context)
-                                        .inputDecorationTheme
-                                        .border,
+                                OTPTextField(
+                                  controller: otpBox,
+                                  length: 5,
+                                  width: MediaQuery.of(context).size.width,
+                                  fieldWidth: 50,
+                                  style: const TextStyle(
+                                      fontSize: 17,
                                   ),
-                                  validator: (val) {
-                                    String pattern = r'^(?:[0-9])?[0-9]{3,5}$';
-                                    RegExp regExp = RegExp(pattern);
-                                    if (val == null || val.isEmpty) {
-                                      return "Please enter OTP";
-                                    } else if (val.length != 5 ||
-                                        !regExp.hasMatch(val)) {
-                                      return "Please enter valid OTP";
-                                    } else {
-                                      return null;
+                                  textFieldAlignment: MainAxisAlignment.spaceAround,
+                                    otpFieldStyle: OtpFieldStyle(borderColor: Colors.white,backgroundColor: Colors.transparent,
+                                      focusBorderColor: Colors.blue,
+                                      disabledBorderColor: Colors.grey,
+                                      enabledBorderColor: Colors.white,
+                                      errorBorderColor: Colors.red),
+                                  fieldStyle: FieldStyle.box,
+                                  onChanged: (pin) {
+                                    print("Changed: $pin");
+                                  },
+                                  onCompleted: (pin) {
+                                    print("Entered OTP Code: $pin");
+                                    if (pin.length == 5) {
+                                      _onOtpCallBack(pin, true);
                                     }
                                   },
-                                  */ /* inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp("[0-9]")),
-                                  ],*/ /*
-                                  maxLength: 5,
-                                  keyboardType:
-                                      const TextInputType.numberWithOptions(
-                                          signed: true),
-                                  // inputFormatters: [WhitelistingTextInputFormatter.digitsOnly]),
-                                  style: const TextStyle(
-                                    fontFamily: "Poppins",
-                                    //color: Colors.white
-                                  ),
-                                ),*/
-                                    TextFieldPinAutoFill(
+                                )
+/*
+                                 TextFieldPinAutoFill(
                                   decoration: InputDecoration(
                                     labelText: StringUtils.otp,
                                     labelStyle: TextStyle(
@@ -193,30 +223,17 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                     FilteringTextInputFormatter.allow(
                                         RegExp("[0-9]")),
                                   ],
-                                  /*validator: (val) {
-                                        String pattern =
-                                            r'(^(?:[+0]9)?[0-9]{10,12}$)';
-                                        RegExp regExp = RegExp(pattern);
-                                        if (val == null || val.isEmpty) {
-                                          return "Please enter mobile number";
-                                        } else if (val.length != 10 ||
-                                            !regExp.hasMatch(val)) {
-                                          return "Please enter valid mobile number";
-                                        } else {
-                                          return null;
-                                        }
-                                      },*/
                                   codeLength: 5,
                                   currentCode: _code,
                                   onCodeSubmitted: (code) {
                                     _code = code;
-                                    //print("inside code submitted : $code");
+                                    print("inside code submitted : $code");
                                   },
                                   onCodeChanged: (code) {
-                                    //print("code changed: $code");
+                                    print("code changed: $code");
                                     _code = code;
                                   },
-                                ),
+                                ),*/
                               ),
                               TimerButton(
                                 label: StringUtils.resendOtp,
@@ -247,41 +264,12 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
                                   child: PinkBorderButton(
                                       isEnabled: true,
                                       content: StringUtils.verify,
-                                      onPressed: () {
-                                        final form = verifyOTPKey.currentState;
-                                        if (form!.validate()) {
-                                          //form.save();
-                                          //bloc.verifyOTP(context);
-                                          print("otpToCompare : $otpToCompare");
-                                          String pattern = r"^[0-9]{5}$";
-                                          RegExp regExp = RegExp(pattern);
-                                          if (_code == null || _code!.isEmpty) {
-                                            CommonToast.getInstance()
-                                                ?.displayToast(
-                                                    message: StringUtils
-                                                        .valEmptyOtp);
-                                          } else if (!regExp.hasMatch(_code!)) {
-                                            CommonToast.getInstance()
-                                                ?.displayToast(
-                                                    message: StringUtils
-                                                        .valValidOtp);
-                                          } else if (otpToCompare == null) {
-                                            CommonToast.getInstance()
-                                                ?.displayToast(
-                                                    message: StringUtils
-                                                        .verifyOTPExpired);
-                                          } else if (_code ==
-                                              otpToCompare.toString()) {
-                                            bloc.getStatus(context, mounted,
-                                                widget.enteredMobNo);
-                                          } else {
-                                            CommonToast.getInstance()
-                                                ?.displayToast(
-                                                    message: StringUtils
-                                                        .verifyOTPFail);
-                                          }
-                                        }
-                                      })),
+                                      onPressed: () async{
+                                      await _verifyOtpCode();}
+                                      /*_enableButton ?
+                                      _verifyOtpCode()
+                                      : null*/
+                                  )),
                             ],
                           ),
                         ),
@@ -451,6 +439,74 @@ class _LoginVerifyOTPState extends State<LoginVerifyOTP>
       ),
     );
   }
+
+
+  Future _verifyOtpCode() async{
+    FocusScope.of(context).requestFocus(FocusNode());
+    final form = verifyOTPKey.currentState;
+    if (form?.validate() ?? false) {
+      //form.save();
+      //bloc.verifyOTP(context);
+      print("otpToCompare : $otpToCompare");
+      String pattern = r"^[0-9]{5}$";
+      RegExp regExp = RegExp(pattern);
+      if (_code == null || _code!.isEmpty) {
+        CommonToast.getInstance()
+            ?.displayToast(
+            message: StringUtils
+                .valEmptyOtp);
+      } else if (!regExp.hasMatch(_code!)) {
+        CommonToast.getInstance()
+            ?.displayToast(
+            message: StringUtils
+                .valValidOtp);
+      } else if (otpToCompare == null) {
+        CommonToast.getInstance()
+            ?.displayToast(
+            message: StringUtils
+                .verifyOTPExpired);
+      } else if (_code ==
+          otpToCompare.toString()) {
+        var getStatusData = await bloc.getStatus(context, mounted,
+            widget.enteredMobNo);
+        if(getStatusData != null) {
+          if (getStatusData.data?.data?.pospStatus == 0) {
+            if (mounted) {
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const DocumentPage()),
+                      (Route<dynamic> route) => false);
+            }
+          } else if (getStatusData.data?.data?.pospStatus == 1) {
+            if (mounted) {
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          Dashboard(
+                              pospId:
+                              getStatusData.data?.data?.pospId.toString() ??
+                                  "")),
+                      (Route<dynamic> route) => false);
+            }
+          }
+        }
+      } else {
+        CommonToast.getInstance()
+            ?.displayToast(
+            message: StringUtils
+                .verifyOTPFail);
+      }
+    }
+   /* Timer(Duration(milliseconds: 4000), () {
+      setState(() {
+        _isLoadingButton = false;
+        _enableButton = false;
+      });
+
+      _scaffoldKey.currentState?.showSnackBar(
+          SnackBar(content: Text("Verification OTP Code $_otpCode Success")));
+    });*/
+  }
+
 }
 
 class CustomFloatingActionButtonLocation

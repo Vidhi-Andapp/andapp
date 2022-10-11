@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:andapp/common/bloc_provider.dart';
 import 'package:andapp/di/app_component_base.dart';
 import 'package:andapp/di/shared_preferences.dart';
-import 'package:andapp/screen/dashboard/dashboard.dart';
-import 'package:andapp/screen/dashboard/document_page.dart';
+import 'package:andapp/model/get_status.dart';
 import 'package:andapp/services/api_client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +30,7 @@ class LoginVerifyOTPBloc extends BlocBase {
     return null;
   }
 
-  void getStatus(BuildContext context, bool mounted, String mobileNo) async {
+  Future<GetStatus?> getStatus(BuildContext context, bool mounted, String mobileNo) async {
     await AppComponentBase.getInstance()
         ?.getSharedPreference()
         .setUserDetail(key: SharedPreference().mobileNumber, value: mobileNo);
@@ -53,38 +52,14 @@ class LoginVerifyOTPBloc extends BlocBase {
             .setUserDetail(
                 key: SharedPreference().pospStatus,
                 value: getStatusData.data?.data?.pospStatus.toString());
-        if (getStatusData.data?.data?.pospStatus == 0) {
-          if (mounted) {
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const DocumentPage()),
-                (Route<dynamic> route) => false);
-          }
-        } else if (getStatusData.data?.data?.pospStatus == 1) {
-          if (mounted) {
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                    builder: (context) => Dashboard(
-                        pospId:
-                            getStatusData.data?.data?.pospId.toString() ?? "")),
-                (Route<dynamic> route) => false);
-          }
+        return getStatusData;
         }
       }
+    return null;
     }
-  }
-
-/*
-  createPdf() async {
-    var bytes = base64Decode(widget.base64String.replaceAll('\n', ''));
-    final output = await getTemporaryDirectory();
-    final file = File("${output.path}/example.pdf");
-    await file.writeAsBytes(bytes.buffer.asUint8List());
-
-    print("${output.path}/example.pdf");
-    await OpenFile.open("${output.path}/example.pdf");
-    setState(() {});
-  }*/
 
   @override
-  void dispose() {}
-}
+  void dispose() {
+    // TODO: implement dispose
+  }
+  }

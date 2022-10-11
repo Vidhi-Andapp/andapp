@@ -39,7 +39,7 @@ class _TrainingDaysState extends State<TrainingDays> {
     var trainingType = widget.title == StringUtils.generalInsurance
         ? ApiClient.trainingTypeGI
         : ApiClient.trainingTypeLI;
-    var theme = (Theme.of(context) == ThemeMode.dark) ? "dark" : "light";
+    var theme = "dark";//(Theme.of(context) == ThemeMode.dark) ? "dark" : "light";
     String url =
         "${ApiClient.trainingDayURL}${trainingType}day${widget.day}$theme.html";
     return Scaffold(

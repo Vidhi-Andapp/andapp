@@ -3,12 +3,16 @@ import 'dart:convert';
 import 'package:andapp/common/common_toast.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/di/app_component_base.dart';
+import 'package:andapp/screen/no_internet_page.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ApiClient {
+  static String siteUrl =
+      'http://ec2-3-7-188-163.ap-south-1.compute.amazonaws.com';
   static String baseUrl =
-      'http://ec2-3-7-188-163.ap-south-1.compute.amazonaws.com:8088';
+      '$siteUrl:8088';
   static String freshDeskUrl = '';
   static String userManualUrl = '';
   static String version = "";
@@ -141,8 +145,8 @@ class ApiClient {
         false) {
       if (isProgressBar) {
         AppComponentBase.getInstance()?.showProgressDialog(true);
+        AppComponentBase.getInstance()?.disableWidget(true);
       }
-      AppComponentBase.getInstance()?.disableWidget(true);
       try {
         http.Response response = await http.post(Uri.parse(url),
             headers: headers, body: body, encoding: encoding);
@@ -187,7 +191,7 @@ class ApiClient {
         CommonToast.getInstance()
             ?.displayToast(message: StringUtils.noInternetContent);
       }
-      throw StringUtils.noInternetContent;
+      //throw StringUtils.noInternetContent;
     }
   }
 

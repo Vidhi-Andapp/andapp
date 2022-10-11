@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:andapp/common/bloc_provider.dart';
+import 'package:andapp/common/common_toast.dart';
+import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/di/app_component_base.dart';
 import 'package:andapp/model/get_profile.dart';
 import 'package:andapp/services/api_client.dart';
@@ -27,7 +29,7 @@ class MyProfileBloc extends BlocBase {
     await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
-        .getProfile(id: pospId)
+        .getProfile(id: pospId,isProgressBar: true)
         .then((getProfile) {
       if (getProfile != null &&
           getProfile.resultflag == ApiClient.resultflagSuccess &&
@@ -38,19 +40,25 @@ class MyProfileBloc extends BlocBase {
   }
 
   Future updateProfilePhoto(
-      BuildContext context, PlatformFile? profilePhoto) async {
+      BuildContext context, String pospId, PlatformFile? profilePhoto) async {
     if (profilePhoto != null) {
-      await AppComponentBase.getInstance()
+      var updateProfile = await AppComponentBase.getInstance()
           ?.getApiInterface()
           .getApiRepository()
-          .updateProfilePhoto(id: "", profilePhoto: profilePhoto)
-          .then((getProfile) {
-        if (getProfile != null &&
-            getProfile.resultflag == ApiClient.resultflagSuccess &&
-            getProfile.data != null) {
+          .updateProfilePhoto(id: pospId, profilePhoto: profilePhoto);
+        if (updateProfile != null &&
+            updateProfile.resultflag == ApiClient.resultflagSuccess &&
+            updateProfile.data != null) {
+          CommonToast.getInstance()
+              ?.displayToast(message: updateProfile.messages ?? StringUtils.profilePhotoSuccess);
           //profileStreamController.sink.add();
         }
-      });
+        else {
+          CommonToast.getInstance()
+              ?.displayToast(message: updateProfile?.messages ?? StringUtils.profilePhotoFail);
+          print("else : submitAnswer : ${updateProfile?.messages}");
+          //return null;
+        }
     }
   }
 

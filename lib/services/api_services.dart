@@ -93,6 +93,17 @@ class ApiServices extends ApiClient {
 
   Future<SendOTP?> commonSendOTP(
       String mobileNo, String type, String aadharNo, String email) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {
       "mobile_no": mobileNo,
       "type": type,
@@ -113,6 +124,17 @@ class ApiServices extends ApiClient {
   }
 
   Future<GetStatus?> getStatus(String mobileNo) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {
       "mobile_no": mobileNo,
     };
@@ -130,6 +152,17 @@ class ApiServices extends ApiClient {
   }
 
   Future<GetAadhar?> getAadharData(String aadharNo, String otp) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {
       "Aadhar_no": aadharNo,
       "OTP": otp,
@@ -148,6 +181,17 @@ class ApiServices extends ApiClient {
   }
 
   Future<GetPan?> getPanData(String panNo) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {
       "Pan_no": panNo,
     };
@@ -165,6 +209,17 @@ class ApiServices extends ApiClient {
   }
 
   Future<GetGst?> getGSTData(String gstNo) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {
       "GST_no": gstNo,
     };
@@ -182,6 +237,17 @@ class ApiServices extends ApiClient {
   }
 
   Future<GetBank?> getBankData(String acNo, String ifsc) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {
       "Account_no": acNo,
       "IFSC": ifsc,
@@ -208,6 +274,17 @@ class ApiServices extends ApiClient {
       PlatformFile? other,
       PlatformFile? profile,
       String? data}) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {
       "data": data,
     };
@@ -278,7 +355,18 @@ class ApiServices extends ApiClient {
     return null;
   }
 
-  Future<GetDashboard?> getDashboard(String id) async {
+  Future<GetDashboard?> getDashboard(String id,bool isProgressBar) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {
       "id": id,
     };
@@ -287,6 +375,7 @@ class ApiServices extends ApiClient {
         body: jsonString,
         headers: getJsonHeader(),
         encoding: Encoding.getByName('utf-8'),
+        isProgressBar: isProgressBar,
         isBackground: true);
     if (response != null) {
       await AppComponentBase.getInstance()
@@ -300,7 +389,18 @@ class ApiServices extends ApiClient {
     return null;
   }
 
-  Future<GetProfile?> getProfile(String id) async {
+  Future<GetProfile?> getProfile(String id,bool isProgressBar) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {
       "id": id,
     };
@@ -309,11 +409,12 @@ class ApiServices extends ApiClient {
         body: jsonString,
         headers: getJsonHeader(),
         encoding: Encoding.getByName('utf-8'),
+        isProgressBar: isProgressBar,
         isBackground: true);
     if (response != null) {
-      AppComponentBase.getInstance()
+      await AppComponentBase.getInstance()
           ?.getSharedPreference()
-          .setUserDetail(key: SharedPreference().dashboard, value: response);
+          .setUserDetail(key: SharedPreference().profile, value: response);
       var data = GetProfile.fromJson(json.decode(response));
       return data;
     }
@@ -322,6 +423,17 @@ class ApiServices extends ApiClient {
 
   Future<CommonData?> updateProfilePhoto(
       {String? id, required PlatformFile profilePhoto}) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {
       "id": id,
     };
@@ -352,6 +464,17 @@ class ApiServices extends ApiClient {
 
   Future<CommonData?> completeTrainingDay(
       String trainingType, String day, String pospId) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {"training_type": trainingType, "day": day, "posp_id": pospId};
     String jsonString = json.encode(body);
     var response = await posts(ApiClient.completeTrainingDay,
@@ -367,6 +490,17 @@ class ApiServices extends ApiClient {
   }
 
   Future<GetQuestionList?> getQuestions(String trainingType) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {
       "training_type": trainingType,
     };
@@ -385,6 +519,17 @@ class ApiServices extends ApiClient {
 
   Future<SubmitAnswer?> submitAnswers(String trainingType, String pospId,
       {required List<AnswerList> ansList}) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {
       "training_type": trainingType,
       "posp_id": pospId,
@@ -405,6 +550,17 @@ class ApiServices extends ApiClient {
 
   Future<DownloadCertificate?> downloadCertificate(
       String id, String trainingType) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {
       "posp_id": id,
       "training_type": trainingType,
@@ -423,6 +579,17 @@ class ApiServices extends ApiClient {
   }
 
   Future<CommonData?> reExam(String id, String trainingType) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
     Map body = {
       "posp_id": id,
       "training_type": trainingType,

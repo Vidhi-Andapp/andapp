@@ -119,7 +119,6 @@ class _SupportPageState extends State<SupportPage>
                                 appTheme),
                             separator(),
                             getRow(() {
-                              _makePhoneCall();
                             }, SvgImages.iconCallBack,
                                 StringUtils.requestACallBack, appTheme),
                             separator(),
@@ -179,7 +178,7 @@ class _SupportPageState extends State<SupportPage>
     Navigator.pop(context);
   }
 
-  Widget getButton(Function() onTap, String image, AppThemeState appTheme) {
+  Widget getButton(Function onTap, String image, AppThemeState appTheme) {
     return FloatingActionButton(
       onPressed: onTap(),
       heroTag: UniqueKey(),
@@ -196,9 +195,9 @@ class _SupportPageState extends State<SupportPage>
     );
   }
 
-  getRow(Function() onTap, String image, String title, AppThemeState appTheme) {
+  getRow(Function onTap, String image, String title, AppThemeState appTheme) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: onTap(),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [

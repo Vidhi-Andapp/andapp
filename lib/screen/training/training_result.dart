@@ -5,16 +5,18 @@ import 'package:andapp/common/pink_border_button.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/model/download_certificate.dart';
 import 'package:andapp/model/submit_answer.dart';
-import 'package:andapp/screen/training/training_result_bloc.dart';
+import 'package:andapp/screen/dashboard/dashboard_bloc.dart';
+import 'package:andapp/screen/training/training_exam.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class TrainingResult extends StatefulWidget {
   final String title;
+  final String pospId;
   final AnswerData? answerData;
 
   const TrainingResult(
-      {Key? key, required this.title, @required this.answerData})
+      {Key? key,required this.pospId, required this.title, @required this.answerData})
       : super(key: key);
 
   @override
@@ -22,13 +24,29 @@ class TrainingResult extends StatefulWidget {
 }
 
 class _TrainingResultState extends State<TrainingResult> {
-  final TrainingResultBloc bloc = TrainingResultBloc();
+  final DashboardBloc bloc = DashboardBloc();
 
   @override
   void initState() {
     super.initState();
-    bloc.downloadCertificate(context);
   }
+/*
+
+  Widget getImageBase64(String image) {
+    var imageBase64 = image;
+    const Base64Codec base64 = Base64Codec();
+    // if (imageBase64 == null) return Container();
+    var bytes = base64.decode(imageBase64);
+    return Image.memory(
+      bytes,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
+      fit: BoxFit.fitWidth,
+    );
+  }
+*/
 
   @override
   Widget build(BuildContext context) {
@@ -37,20 +55,6 @@ class _TrainingResultState extends State<TrainingResult> {
       percent =
           double.parse(widget.answerData!.percentage!.replaceAll("%", "")) /
               100;
-    }
-    Widget getImageBase64(String image) {
-      var imageBase64 = image;
-      const Base64Codec base64 = Base64Codec();
-      // if (imageBase64 == null) return Container();
-      var bytes = base64.decode(imageBase64);
-      return Image.memory(
-        bytes,
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
-        fit: BoxFit.fitWidth,
-      );
     }
     final appTheme = AppTheme.of(context);
     return Scaffold(
@@ -172,7 +176,26 @@ class _TrainingResultState extends State<TrainingResult> {
                             if (widget.answerData?.result
                                 ?.toLowerCase() ==
                                 StringUtils.pass) {
-                              bloc.downloadCertificate(context);
+                              bloc.downloadCertificate(context,widget.pospId,widget.title);
+                            }
+                            else if (widget.answerData?.result
+                                ?.toLowerCase() ==
+                                StringUtils.notPass) {
+                              bloc
+                                  .reExam(context, widget.pospId,
+                                  StringUtils.generalInsurance)
+                                  .then((value) {
+                                if (value) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) {
+                                      return TrainingExam(
+                                          title: StringUtils.generalInsurance, pospId: widget.pospId,);
+                                    }),
+                                  ).then((value) =>
+                                      bloc.getDashboard(context, widget.pospId,isProgressBar: false));
+                                }
+                              });
                             }
                           },
                         ),
@@ -317,16 +340,6 @@ class _TrainingResultState extends State<TrainingResult> {
                   ),
                 ],
               ),
-              StreamBuilder(
-                  stream: bloc.resultStream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      DownloadCertificate dc =
-                      snapshot.data as DownloadCertificate;
-                      return getImageBase64(dc.data?.data?.image ?? "");
-                    }
-                    return Container();
-                  }),
             ],
           ),
         )

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:andapp/common/app_theme.dart';
 import 'package:andapp/common/custom_expansion.dart';
 import 'package:andapp/common/custom_user_account_drawer_header.dart';
@@ -6,14 +8,19 @@ import 'package:andapp/common/network_image.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/di/app_component_base.dart';
 import 'package:andapp/di/shared_preferences.dart';
+import 'package:andapp/model/get_dashboard.dart';
 import 'package:andapp/model/get_profile.dart';
 import 'package:andapp/screen/dashboard/dashboard_bloc.dart';
+import 'package:andapp/screen/login/login_send_otp_page.dart';
 import 'package:andapp/screen/profile/my_profile.dart';
 import 'package:andapp/screen/support/support.dart';
 import 'package:andapp/screen/training/training_dashboard_gi.dart';
 import 'package:andapp/screen/training/training_dashboard_li.dart';
+import 'package:andapp/services/api_client.dart';
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({Key? key}) : super(key: key);
@@ -26,6 +33,7 @@ class _NavBarState extends State<NavBar> {
   final DashboardBloc bloc = DashboardBloc();
   List<Item>? _menu;
   String? pospId;
+  bool showTraining = false;
 
   List<Item> addItems() {
     List<Item> data = [];
@@ -51,7 +59,8 @@ class _NavBarState extends State<NavBar> {
         ),
         expandedValue: [StringUtils.menuMail, StringUtils.menuCopy],
         isExpanded: false));
-    data.add(Item(
+    if(showTraining) {
+      data.add(Item(
         index: 3,
         headerValue: StringUtils.training,
         leadingIcon: SvgImages.menuTraining,
@@ -64,6 +73,7 @@ class _NavBarState extends State<NavBar> {
           StringUtils.lifeInsurance
         ],
         isExpanded: false));
+    }
     data.add(Item(
       index: 4,
       headerValue: StringUtils.menuLogout,
@@ -73,7 +83,7 @@ class _NavBarState extends State<NavBar> {
     return data;
   }
 
-  Widget _buildPanel() {
+  Widget _buildPanel(String? referralLink) {
     return CustomExpansionPanelList(
       elevation: 0,
       key: const ValueKey<int>(1),
@@ -85,29 +95,50 @@ class _NavBarState extends State<NavBar> {
       children: _menu!.map<CustomExpansionPanel>((Item item) {
         return CustomExpansionPanel(
           canTapOnHeader: true,
-          backgroundColor: Theme
-              .of(context)
-              .scaffoldBackgroundColor,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           headerBuilder: (BuildContext context, bool isExpanded) {
             return ListTile(
-              onTap: () {
-                if (item.headerValue == StringUtils.menuProfile) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) {
-                      return MyProfile(pospId: pospId!);
-                    }),
-                  );
-                } else if (item.headerValue == StringUtils.menuSupport) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) {
-                      return const SupportPage();
-                    }),
-                  );
-                }
-                else {
-                  expansionCallBack(item.index, !item.isExpanded);
+              onTap: () async {
+                switch (item.index) {
+                  case 0:
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) {
+                        return MyProfile(pospId: pospId!);
+                      }),
+                    );
+                    break;
+                  case 1:
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) {
+                        return const SupportPage();
+                      }),
+                    );
+                    break;
+                  case 2:
+                    expansionCallBack(item.index, !item.isExpanded);
+                    break;
+                  case 3:
+                    expansionCallBack(item.index, !item.isExpanded);
+                    break;
+                  case 4:
+                    await AppComponentBase.getInstance()
+                        ?.getSharedPreference()
+                        .clearDataOnLogout();
+                    if (mounted) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return const LoginSendOTP();
+                        }),
+                      );
+                    }
+                    break;
+                  default:
+                    break;
                 }
               },
               leading: SvgPicture.asset(
@@ -129,64 +160,58 @@ class _NavBarState extends State<NavBar> {
           hasIcon: item.trailingIcon == null ? false : true,
           body: (item.expandedValue != null)
               ? ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(0),
-              shrinkWrap: true,
-              itemBuilder: (context, index) =>
-                  ListTile(
-                    onTap: () {
-                      if (item.expandedValue![index] ==
-                          StringUtils.generalInsurance &&
-                          pospId != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) {
-                            return TrainingDashboardGI(pospId: pospId!);
-                          }),
-                        );
-                      } else if (item.expandedValue![index] ==
-                          StringUtils.lifeInsurance &&
-                          pospId != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) {
-                            return TrainingDashboardLI(pospId: pospId!);
-                          }),
-                        );
-                      }
-                      /* else if (item.expandedValue![index] ==
-                          StringUtils.menuMail) {
-                        Navigator.push(
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(0),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) => ListTile(
+                        onTap: () {
+                          if (item.expandedValue![index] ==
+                                  StringUtils.generalInsurance &&
+                              pospId != null) {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return TrainingDashboardGI(pospId: pospId!);
+                              }),
+                            );
+                          } else if (item.expandedValue![index] ==
+                                  StringUtils.lifeInsurance &&
+                              pospId != null) {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return TrainingDashboardLI(pospId: pospId!);
+                              }),
+                            );
+                          } else if (item.expandedValue![index] ==
+                              StringUtils.menuMail) {
+                            launchUrl(emailLaunchUri);
+                          } else if (item.expandedValue![index] ==
+                              StringUtils.menuCopy) {
+                            FlutterClipboard.copy(referralLink ?? "");
+                            /*Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) {
                                 return const TrainingDashboardLI();
                               }),
-                        );
-                      }
-                      else if (item.expandedValue![index] ==
-                          StringUtils.menuCopy) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) {
-                                return const TrainingDashboardLI();
-                              }),
-                        );
-                      }*/
-                    },
-                    tileColor: const Color(0x20DADADA),
-                    leading: SvgPicture.asset(
-                      item.leadingIcon,
-                      height: 22,
-                      width: 22,
-                      color: Colors.transparent,
-                    ),
-                    title: Text(item.expandedValue![index]),
-                    dense: true,
-                    //trailing: item.trailingIcon,
-                  ),
-              itemCount: item.expandedValue?.length)
+                        );*/
+                          }
+                        },
+                        tileColor: const Color(0x20DADADA),
+                        leading: SvgPicture.asset(
+                          item.leadingIcon,
+                          height: 22,
+                          width: 22,
+                          color: Colors.transparent,
+                        ),
+                        title: Text(item.expandedValue![index]),
+                        dense: true,
+                        //trailing: item.trailingIcon,
+                      ),
+                  itemCount: item.expandedValue?.length)
               : Container(),
           isExpanded: item.isExpanded,
         );
@@ -194,16 +219,18 @@ class _NavBarState extends State<NavBar> {
     );
   }
 
+  final Uri emailLaunchUri = Uri(
+    scheme: 'mailto',
+    path: StringUtils.supportMail,
+    /*query: _encodeQueryParameters(<String, String>{
+      'subject': 'Example Subject & Symbols are allowed!'
+    }),*/
+  );
+
   @override
   void initState() {
     super.initState();
-    AppComponentBase.getInstance()
-        ?.getSharedPreference()
-        .getUserDetail(key: SharedPreference().pospId)
-        .then((value) {
-      pospId = value;
-      bloc.getProfile(value);
-    });
+    refreshPage();
   }
 
   @override
@@ -212,9 +239,7 @@ class _NavBarState extends State<NavBar> {
     _menu ??= addItems();
     return Drawer(
       width: 300,
-      backgroundColor: Theme
-          .of(context)
-          .scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: SizedBox(
         child: StreamBuilder<ProfileData?>(
             stream: bloc.profileStream,
@@ -244,29 +269,18 @@ class _NavBarState extends State<NavBar> {
                       currentAccountPicture: CustomNetworkImage(
                         radius: 54, //as current picture size is 108
                         placeholderImage:
-                        profileData?.personalDetails?.gender == "M"
-                            ? AssetImages.profileAvatarMale
-                            : AssetImages.profileAvatarFemale,
+                            profileData?.personalDetails?.gender == "M"
+                                ? AssetImages.profileAvatarMale
+                                : AssetImages.profileAvatarFemale,
                         image: profileData?.personalDetails?.pospPhoto ?? "",
                       ),
-                      /* CircleAvatar(
-                        radius: 100,
-                        backgroundColor: Colors.white,
-                        child: CircleAvatar(
-                          radius: 48,
-                          backgroundColor: appTheme.primaryColor,
-                          child: ClipOval(
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            child: Image.asset(AssetImages.profileAvatarFemale,
-                                height: 100, width: 100),
-                          ),
-                        ),
-                      ),*/
                       decoration: BoxDecoration(
                         color: appTheme.primaryColor,
                       ),
                     ),
-                    _buildPanel(),
+                    _buildPanel(ApiClient.siteUrl +
+                        (profileData?.referralLink ??
+                            "")),
                   ],
                 );
               }
@@ -287,6 +301,37 @@ class _NavBarState extends State<NavBar> {
       _menu![index].isExpanded = newValue;
       isExpanded = newValue;
     });
+  }
+
+  void refreshPage() async {
+    var dashboard = await AppComponentBase.getInstance()
+        ?.getSharedPreference()
+        .getUserDetail(key: SharedPreference().dashboard);
+    if (dashboard != null) {
+      var getDashboard = GetDashboard.fromJson(json.decode(dashboard));
+      if (getDashboard.resultflag == ApiClient.resultflagSuccess &&
+          getDashboard.data != null) {
+        if(getDashboard.data?.data?.pospRegistrationStatus == "true") {
+          showTraining = true;
+        }
+        //setState(() {});
+        var profile = await AppComponentBase.getInstance()
+            ?.getSharedPreference()
+            .getUserDetail(key: SharedPreference().profile);
+        if(profile != null) {
+          var getProfile = GetProfile.fromJson(json.decode(profile));
+          if (getProfile.resultflag == ApiClient.resultflagSuccess &&
+              getProfile.data != null) {
+            bloc.profileStreamController.sink.add(getProfile.data?.data);
+          }
+        }
+      }
+    }
+    var sPPospId = await AppComponentBase.getInstance()
+        ?.getSharedPreference()
+        .getUserDetail(key: SharedPreference().pospId);
+    pospId = sPPospId;
+    bloc.getProfile(sPPospId);
   }
 }
 

@@ -89,7 +89,7 @@ class StringUtils {
   static const String hsc = "HSC";
   static const String graduation = "Graduation";
   static const String postGraduation = "Post Graduation";
-  static const String phd = "Phd";
+  static const String phd = "PhD";
   static const String other = "Other";
   static const String previous = "Previous";
   static const String next = "Next";
@@ -118,7 +118,7 @@ class StringUtils {
   static const String menuCopy = "Copy";
   static const String menuLogout = "Logout";
   static const String dashboard = "Dashboard";
-  static const String videoTutorials = "Video Tutorials";
+  static const String videoTutorials = "Video tutorials";
   static const String unlimitedAccess = "Unlimited access";
   static const String recognisedCertification = "Recognised certification";
   static const String abtThisCourse = "About This Course";
@@ -141,8 +141,8 @@ class StringUtils {
   static const String userManual = "User Manual";
 
   static const String titleMyProfile = "My Profile";
-  static const String personalDetails = "Personal Details";
-  static const String qrScan = "QR Scan";
+  static const String personalDetails = "Personal\nDetails";
+  static const String qrScan = "QR\nScan";
 
   static const String registerSuccess =
       "Your PoSP registration has been done successfully with Andapp";
@@ -154,6 +154,10 @@ class StringUtils {
       "Invalid OTP.Please try with latest valid OTP";
   static const String verifyOTPExpired =
       "Your OTP is expired.Please Send again and try with latest valid OTP";
+  static const String profilePhotoSuccess =
+      "Your photo has been updated successfully";
+  static const String profilePhotoFail =
+      "Your photo has not been updated yet.Please try again later";
   static const String trainingSuccessTitle = "Congratulations...!!";
   static const String trainingDaysSuccessTitle = "Superb...!!";
   static const String registrationPendingMsg =
@@ -171,9 +175,12 @@ class StringUtils {
   static const String trainingFailTitle = "Oops ...!!";
   static const String trainingFailMessage =
       "You have not achieved 40% of the score... We request you to retake the exam.....";
+  static const String downloadSuccess =
+      "Your PoSP Training Certificate has been downloaded successfully.";
   static const String downloadCertificate = "Download Certificate";
   static const String reExam = "Re-Exam";
   static const String pass = "pass"; // In any language,It has to "pass" only.
+  static const String notPass = "not pass"; // In any language,It has to "not pass" only.
   static const String totalQue = "Total Questions";
   static const String totalAns = "Total Correct Answers";
 

@@ -6,6 +6,8 @@ import 'package:andapp/common/pink_border_button.dart';
 import 'package:andapp/common/string_utils.dart';
 import 'package:andapp/model/get_profile.dart';
 import 'package:andapp/screen/profile/my_profile_bloc.dart';
+import 'package:andapp/services/api_client.dart';
+import 'package:clipboard/clipboard.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -64,9 +66,18 @@ class _MyProfileState extends State<MyProfile> {
   @override
   Widget build(BuildContext context) {
     final appTheme = AppTheme.of(context);
-    var iconSize = (MediaQuery.of(context).size.width - 64) / 12;
-    var firstHeight = MediaQuery.of(context).size.height * 3 / 10;
-    var secondHeight = MediaQuery.of(context).size.height * 2.2 / 10;
+    var iconSize = (MediaQuery
+        .of(context)
+        .size
+        .width - 64) / 12;
+    var firstHeight = MediaQuery
+        .of(context)
+        .size
+        .height * 3 / 10;
+    var secondHeight = MediaQuery
+        .of(context)
+        .size
+        .height * 2.2 / 10;
     return Scaffold(
       appBar: AppBar(
           title: Align(
@@ -74,7 +85,10 @@ class _MyProfileState extends State<MyProfile> {
             child: Text(
               StringUtils.titleMyProfile,
               textAlign: TextAlign.left,
-              style: Theme.of(context).appBarTheme.titleTextStyle,
+              style: Theme
+                  .of(context)
+                  .appBarTheme
+                  .titleTextStyle,
             ),
           ),
           backgroundColor: appTheme.primaryColor,
@@ -89,11 +103,15 @@ class _MyProfileState extends State<MyProfile> {
                   Navigator.of(context).pop();
                 },
                 iconSize: 30,
-                tooltip: MaterialLocalizations.of(context).showMenuTooltip,
+                tooltip: MaterialLocalizations
+                    .of(context)
+                    .showMenuTooltip,
               );
             },
           )),
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme
+          .of(context)
+          .scaffoldBackgroundColor,
       body: SizedBox(
         //height: MediaQuery.of(context).size.height,
         child: SingleChildScrollView(
@@ -120,31 +138,40 @@ class _MyProfileState extends State<MyProfile> {
                                       .add(profilePhoto);
                                   if (mounted) {
                                     await bloc.updateProfilePhoto(
-                                        context, profilePhoto);
+                                        context, widget.pospId, profilePhoto);
                                   }
                                 },
                                 child: Stack(
                                   children: [
                                     CustomNetworkImage(
                                       width:
-                                          MediaQuery.of(context).size.height *
-                                              1.75 /
-                                              12,
+                                      MediaQuery
+                                          .of(context)
+                                          .size
+                                          .height *
+                                          1.75 /
+                                          12,
                                       height:
-                                          MediaQuery.of(context).size.height *
-                                              1.75 /
-                                              12,
+                                      MediaQuery
+                                          .of(context)
+                                          .size
+                                          .height *
+                                          1.75 /
+                                          12,
                                       radius:
-                                          MediaQuery.of(context).size.height *
-                                              1.75 /
-                                              24,
+                                      MediaQuery
+                                          .of(context)
+                                          .size
+                                          .height *
+                                          1.75 /
+                                          24,
                                       placeholderImage:
-                                          profile.personalDetails?.gender == "M"
-                                              ? AssetImages.profileAvatarMale
-                                              : AssetImages.profileAvatarFemale,
+                                      (profile.personalDetails?.gender ?? "").startsWith("F",0)
+                                          ? AssetImages.profileAvatarFemale
+                                          : AssetImages.profileAvatarMale,
                                       image:
-                                          profile.personalDetails?.pospPhoto ??
-                                              "",
+                                      profile.personalDetails?.pospPhoto ??
+                                          "",
                                     ),
                                     Positioned(
                                       right: 8,
@@ -197,10 +224,13 @@ class _MyProfileState extends State<MyProfile> {
                           clipBehavior: Clip.antiAlias,
                           child: Container(
                               height: secondHeight,
-                              width: MediaQuery.of(context).size.width,
+                              width: MediaQuery
+                                  .of(context)
+                                  .size
+                                  .width,
                               margin: const EdgeInsets.only(top: 4.0),
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 28),
+                              const EdgeInsets.symmetric(horizontal: 28),
                               decoration: BoxDecoration(
                                   boxShadow: const [
                                     BoxShadow(
@@ -234,32 +264,35 @@ class _MyProfileState extends State<MyProfile> {
                                   children: [
                                     SizedBox(
                                       width:
-                                          (MediaQuery.of(context).size.width -
-                                                  64) /
-                                              4,
+                                      (MediaQuery
+                                          .of(context)
+                                          .size
+                                          .width -
+                                          64) /
+                                          4,
                                       child: Column(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        MainAxisAlignment.center,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                         children: [
                                           FloatingActionButton(
                                               elevation: 0.0,
                                               heroTag: UniqueKey(),
                                               backgroundColor:
-                                                  selectedIndex == 0
-                                                      ? appTheme.primaryColor
-                                                      : Colors.white,
+                                              selectedIndex == 0
+                                                  ? appTheme.primaryColor
+                                                  : Colors.white,
                                               onPressed: () {
                                                 _pageController.jumpToPage(0);
                                               },
                                               shape: CircleBorder(
                                                   side: BorderSide(
-                                                width: 2,
-                                                color: selectedIndex == 0
-                                                    ? appTheme.primaryColor
-                                                    : Colors.white,
-                                              )),
+                                                    width: 2,
+                                                    color: selectedIndex == 0
+                                                        ? appTheme.primaryColor
+                                                        : Colors.white,
+                                                  )),
                                               child: Center(
                                                   child: SvgPicture.asset(
                                                       SvgImages
@@ -269,7 +302,7 @@ class _MyProfileState extends State<MyProfile> {
                                                       color: selectedIndex == 0
                                                           ? Colors.white
                                                           : appTheme
-                                                              .primaryColor))),
+                                                          .primaryColor))),
                                           const SizedBox(height: 8),
                                           const Text(
                                               StringUtils.personalDetails,
@@ -282,32 +315,35 @@ class _MyProfileState extends State<MyProfile> {
                                     ),
                                     SizedBox(
                                       width:
-                                          (MediaQuery.of(context).size.width -
-                                                  64) /
-                                              4,
+                                      (MediaQuery
+                                          .of(context)
+                                          .size
+                                          .width -
+                                          64) /
+                                          4,
                                       child: Column(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        MainAxisAlignment.center,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                         children: [
                                           FloatingActionButton(
                                               elevation: 0.0,
                                               heroTag: UniqueKey(),
                                               backgroundColor:
-                                                  selectedIndex == 1
-                                                      ? appTheme.primaryColor
-                                                      : Colors.white,
+                                              selectedIndex == 1
+                                                  ? appTheme.primaryColor
+                                                  : Colors.white,
                                               onPressed: () {
                                                 _pageController.jumpToPage(1);
                                               },
                                               shape: CircleBorder(
                                                   side: BorderSide(
-                                                width: 2,
-                                                color: selectedIndex == 1
-                                                    ? appTheme.primaryColor
-                                                    : Colors.white,
-                                              )),
+                                                    width: 2,
+                                                    color: selectedIndex == 1
+                                                        ? appTheme.primaryColor
+                                                        : Colors.white,
+                                                  )),
                                               child: Center(
                                                   child: SvgPicture.asset(
                                                       SvgImages.iconKYCDetails,
@@ -316,7 +352,7 @@ class _MyProfileState extends State<MyProfile> {
                                                       color: selectedIndex == 1
                                                           ? Colors.white
                                                           : appTheme
-                                                              .primaryColor))),
+                                                          .primaryColor))),
                                           const SizedBox(height: 8),
                                           const Padding(
                                             padding: EdgeInsets.symmetric(
@@ -326,39 +362,42 @@ class _MyProfileState extends State<MyProfile> {
                                                 style: TextStyle(
                                                     fontSize: 14,
                                                     fontWeight:
-                                                        FontWeight.w500)),
+                                                    FontWeight.w500)),
                                           ),
                                         ],
                                       ),
                                     ),
                                     SizedBox(
                                       width:
-                                          (MediaQuery.of(context).size.width -
-                                                  64) /
-                                              4,
+                                      (MediaQuery
+                                          .of(context)
+                                          .size
+                                          .width -
+                                          64) /
+                                          4,
                                       child: Column(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        MainAxisAlignment.center,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                         children: [
                                           FloatingActionButton(
                                               elevation: 0.0,
                                               heroTag: UniqueKey(),
                                               backgroundColor:
-                                                  selectedIndex == 2
-                                                      ? appTheme.primaryColor
-                                                      : Colors.white,
+                                              selectedIndex == 2
+                                                  ? appTheme.primaryColor
+                                                  : Colors.white,
                                               onPressed: () {
                                                 _pageController.jumpToPage(2);
                                               },
                                               shape: CircleBorder(
                                                   side: BorderSide(
-                                                width: 2,
-                                                color: selectedIndex == 2
-                                                    ? appTheme.primaryColor
-                                                    : Colors.white,
-                                              )),
+                                                    width: 2,
+                                                    color: selectedIndex == 2
+                                                        ? appTheme.primaryColor
+                                                        : Colors.white,
+                                                  )),
                                               child: Center(
                                                   child: SvgPicture.asset(
                                                       SvgImages
@@ -368,7 +407,7 @@ class _MyProfileState extends State<MyProfile> {
                                                       color: selectedIndex == 2
                                                           ? Colors.white
                                                           : appTheme
-                                                              .primaryColor))),
+                                                          .primaryColor))),
                                           const SizedBox(height: 8),
                                           const Padding(
                                             padding: EdgeInsets.symmetric(
@@ -378,58 +417,63 @@ class _MyProfileState extends State<MyProfile> {
                                                 style: TextStyle(
                                                     fontSize: 14,
                                                     fontWeight:
-                                                        FontWeight.w500)),
+                                                    FontWeight.w500)),
                                           ),
                                         ],
                                       ),
                                     ),
                                     SizedBox(
                                       width:
-                                          (MediaQuery.of(context).size.width -
-                                                  64) /
-                                              4,
+                                      (MediaQuery
+                                          .of(context)
+                                          .size
+                                          .width -
+                                          64) /
+                                          4,
                                       child: Column(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        MainAxisAlignment.center,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                         children: [
                                           FloatingActionButton(
                                               elevation: 0.0,
                                               heroTag: UniqueKey(),
                                               backgroundColor:
-                                                  selectedIndex == 3
-                                                      ? appTheme.primaryColor
-                                                      : Colors.white,
+                                              selectedIndex == 3
+                                                  ? appTheme.primaryColor
+                                                  : Colors.white,
                                               onPressed: () {
                                                 _pageController.jumpToPage(3);
                                               },
                                               shape: CircleBorder(
                                                   side: BorderSide(
-                                                width: 2,
-                                                color: selectedIndex == 3
-                                                    ? appTheme.primaryColor
-                                                    : Colors.white,
-                                              )),
+                                                    width: 2,
+                                                    color: selectedIndex == 3
+                                                        ? appTheme.primaryColor
+                                                        : Colors.white,
+                                                  )),
                                               child: Center(
                                                   child: SvgPicture.asset(
                                                       SvgImages.iconQRScan,
-                                                      height: (MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width -
-                                                              64) /
+                                                      height: (MediaQuery
+                                                          .of(
+                                                          context)
+                                                          .size
+                                                          .width -
+                                                          64) /
                                                           16,
                                                       width:
-                                                          (MediaQuery.of(context)
-                                                                      .size
-                                                                      .width -
-                                                                  64) /
-                                                              16,
+                                                      (MediaQuery
+                                                          .of(context)
+                                                          .size
+                                                          .width -
+                                                          64) /
+                                                          16,
                                                       color: selectedIndex == 3
                                                           ? Colors.white
                                                           : appTheme
-                                                              .primaryColor))),
+                                                          .primaryColor))),
                                           const SizedBox(height: 8),
                                           const Padding(
                                             padding: EdgeInsets.symmetric(
@@ -439,7 +483,7 @@ class _MyProfileState extends State<MyProfile> {
                                                 style: TextStyle(
                                                     fontSize: 14,
                                                     fontWeight:
-                                                        FontWeight.w500)),
+                                                    FontWeight.w500)),
                                           ),
                                         ],
                                       ),
@@ -457,7 +501,10 @@ class _MyProfileState extends State<MyProfile> {
                           clipBehavior: Clip.antiAlias,
                           //clipper: [],
                           child: Container(
-                            width: MediaQuery.of(context).size.width,
+                            width: MediaQuery
+                                .of(context)
+                                .size
+                                .width,
                             margin: const EdgeInsets.only(top: 4.0),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 24, vertical: 16),
@@ -491,7 +538,9 @@ class _MyProfileState extends State<MyProfile> {
                                 borderRadius: const BorderRadius.vertical(
                                     top: Radius.circular(16.0)),
                                 color:
-                                    Theme.of(context).scaffoldBackgroundColor),
+                                Theme
+                                    .of(context)
+                                    .scaffoldBackgroundColor),
                             alignment: Alignment.center,
                             child: ExpandablePageView.builder(
                               controller: _pageController,
@@ -504,283 +553,305 @@ class _MyProfileState extends State<MyProfile> {
                                 selectedIndex = position;
                                 return position == 0
                                     ? Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          getProfileRow(
-                                              SvgImages.iconUsername,
-                                              StringUtils.userName,
-                                              profile.personalDetails
-                                                      ?.userName ??
-                                                  "",
-                                              SvgImages.iconProfileEdit,
-                                              () {}),
-                                          const SizedBox(
-                                            height: 12,
-                                          ),
-                                          getProfileRow(
-                                              SvgImages.iconBirthdate,
-                                              StringUtils.birthdate,
-                                              profile.personalDetails
-                                                      ?.birthdate ??
-                                                  "",
-                                              "",
-                                              () {}),
-                                          const SizedBox(
-                                            height: 12,
-                                          ),
-                                          getProfileRow(
-                                              SvgImages.iconEmail,
-                                              StringUtils.emailID,
-                                              profile.personalDetails
-                                                      ?.emailId ??
-                                                  "",
-                                              SvgImages.iconProfileEdit,
-                                              () {}),
-                                          const SizedBox(
-                                            height: 12,
-                                          ),
-                                          getProfileRow(
-                                              SvgImages.iconCall,
-                                              StringUtils.mobileNumber,
-                                              profile.personalDetails
-                                                      ?.mobileNo ??
-                                                  "",
-                                              SvgImages.iconNext,
-                                              () {}),
-                                          const SizedBox(
-                                            height: 12,
-                                          ),
-                                          getProfileRow(
-                                              SvgImages.iconWhatsapp,
-                                              StringUtils.whatsappNumber,
-                                              profile.personalDetails
-                                                      ?.whatsappNo ??
-                                                  "",
-                                              SvgImages.iconProfileEdit,
-                                              () {}),
-                                        ],
-                                      )
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.start,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    getProfileRow(
+                                        SvgImages.iconUsername,
+                                        StringUtils.userName,
+                                        profile.personalDetails
+                                            ?.userName ??
+                                            "",
+                                        SvgImages.iconProfileEdit,
+                                            () {}),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    getProfileRow(
+                                        SvgImages.iconBirthdate,
+                                        StringUtils.birthdate,
+                                        profile.personalDetails
+                                            ?.birthdate ??
+                                            "",
+                                        "",
+                                            () {}),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    getProfileRow(
+                                        SvgImages.iconEmail,
+                                        StringUtils.emailID,
+                                        profile.personalDetails
+                                            ?.emailId ??
+                                            "",
+                                        SvgImages.iconProfileEdit,
+                                            () {}),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    getProfileRow(
+                                        SvgImages.iconCall,
+                                        StringUtils.mobileNumber,
+                                        profile.personalDetails
+                                            ?.mobileNo ??
+                                            "",
+                                        SvgImages.iconNext,
+                                            () {}),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    getProfileRow(
+                                        SvgImages.iconWhatsapp,
+                                        StringUtils.whatsappNumber,
+                                        profile.personalDetails
+                                            ?.whatsappNo ??
+                                            "",
+                                        SvgImages.iconProfileEdit,
+                                            () {}),
+                                  ],
+                                )
                                     : position == 1
-                                        ? Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              getProfileRow(
-                                                  SvgImages.iconAadharNumber,
-                                                  StringUtils.aadharNumber,
-                                                  profile.kycDetails
-                                                          ?.aadharNo ??
-                                                      "",
-                                                  SvgImages.iconProfileEdit,
-                                                  () {}),
-                                              const SizedBox(
-                                                height: 12,
+                                    ? Column(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.start,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    getProfileRow(
+                                        SvgImages.iconAadharNumber,
+                                        StringUtils.aadharNumber,
+                                        profile.kycDetails
+                                            ?.aadharNo ??
+                                            "",
+                                        SvgImages.iconProfileEdit,
+                                            () {}),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    getProfileRow(
+                                        SvgImages.iconPanNumber,
+                                        StringUtils.panNumber,
+                                        profile.kycDetails?.panNo ??
+                                            "",
+                                        "",
+                                            () {}),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    getProfileRow(
+                                        SvgImages.iconGstNumber,
+                                        StringUtils.gstNumber,
+                                        profile.kycDetails?.gstNo ??
+                                            "",
+                                        "",
+                                            () {}),
+                                    //Spacer(),
+                                  ],
+                                )
+                                    : position == 2
+                                    ? Column(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.start,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    getProfileRow(
+                                        SvgImages
+                                            .iconBankAcNumber,
+                                        StringUtils
+                                            .bankAccountNumber,
+                                        profile.bankDetails
+                                            ?.bankAccountNo ??
+                                            "",
+                                        "",
+                                            () {}),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    getProfileRow(
+                                        SvgImages.iconIfscCode,
+                                        StringUtils.ifscCode,
+                                        profile.bankDetails
+                                            ?.ifsc ??
+                                            "",
+                                        "",
+                                            () {}),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    getProfileRow(
+                                        SvgImages
+                                            .iconAcHolderName,
+                                        StringUtils.accountHolder,
+                                        profile.bankDetails
+                                            ?.bankHolderName ??
+                                            "",
+                                        "",
+                                            () {}),
+                                    Padding(
+                                        padding: const EdgeInsets
+                                            .symmetric(
+                                          vertical: 32.0,
+                                        ),
+                                        child: Center(
+                                          child: PinkBorderButton(
+                                            isEnabled: true,
+                                            content:
+                                            StringUtils.edit,
+                                            onPressed: () {},
+                                          ),
+                                        )),
+                                  ],
+                                )
+                                    : position == 3
+                                    ? Column(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .center,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment
+                                      .center,
+                                  children: [
+                                    Container(
+                                      height: 224,
+                                      width: 224,
+                                      margin: const EdgeInsets
+                                          .fromLTRB(
+                                          50, 50, 50, 0),
+                                      decoration:
+                                      ShapeDecoration(
+                                          shadows: [
+                                            BoxShadow(
+                                              blurRadius: 4.0,
+                                              spreadRadius: 2,
+                                              offset:
+                                              const Offset(
+                                                  2, 2),
+                                              color: appTheme
+                                                  .myProfileThirdBgBorderColor,
+                                            ),
+                                          ],
+                                          shape:
+                                          RoundedRectangleBorder(
+                                              borderRadius:
+                                              const BorderRadius
+                                                  .all(
+                                                Radius.circular(
+                                                    8.0),
                                               ),
-                                              getProfileRow(
-                                                  SvgImages.iconPanNumber,
-                                                  StringUtils.panNumber,
-                                                  profile.kycDetails?.panNo ??
-                                                      "",
-                                                  "",
-                                                  () {}),
-                                              const SizedBox(
-                                                height: 12,
+                                              side: BorderSide(
+                                                  width:
+                                                  2,
+                                                  color: appTheme
+                                                      .trainingCardBorderColor)),
+                                          color: Colors
+                                              .white),
+                                      alignment:
+                                      Alignment.center,
+                                      child: QrImage(
+                                        data:
+                                        ApiClient.siteUrl +
+                                            (profile.qrLink ?? ""),
+                                        version:
+                                        QrVersions.auto,
+                                        //size: 200.0,
+                                      ),
+                                    ),
+                                    Container(
+                                      width: 224,
+                                      margin: const EdgeInsets
+                                          .symmetric(
+                                          vertical: 16),
+                                      padding:
+                                      const EdgeInsets
+                                          .all(8),
+                                      decoration:
+                                      ShapeDecoration(
+                                          shadows: [
+                                            BoxShadow(
+                                              blurRadius: 4.0,
+                                              spreadRadius: 2,
+                                              offset:
+                                              const Offset(
+                                                  2, 2),
+                                              color: appTheme
+                                                  .myProfileThirdBgBorderColor,
+                                            ),
+                                          ],
+                                          shape:
+                                          RoundedRectangleBorder(
+                                              borderRadius:
+                                              const BorderRadius
+                                                  .all(
+                                                Radius.circular(
+                                                    8.0),
                                               ),
-                                              getProfileRow(
-                                                  SvgImages.iconGstNumber,
-                                                  StringUtils.gstNumber,
-                                                  profile.kycDetails?.gstNo ??
-                                                      "",
-                                                  "",
-                                                  () {}),
-                                              //Spacer(),
-                                            ],
+                                              side: BorderSide(
+                                                  width:
+                                                  2,
+                                                  color: appTheme
+                                                      .trainingCardBorderColor)),
+                                          color: Colors
+                                              .white),
+                                      alignment:
+                                      Alignment.center,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                                ApiClient.siteUrl +
+                                                    (profile.referralLink ??
+                                                        ""),
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                    decoration:
+                                                    TextDecoration
+                                                        .underline,
+                                                    fontSize:
+                                                    14,
+                                                    fontWeight:
+                                                    FontWeight
+                                                        .w300,
+                                                    color: appTheme
+                                                        .primaryColor)),
+                                          ),
+                                         /* const SizedBox(
+                                            width: 8,
+                                          ),*/
+                                          SizedBox(
+                                            width : 24,
+                                            height : 24,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                FlutterClipboard.copy(
+                                                    ApiClient.siteUrl +
+                                                        (profile.referralLink ??
+                                                            ""));
+                                              },
+                                              //clipBehaviour:Clip.
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.white,
+                                                  padding: const EdgeInsets.all(2),
+                                                  fixedSize: const Size(20, 20),
+                                                  //maximumSize: const Size(18, 18)
+                                              ),
+                                              child: SvgPicture.asset(
+                                                  SvgImages
+                                                      .iconCopy,
+                                                  height: 16,
+                                                  width: 16),),
                                           )
-                                        : position == 2
-                                            ? Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  getProfileRow(
-                                                      SvgImages
-                                                          .iconBankAcNumber,
-                                                      StringUtils
-                                                          .bankAccountNumber,
-                                                      profile.bankDetails
-                                                              ?.bankAccountNo ??
-                                                          "",
-                                                      "",
-                                                      () {}),
-                                                  const SizedBox(
-                                                    height: 12,
-                                                  ),
-                                                  getProfileRow(
-                                                      SvgImages.iconIfscCode,
-                                                      StringUtils.ifscCode,
-                                                      profile.bankDetails
-                                                              ?.ifsc ??
-                                                          "",
-                                                      "",
-                                                      () {}),
-                                                  const SizedBox(
-                                                    height: 12,
-                                                  ),
-                                                  getProfileRow(
-                                                      SvgImages
-                                                          .iconAcHolderName,
-                                                      StringUtils.accountHolder,
-                                                      profile.bankDetails
-                                                              ?.bankHolderName ??
-                                                          "",
-                                                      "",
-                                                      () {}),
-                                                  Padding(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                        vertical: 32.0,
-                                                      ),
-                                                      child: Center(
-                                                        child: PinkBorderButton(
-                                                          isEnabled: true,
-                                                          content:
-                                                              StringUtils.edit,
-                                                          onPressed: () {},
-                                                        ),
-                                                      )),
-                                                ],
-                                              )
-                                            : position == 3
-                                                ? Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Container(
-                                                        height: 224,
-                                                        width: 224,
-                                                        margin: const EdgeInsets
-                                                                .fromLTRB(
-                                                            50, 50, 50, 0),
-                                                        decoration:
-                                                            ShapeDecoration(
-                                                                shadows: [
-                                                              BoxShadow(
-                                                                blurRadius: 4.0,
-                                                                spreadRadius: 2,
-                                                                offset:
-                                                                    const Offset(
-                                                                        2, 2),
-                                                                color: appTheme
-                                                                    .myProfileThirdBgBorderColor,
-                                                              ),
-                                                            ],
-                                                                shape:
-                                                                    RoundedRectangleBorder(
-                                                                        borderRadius:
-                                                                            const BorderRadius
-                                                                                .all(
-                                                                          Radius.circular(
-                                                                              8.0),
-                                                                        ),
-                                                                        side: BorderSide(
-                                                                            width:
-                                                                                2,
-                                                                            color: appTheme
-                                                                                .trainingCardBorderColor)),
-                                                                color: Colors
-                                                                    .white),
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: QrImage(
-                                                          data:
-                                                              profile.qrLink ??
-                                                                  "",
-                                                          version:
-                                                              QrVersions.auto,
-                                                          //size: 200.0,
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        width: 224,
-                                                        margin: const EdgeInsets
-                                                                .symmetric(
-                                                            vertical: 16),
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8),
-                                                        decoration:
-                                                            ShapeDecoration(
-                                                                shadows: [
-                                                              BoxShadow(
-                                                                blurRadius: 4.0,
-                                                                spreadRadius: 2,
-                                                                offset:
-                                                                    const Offset(
-                                                                        2, 2),
-                                                                color: appTheme
-                                                                    .myProfileThirdBgBorderColor,
-                                                              ),
-                                                            ],
-                                                                shape:
-                                                                    RoundedRectangleBorder(
-                                                                        borderRadius:
-                                                                            const BorderRadius
-                                                                                .all(
-                                                                          Radius.circular(
-                                                                              8.0),
-                                                                        ),
-                                                                        side: BorderSide(
-                                                                            width:
-                                                                                2,
-                                                                            color: appTheme
-                                                                                .trainingCardBorderColor)),
-                                                                color: Colors
-                                                                    .white),
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            Text(
-                                                                profile.referralLink ??
-                                                                    "",
-                                                                style: TextStyle(
-                                                                    decoration:
-                                                                        TextDecoration
-                                                                            .underline,
-                                                                    fontSize:
-                                                                        14,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w300,
-                                                                    color: appTheme
-                                                                        .primaryColor)),
-                                                            const SizedBox(
-                                                              width: 8,
-                                                            ),
-                                                            SvgPicture.asset(
-                                                                SvgImages
-                                                                    .iconCopy,
-                                                                height: 16,
-                                                                width: 16),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )
-                                                : Container();
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                )
+                                    : Container();
                               },
                             ),
                           ),

@@ -35,7 +35,7 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
   @override
   void initState() {
     super.initState();
-    bloc.getDashboard(context, widget.pospId);
+    bloc.getDashboard(context, widget.pospId,isProgressBar: false);
     //bloc.downloadCertificate(context);
   }
 
@@ -402,7 +402,8 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                                       const SizedBox(
                                                         width: 12,
                                                       ),
-                                                      Text(
+                                                  Expanded(
+                                                      child: Text(
                                                         StringUtils
                                                             .videoTutorials,
                                                         style: TextStyle(
@@ -415,7 +416,7 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                                             fontWeight:
                                                                 FontWeight
                                                                     .w400),
-                                                      ),
+                                                      ),),
                                                     ],
                                                   ),
                                                 ),
@@ -434,19 +435,21 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                                       const SizedBox(
                                                         width: 12,
                                                       ),
-                                                      Text(
-                                                        StringUtils
-                                                            .unlimitedAccess,
-                                                        style: TextStyle(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyText1
-                                                                ?.color,
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400),
+                                                      Expanded(
+                                                        child: Text(
+                                                          StringUtils
+                                                              .unlimitedAccess,
+                                                          style: TextStyle(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodyText1
+                                                                  ?.color,
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400),
+                                                        ),
                                                       ),
                                                     ],
                                                   ),
@@ -659,7 +662,7 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                                 day: liDay);
                                           }),
                                         ).then((value) => bloc.getDashboard(
-                                            context, widget.pospId));
+                                            context, widget.pospId,isProgressBar: false));
                                       } else {
                                         CommonToast.getInstance()?.displayToast(
                                             message:
@@ -669,11 +672,11 @@ class _TrainingDashboardLIState extends State<TrainingDashboardLI>
                                       Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(builder: (context) {
-                                          return const TrainingExam(
-                                              title: StringUtils.lifeInsurance);
+                                          return TrainingExam(
+                                              title: StringUtils.lifeInsurance,pospId: widget.pospId,);
                                         }),
                                       ).then((value) => bloc.getDashboard(
-                                          context, widget.pospId));
+                                          context, widget.pospId,isProgressBar: false));
                                     }
                                   },
                                 ),

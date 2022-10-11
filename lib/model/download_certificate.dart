@@ -8,9 +8,7 @@ class DownloadCertificate {
   DownloadCertificate.fromJson(Map<String, dynamic> json) {
     resultflag = json['resultflag'];
     messages = json['Messages'];
-    data = json['Data'] != null
-        ? DownloadCertificateData.fromJson(json['Data'])
-        : null;
+    data = json['Data'] != null ? DownloadCertificateData.fromJson(json['Data']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -25,12 +23,12 @@ class DownloadCertificate {
 }
 
 class DownloadCertificateData {
-  DCData? data;
+  DownloadCertificateImageData? data;
 
   DownloadCertificateData({this.data});
 
   DownloadCertificateData.fromJson(Map<String, dynamic> json) {
-    data = json['data'] != null ? DCData.fromJson(json['data']) : null;
+    data = json['data'] != null ? DownloadCertificateImageData.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -42,12 +40,12 @@ class DownloadCertificateData {
   }
 }
 
-class DCData {
-  dynamic image;
+class DownloadCertificateImageData {
+  String? image;
 
-  DCData({this.image});
+  DownloadCertificateImageData({this.image});
 
-  DCData.fromJson(Map<String, dynamic> json) {
+  DownloadCertificateImageData.fromJson(Map<String, dynamic> json) {
     image = json['image'];
   }
 
