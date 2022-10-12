@@ -122,54 +122,57 @@ class _TrainingExamState extends State<TrainingExam>
                                     latestAttemptedIndex = i;
                                   }
                                 }
-                                return Transform.scale(
-                                  scale: index == current ? 1 : 0.75,
-                                  child: FloatingActionButton(
-                                      heroTag: null,
-                                      elevation: 0.0,
-                                      backgroundColor: (index == current ||
-                                              listQuestion[index]
-                                                      .attemptedAns !=
-                                                  null)
-                                          ? appTheme.primaryColor
-                                          : Colors.transparent,
-                                      onPressed: () {
-                                        if (kDebugMode) {
-                                          print(index);
-                                        }
-                                        if (index <= current + 1 ||
-                                            index <= latestAttemptedIndex + 1) {
-                                          selectIndex(index, scrollController);
-                                        }
-                                      },
-                                      shape: CircleBorder(
-                                          side: BorderSide(
-                                        width: 2,
-                                        color: (index <= current ||
+                                return SizedBox(
+                                  width: (MediaQuery.of(context).size.width - 48 -32 - 48) / 5,
+                                  child: Transform.scale(
+                                    scale: index == current ? 1 : 0.75,
+                                    child: FloatingActionButton(
+                                        heroTag: null,
+                                        elevation: 0.0,
+                                        backgroundColor: (index == current ||
                                                 listQuestion[index]
                                                         .attemptedAns !=
-                                                    null ||
-                                                index <= latestAttemptedIndex)
+                                                    null)
                                             ? appTheme.primaryColor
-                                            : Colors.white,
-                                      )),
-                                      child: Center(
-                                          child: Text(
-                                        "$displayIndex",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            color: ((index < current ||
-                                                        (index <=
-                                                                latestAttemptedIndex &&
-                                                            index !=
-                                                                current)) &&
-                                                    listQuestion[index]
-                                                            .attemptedAns ==
-                                                        null)
-                                                ? appTheme.primaryColor
-                                                : Colors.white),
-                                      ))),
+                                            : Colors.transparent,
+                                        onPressed: () {
+                                          if (kDebugMode) {
+                                            print(index);
+                                          }
+                                          if (index <= current + 1 ||
+                                              index <= latestAttemptedIndex + 1) {
+                                            selectIndex(index, scrollController);
+                                          }
+                                        },
+                                        shape: CircleBorder(
+                                            side: BorderSide(
+                                          width: 2,
+                                          color: (index <= current ||
+                                                  listQuestion[index]
+                                                          .attemptedAns !=
+                                                      null ||
+                                                  index <= latestAttemptedIndex)
+                                              ? appTheme.primaryColor
+                                              : Colors.white,
+                                        )),
+                                        child: Center(
+                                            child: Text(
+                                          "$displayIndex",
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color: ((index < current ||
+                                                          (index <=
+                                                                  latestAttemptedIndex &&
+                                                              index !=
+                                                                  current)) &&
+                                                      listQuestion[index]
+                                                              .attemptedAns ==
+                                                          null)
+                                                  ? appTheme.primaryColor
+                                                  : Colors.white),
+                                        ))),
+                                  ),
                                 );
                               }),
                         ),

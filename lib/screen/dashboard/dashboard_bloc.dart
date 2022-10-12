@@ -79,22 +79,22 @@ class DashboardBloc extends BlocBase {
           ?.getApiInterface()
           .getApiRepository()
           .getProfile(id: pospId,isProgressBar: false);
-      if (getProfile != null &&
+      /*if (getProfile != null &&
           getProfile.resultflag == ApiClient.resultflagSuccess &&
-          getProfile.data != null) {
+          getProfile.data != null && !isBackground) {
         profileStreamController.sink.add(getProfile.data?.data);
-      }
+      }*/
     }
-    else {
+  /*  else {
       var profile = await AppComponentBase.getInstance()
           ?.getSharedPreference()
           .getUserDetail(key: SharedPreference().profile);
       var getProfile = GetProfile.fromJson(json.decode(profile));
       if (getProfile.resultflag == ApiClient.resultflagSuccess &&
-          getProfile.data != null) {
+          getProfile.data != null && !isBackground) {
         profileStreamController.sink.add(getProfile.data?.data);
       }
-    }
+    }*/
   }
 
   void downloadCertificate(

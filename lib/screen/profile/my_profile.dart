@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:andapp/common/app_theme.dart';
 import 'package:andapp/common/common_toast.dart';
 import 'package:andapp/common/image_utils.dart';
@@ -10,6 +12,7 @@ import 'package:andapp/services/api_client.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -32,7 +35,7 @@ class _MyProfileState extends State<MyProfile> {
   @override
   void initState() {
     super.initState();
-    bloc.getProfile(context, widget.pospId);
+    bloc.getProfile(widget.pospId);
   }
 
   Future<PlatformFile?> _pickFile() async {
@@ -54,7 +57,9 @@ class _MyProfileState extends State<MyProfile> {
     print(result.files.first.path);*/
     var bytes = result.files.first.size;
     double sizeInMB = bytes / (1024 * 1024);
-    print("sizeInMB : $sizeInMB");
+    if (kDebugMode) {
+      print("sizeInMB : $sizeInMB");
+    }
     if (sizeInMB > 4) {
       CommonToast.getInstance()
           ?.displayToast(message: "Please select file upto 4 MB only");
@@ -121,6 +126,8 @@ class _MyProfileState extends State<MyProfile> {
                   (BuildContext context, AsyncSnapshot<ProfileData?> snapshot) {
                 if (snapshot.hasData) {
                   ProfileData? profile = snapshot.data!;
+                  const Base64Codec base64 = Base64Codec();
+                  var bytes = base64.decode(profile.personalDetails?.pospPhoto ?? "");
                   return Stack(
                     children: [
                       Container(
@@ -134,11 +141,13 @@ class _MyProfileState extends State<MyProfile> {
                               GestureDetector(
                                 onTap: () async {
                                   var profilePhoto = await _pickFile();
-                                  bloc.profilePhotoStreamController.sink
-                                      .add(profilePhoto);
-                                  if (mounted) {
-                                    await bloc.updateProfilePhoto(
-                                        context, widget.pospId, profilePhoto);
+                                  if(profilePhoto != null) {
+                                    bloc.profilePhotoStreamController.sink
+                                        .add(profilePhoto);
+                                    if (mounted) {
+                                      await bloc.updateProfilePhoto(
+                                          context, widget.pospId, profilePhoto);
+                                    }
                                   }
                                 },
                                 child: Stack(
@@ -170,9 +179,9 @@ class _MyProfileState extends State<MyProfile> {
                                           ? AssetImages.profileAvatarFemale
                                           : AssetImages.profileAvatarMale,
                                       image:
-                                      profile.personalDetails?.pospPhoto ??
-                                          "",
+                                      bytes,
                                     ),
+
                                     Positioned(
                                       right: 8,
                                       bottom: 8,
@@ -190,18 +199,31 @@ class _MyProfileState extends State<MyProfile> {
                                 ),
                               ),
                               const SizedBox(
-                                width: 32,
-                              ),
+                                  width: 32,
+                                ),
+
                               Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                        profile.personalDetails?.pospName ?? "",
-                                        style: const TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.w600)),
+                                    SizedBox(
+                                      width : MediaQuery
+                                          .of(context)
+                                          .size
+                                          .width - ((MediaQuery
+                                          .of(context)
+                                          .size
+                                          .height *
+                                          1.75 /
+                                          12))-32-96,
+                                      child: Text(
+                                          profile.personalDetails?.pospName ?? "",
+                                          maxLines: 2,
+                                          style: const TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.w600)),
+                                    ),
                                     const SizedBox(
                                       height: 8,
                                     ),
@@ -354,16 +376,12 @@ class _MyProfileState extends State<MyProfile> {
                                                           : appTheme
                                                           .primaryColor))),
                                           const SizedBox(height: 8),
-                                          const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 8.0),
-                                            child: Text(StringUtils.kycDetails,
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight:
-                                                    FontWeight.w500)),
-                                          ),
+                                          const Text(StringUtils.profileKycDetails,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight:
+                                                  FontWeight.w500)),
                                         ],
                                       ),
                                     ),
@@ -409,16 +427,12 @@ class _MyProfileState extends State<MyProfile> {
                                                           : appTheme
                                                           .primaryColor))),
                                           const SizedBox(height: 8),
-                                          const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 8.0),
-                                            child: Text(StringUtils.bankDetails,
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight:
-                                                    FontWeight.w500)),
-                                          ),
+                                          const Text(StringUtils.profileKycDetails,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight:
+                                                  FontWeight.w500)),
                                         ],
                                       ),
                                     ),
@@ -475,16 +489,12 @@ class _MyProfileState extends State<MyProfile> {
                                                           : appTheme
                                                           .primaryColor))),
                                           const SizedBox(height: 8),
-                                          const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 24.0),
-                                            child: Text(StringUtils.qrScan,
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight:
-                                                    FontWeight.w500)),
-                                          ),
+                                          const Text(StringUtils.qrScan,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight:
+                                                  FontWeight.w500)),
                                         ],
                                       ),
                                     ),
@@ -546,8 +556,7 @@ class _MyProfileState extends State<MyProfile> {
                               controller: _pageController,
                               itemCount: 4,
                               onPageChanged: (int? page) {
-                                selectedIndex = page ?? 0;
-                                setState(() {});
+                                setState(() {selectedIndex = page ?? 0;});
                               },
                               itemBuilder: (context, position) {
                                 selectedIndex = position;

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +13,7 @@ class CustomNetworkImage extends StatelessWidget {
   final double width;
   final double height;
   final BoxFit fit;
-  final String image;
+  final Uint8List image;
   final double radius;
   final String placeholderImage;
   final String errorImage;
@@ -22,7 +24,7 @@ class CustomNetworkImage extends StatelessWidget {
       this.width = 150,
       this.height = 180,
       this.fit = BoxFit.cover,
-      this.image = '',
+      required this.image,
       this.radius = 0,
       this.placeholderImage = '',
       this.errorImage = '',
@@ -45,29 +47,61 @@ class CustomNetworkImage extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(radius),
-        child: CachedNetworkImage(
-          imageUrl: image,
-          width: width,
-          height: height,
-          errorWidget: (context, url, error) => Image.asset(
-            placeholderImage,
-            width: width,
-            height: height,
-          ),
-          placeholder: (context, url) => Center(
-            child: SizedBox(
-              width: width,
+        child: Stack(
+          children: [
+            image.isEmpty ?
+            /*CachedNetworkImage(
+              imageUrl: image.toString(),
+    *//*imageBuilder: (context, imageProvider) => Container(
+    width: width,
+    height: height,
+    decoration: BoxDecoration(
+    shape: BoxShape.circle,
+    image: DecorationImage(
+    image: MemoryImage(image), fit: BoxFit.cover),
+    ),
+    ),*//*
+    width: width,
               height: height,
-              child: ShimmerLoading(
-                isLoading: true,
-                child: Container(
-                  decoration: BoxDecoration(
-                      image:
-                          DecorationImage(image: AssetImage(placeholderImage))),
+              errorWidget: (context, url, error) => Center(
+                child: Image.asset(
+                  placeholderImage,
+                  width: width,
+                  height: height,
                 ),
               ),
-            ),
-          ),
+              placeholder: (context, url) => Center(
+                child: SizedBox(
+                  width: width,
+                  height: height,
+                  child: ShimmerLoading(
+                    isLoading: true,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          image:
+                              DecorationImage(image: AssetImage(placeholderImage))),
+                    ),
+                  ),
+                ),
+              ),
+            )*/
+        Center(
+        child: Image.asset(
+          placeholderImage,
+          width: width,
+          height: height,
+        ),
+      ):
+            Container(
+              width: width,
+              height: height,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                    image: MemoryImage(image), fit: BoxFit.cover),
+              ),
+            )
+          ],
         ),
       ),
     );

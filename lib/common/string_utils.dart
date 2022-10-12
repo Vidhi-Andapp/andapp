@@ -142,6 +142,8 @@ class StringUtils {
 
   static const String titleMyProfile = "My Profile";
   static const String personalDetails = "Personal\nDetails";
+  static const String profileKycDetails = "KYC\nDetails";
+  static const String profileBankDetails = "Bank\nDetails";
   static const String qrScan = "QR\nScan";
 
   static const String registerSuccess =

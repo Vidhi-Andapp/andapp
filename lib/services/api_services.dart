@@ -435,7 +435,7 @@ class ApiServices extends ApiClient {
       }
     }
     Map body = {
-      "id": id,
+      "posp_id": id,
     };
     String jsonString = json.encode(body);
     var request =
@@ -446,12 +446,15 @@ class ApiServices extends ApiClient {
     request.files.add(await http.MultipartFile.fromPath(
       'profile',
       profilePhoto.path ?? "",
-      contentType: MediaType('application', 'png'),
+      //contentType: MediaType('application', 'png'),
+      contentType: MediaType(
+          profilePhoto.extension == "pdf" ? 'application' : 'image',
+          '${profilePhoto.extension}'),
     ));
     var response = await postsMultipart(
       request,
-      body: jsonString,
-      headers: getFormHeader(),
+      //body: jsonString,
+      headers: getJsonHeader(),
       encoding: Encoding.getByName('utf-8'),
       isBackground: true,
     );

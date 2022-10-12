@@ -247,6 +247,8 @@ class _NavBarState extends State<NavBar> {
                 (BuildContext context, AsyncSnapshot<ProfileData?> snapshot) {
               if (snapshot.hasData && snapshot.data != null) {
                 var profileData = snapshot.data;
+                const Base64Codec base64 = Base64Codec();
+                var bytes = base64.decode(profileData?.personalDetails?.pospPhoto ?? "");
                 return ListView(
                   // Remove padding
                   padding: EdgeInsets.zero,
@@ -272,11 +274,20 @@ class _NavBarState extends State<NavBar> {
                             profileData?.personalDetails?.gender == "M"
                                 ? AssetImages.profileAvatarMale
                                 : AssetImages.profileAvatarFemale,
-                        image: profileData?.personalDetails?.pospPhoto ?? "",
+                        image: bytes,
                       ),
                       decoration: BoxDecoration(
                         color: appTheme.primaryColor,
                       ),
+                      onDetailsPressed: (){
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) {
+                            return MyProfile(pospId: pospId!);
+                          }),
+                        );
+                      },
                     ),
                     _buildPanel(ApiClient.siteUrl +
                         (profileData?.referralLink ??

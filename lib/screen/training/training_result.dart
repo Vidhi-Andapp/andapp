@@ -186,7 +186,7 @@ class _TrainingResultState extends State<TrainingResult> {
                                   StringUtils.generalInsurance)
                                   .then((value) {
                                 if (value) {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(builder: (context) {
                                       return TrainingExam(

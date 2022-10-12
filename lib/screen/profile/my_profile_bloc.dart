@@ -25,7 +25,7 @@ class MyProfileBloc extends BlocBase {
 
   //PlatformFile? profilePhoto;
 
-  Future getProfile(BuildContext context, String pospId) async {
+  Future getProfile(String pospId) async {
     await AppComponentBase.getInstance()
         ?.getApiInterface()
         .getApiRepository()
@@ -50,8 +50,8 @@ class MyProfileBloc extends BlocBase {
             updateProfile.resultflag == ApiClient.resultflagSuccess &&
             updateProfile.data != null) {
           CommonToast.getInstance()
-              ?.displayToast(message: updateProfile.messages ?? StringUtils.profilePhotoSuccess);
-          //profileStreamController.sink.add();
+              ?.displayToast(message: updateProfile.data ?? StringUtils.profilePhotoSuccess);
+            await getProfile(pospId);
         }
         else {
           CommonToast.getInstance()
