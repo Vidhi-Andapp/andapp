@@ -70,7 +70,7 @@ class DashboardBloc extends BlocBase {
     }
   }
 
-  Future getProfile(String pospId) async {
+  Future getProfile(String pospId,{bool isBackground = false}) async {
     if (await AppComponentBase.getInstance()
         ?.getNetworkManager()
         .isConnected() ??
@@ -79,11 +79,11 @@ class DashboardBloc extends BlocBase {
           ?.getApiInterface()
           .getApiRepository()
           .getProfile(id: pospId,isProgressBar: false);
-      /*if (getProfile != null &&
+      if (getProfile != null &&
           getProfile.resultflag == ApiClient.resultflagSuccess &&
           getProfile.data != null && !isBackground) {
         profileStreamController.sink.add(getProfile.data?.data);
-      }*/
+      }
     }
   /*  else {
       var profile = await AppComponentBase.getInstance()
@@ -97,7 +97,7 @@ class DashboardBloc extends BlocBase {
     }*/
   }
 
-  void downloadCertificate(
+  Future<DownloadCertificate?> downloadCertificate(
       BuildContext context, String pospId, String trainingType) async {
     var downloadCertificate = await AppComponentBase.getInstance()
         ?.getApiInterface()
@@ -111,17 +111,16 @@ class DashboardBloc extends BlocBase {
       if (downloadCertificate != null &&
           downloadCertificate.resultflag == ApiClient.resultflagSuccess &&
           downloadCertificate.data != null) {
-        await createPdf(downloadCertificate.data?.data?.image ?? "",trainingType);
+        return downloadCertificate;
+       /* await createPdf(downloadCertificate.data?.data?.image ?? "",trainingType);
         CommonToast.getInstance()?.displayToast(
             message: StringUtils.downloadSuccess);
-        resultStreamController.sink.add(downloadCertificate);
+        resultStreamController.sink.add(downloadCertificate);*/
       }
+      return null;
     }
 
   Future createPdf(String source,String trainingType) async {
-//    String dir = (await getApplicationDocumentsDirectory()).path;
-    /*File file = File(
-        "$dir/" + DateTime.now().millisecondsSinceEpoch.toString() + ".pdf");*/
     var type = trainingType == StringUtils.generalInsurance
         ? ApiClient.trainingTypeGI
         : ApiClient.trainingTypeLI;
@@ -132,19 +131,6 @@ class DashboardBloc extends BlocBase {
     // response.data is List<int> type
     raf.writeFromSync(bytes);
     await raf.close();
-
-//    await file.writeAsBytes(bytes);
-
-// or
-    //file.writeAsBytesSync(bytes);
-
-    /* final output = await getTemporaryDirectory();
-    final file = File("${output.path}/example.pdf");
-    await file.writeAsBytes(bytes.buffer.asUint8List());
-
-    print("${output.path}/example.pdf");
-    await OpenFile.open("${output.path}/example.pdf");*/
-    //setState(() {});
   }
 
   Future<bool> reExam(

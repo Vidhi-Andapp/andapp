@@ -54,6 +54,12 @@ class ApiRepositoryIml extends ApiRepository {
   }
 
   @override
+  Future<SendOTP?> emailCheck(
+      {String? email}){
+    return _apiServices.emailCheck(email ?? "");
+  }
+
+  @override
   Future<SendOTP?> commonSendOTP(
       {String? mobileNo, String? type, String? aadharNo, String? email}) {
     return _apiServices.commonSendOTP(mobileNo ?? '',
@@ -174,6 +180,9 @@ abstract class ApiRepository {
   Future<CommonData?> registerDevice({String? mobileNo, String? deviceId});
 
   Future<CommonData?> updateMobile({String? mobileNo, String? deviceId});
+
+  Future<SendOTP?> emailCheck(
+      {String? email});
 
   Future<SendOTP?> commonSendOTP(
       {String? mobileNo, String? type, String? aadharNo, String? email});

@@ -3,6 +3,7 @@ import Flutter
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
+
   /* override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -15,6 +16,12 @@ override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+if #available(iOS 10.0, *) {
+  UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
+}
+ FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { (registry) in
+    GeneratedPluginRegistrant.register(with: registry)
+  }
 
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
 
@@ -54,4 +61,31 @@ override func application(
         result(decrypted)
     }
 
+final DarwinInitializationSettings initializationSettingsDarwin = DarwinInitializationSettings(
+    // ...
+    notificationCategories: [
+    const DarwinNotificationCategory(
+        'demoCategory',
+        <DarwinNotificationAction>[
+            IOSNotificationAction('id_1', 'Action 1'),
+            IOSNotificationAction(
+            'id_2',
+            'Action 2',
+            options: <DarwinNotificationActionOption>{
+                DarwinNotificationActionOption.destructive,
+            },
+            ),
+            DarwinNotificationAction(
+            'id_3',
+            'Action 3',
+            options: <DarwinNotificationActionOption>{
+                DarwinNotificationActionOption.foreground,
+            },
+            ),
+        ],
+        options: <DarwinNotificationCategoryOption>{
+            DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
+        },
+    )
+],
 }

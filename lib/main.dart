@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:andapp/common/app_theme.dart';
 import 'package:andapp/common/custom_progress.dart';
 import 'package:andapp/common/string_utils.dart';
@@ -14,6 +13,26 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+String? selectedNotificationPayload;
+
+class ReceivedNotification {
+  ReceivedNotification({
+    required this.id,
+    required this.title,
+    required this.body,
+    required this.payload,
+  });
+
+  final int id;
+  final String title;
+  final String body;
+  final String payload;
+}
+
 
 Future<void> main() async {
   /*const plainText = '123456789012';
@@ -50,8 +69,26 @@ Future<void> main() async {
   if (kDebugMode) {
     //print("decrypted base 64 : $decrypted64");
   }
-  //bool isLoggedIn = false;
+  //bool isLoggedIn = false;/
   WidgetsFlutterBinding.ensureInitialized();
+  const AndroidInitializationSettings initializationSettingsAndroid =
+  AndroidInitializationSettings('@mipmap/ic_launcher');
+  flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+      AndroidFlutterLocalNotificationsPlugin>()?.requestPermission();
+
+  InitializationSettings initializationSettings = const InitializationSettings(
+      android: initializationSettingsAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onDidReceiveNotificationResponse : (notificationResponse) {
+
+      },
+    /*  onSelectNotification: (String payload) async {
+        if (payload != null) {
+          debugPrint('notification payload: $payload');
+        }
+      }*/
+      );
+
   String? pospId;
   String page = "0";
   await getToken();
@@ -317,6 +354,10 @@ class MyAppState extends State<MyApp> {
           borderRadius: BorderRadius.circular(8.0),
           borderSide: const BorderSide(width: 1, color: Colors.white),
         ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide(width: 1, color: _appTheme.primaryColor),
+        ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: const BorderSide(width: 1, color: Colors.white),
@@ -354,6 +395,14 @@ class MyAppState extends State<MyApp> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: BorderSide(width: 1, color: _appTheme.blackFontColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide(width: 1, color: _appTheme.primaryColor),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(width: 1, color: Colors.grey),
         ),
         labelStyle: TextStyle(color: _appTheme.blackFontColor, fontSize: 24.0),
       ),

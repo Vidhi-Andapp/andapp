@@ -123,6 +123,35 @@ class ApiServices extends ApiClient {
     return null;
   }
 
+  Future<SendOTP?> emailCheck(
+      String email) async {
+    if (ApiClient.bearerToken.isEmpty) {
+      var tokenValue = await AppComponentBase.getInstance()
+          ?.getApiInterface()
+          .getApiRepository()
+          .token();
+      if (tokenValue != null && tokenValue.accessToken != null) {
+        if (tokenValue.accessToken!.isNotEmpty) {
+          ApiClient.bearerToken = tokenValue.accessToken!;
+        }
+      }
+    }
+    Map body = {
+      "email_id": email
+    };
+    String jsonString = json.encode(body);
+    var response = await posts(ApiClient.emailCheck,
+        body: jsonString,
+        headers: getJsonHeader(),
+        encoding: Encoding.getByName('utf-8'),
+        isBackground: true);
+    if (response != null) {
+      var data = SendOTP.fromJson(json.decode(response));
+      return data;
+    }
+    return null;
+  }
+
   Future<GetStatus?> getStatus(String mobileNo) async {
     if (ApiClient.bearerToken.isEmpty) {
       var tokenValue = await AppComponentBase.getInstance()

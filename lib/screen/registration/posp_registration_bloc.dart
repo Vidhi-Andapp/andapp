@@ -46,6 +46,22 @@ class PospRegistrationBloc extends BlocBase {
   int? automatedManual = 0;
   bool withGSTA = false;
 
+  Future<String?> emailCheck(BuildContext context) async {
+    var emailCheck = await AppComponentBase.getInstance()
+        ?.getApiInterface()
+        .getApiRepository()
+        .emailCheck(
+        email: email.text);
+    if (emailCheck != null) {
+      if (emailCheck.resultflag != ApiClient.resultflagSuccess) {
+        CommonToast.getInstance()?.displayToast(
+            message: emailCheck.messages ?? StringUtils.emailCheckFail);
+      }
+      return emailCheck.resultflag;
+    }
+    return null;
+  }
+  
   Future<String?> sendAadharOTP(BuildContext context) async {
     var sendOTPData = await AppComponentBase.getInstance()
         ?.getApiInterface()

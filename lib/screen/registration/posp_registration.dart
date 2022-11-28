@@ -29,6 +29,7 @@ class PoSPRegistration extends StatefulWidget {
 class _PoSPRegistrationState extends State<PoSPRegistration> {
   final PospRegistrationBloc bloc = PospRegistrationBloc();
   static int selectedIndex = 1;
+  final emailFocus = FocusNode();
   bool
   isPersonalDetailsVisible = true,
       isAadharOtpEnabled = false;
@@ -249,8 +250,9 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                     child: TextFormField(
                                       controller:
                                       bloc.username,
+                                      textInputAction: TextInputAction.next,
                                       decoration: InputDecoration(
-                                          labelText: StringUtils.userName,
+                                              labelText: StringUtils.userName,
                                           labelStyle: TextStyle(
                                               color: Theme
                                                   .of(context)
@@ -295,8 +297,10 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                     child: TextFormField(
                                       controller:
                                       bloc.email,
+                                        textInputAction: TextInputAction.next,
                                       decoration: InputDecoration(
                                           labelText: StringUtils.emailID,
+                                          //suffixIcon : Icon(Icons.check_circle_rounded error_outline_rounded,color: emailUpdatable,),
                                           labelStyle: TextStyle(
                                               color: Theme
                                                   .of(context)
@@ -311,7 +315,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                           focusedBorder: Theme
                                               .of(context)
                                               .inputDecorationTheme
-                                              .border),
+                                              .focusedBorder),
                                       validator: (val) {
                                         if (val == null || val.isEmpty) {
                                           return StringUtils.valEmptyEmailId;
@@ -328,6 +332,12 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                         fontFamily: "Poppins",
                                         //color: Colors.white
                                       ),
+                                        focusNode: emailFocus,
+                                        onFieldSubmitted: (v) async {
+                                        var value = await bloc
+                                            .emailCheck(
+                                            context);
+                                      }
                                     ),
                                   ),
                                   Padding(
@@ -336,6 +346,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                     child: TextFormField(
                                       controller:
                                       bloc.whatsappNumber,
+                                      textInputAction: TextInputAction.next,
                                       decoration: InputDecoration(
                                           labelText:
                                           StringUtils.whatsappNumber,
@@ -1083,6 +1094,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                     child: TextFormField(
                                                       controller:
                                                       bloc.firstName,
+                                                      textInputAction: TextInputAction.next,
                                                       decoration: InputDecoration(
                                                           labelText: StringUtils
                                                               .firstName,
@@ -1125,14 +1137,15 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                       ),
                                                     ),
                                                   ),
-                                                  Padding(
-                                                    padding: const EdgeInsets
+                                                    Padding(
+                                                        padding: const EdgeInsets
                                                         .symmetric(
                                                         vertical: 8,
                                                         horizontal: 32),
                                                     child: TextFormField(
                                                       controller:
                                                       bloc.middleName,
+                                                      textInputAction: TextInputAction.next,
                                                       decoration: InputDecoration(
                                                           labelText: StringUtils
                                                               .middleName,
@@ -1183,6 +1196,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                     child: TextFormField(
                                                       controller:
                                                       bloc.lastName,
+                                                      textInputAction: TextInputAction.next,
                                                       decoration: InputDecoration(
                                                           labelText: StringUtils
                                                               .lastName,
@@ -1707,6 +1721,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                           TextFormField(
                                                             controller: bloc
                                                                 .gstNumber,
+                                                            textInputAction: TextInputAction.next,
                                                             decoration: InputDecoration(
                                                                 labelText: StringUtils
                                                                     .gstNumber,
@@ -1811,6 +1826,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                                         TextFormField(
                                                           controller: bloc
                                                               .gstName,
+                                                          textInputAction: TextInputAction.next,
                                                           decoration:
                                                           InputDecoration(
                                                             labelText:
@@ -2452,6 +2468,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                               child: TextFormField(
                                                 controller:
                                                 bloc.bankAcNo,
+                                                textInputAction: TextInputAction.next,
                                                 decoration: InputDecoration(
                                                     labelText: StringUtils
                                                         .bankAcNumber,
@@ -2510,6 +2527,7 @@ class _PoSPRegistrationState extends State<PoSPRegistration> {
                                               child: TextFormField(
                                                 controller:
                                                 bloc.ifscCode,
+                                                textInputAction: TextInputAction.next,
                                                 decoration:
                                                 InputDecoration(
                                                     labelText:

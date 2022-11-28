@@ -150,6 +150,8 @@ class StringUtils {
       "Your PoSP registration has been done successfully with Andapp";
   static const String updateMobSuccess =
       "Your Mobile Number has been updated successfully with Andapp";
+  static const String emailCheckFail =
+      "Email ID already exists.Please enter another email ID";
   static const String sendOTPFail =
       "Please enter valid mobile number Or mobile number not found";
   static const String verifyOTPFail =

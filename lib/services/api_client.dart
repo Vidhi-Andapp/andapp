@@ -38,6 +38,7 @@ class ApiClient {
   static String getUrls = "$baseUrl/api/mobileApi/GetUrl";
   static String requestACallBack = "$baseUrl/api/mobileApi/RequestcallBack";
   static String registerDevice = "$baseUrl/api/mobileApi/RegisterDevice";
+  static String emailCheck = "$baseUrl/api/mobileApi/EmailCheck";
   static String updateMobile = "$baseUrl/api/mobileApi/Updatemobile";
   static String sendOTP = "$baseUrl/api/mobileApi/SendOTP";
   static String getStatus = "$baseUrl/api/mobileApi/GetStatus";

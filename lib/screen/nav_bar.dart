@@ -37,12 +37,14 @@ class _NavBarState extends State<NavBar> {
 
   List<Item> addItems() {
     List<Item> data = [];
-    data.add(Item(
+    if(showTraining) {
+      data.add(Item(
       index: 0,
       headerValue: StringUtils.menuProfile,
       leadingIcon: SvgImages.menuProfile,
       /*trailingIcon: const Icon(Icons.keyboard_arrow_down_outlined,size: 30,),*/
     ));
+    }
     data.add(Item(
       index: 1,
       leadingIcon: SvgImages.menuSupport,
@@ -236,7 +238,7 @@ class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
     final appTheme = AppTheme.of(context);
-    _menu ??= addItems();
+    _menu = addItems();
     return Drawer(
       width: 300,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -253,41 +255,45 @@ class _NavBarState extends State<NavBar> {
                   // Remove padding
                   padding: EdgeInsets.zero,
                   children: [
-                    CustomUserAccountsDrawerHeader(
-                      accountName: Text(
-                        profileData?.personalDetails?.pospName ?? "",
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                            fontFamily: "Poppins"),
-                      ),
-                      accountEmail: Text(
-                        profileData?.personalDetails?.pospCode ?? "",
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            fontFamily: "Poppins"),
-                      ),
-                      currentAccountPicture: CustomNetworkImage(
-                        radius: 54, //as current picture size is 108
-                        placeholderImage:
-                            profileData?.personalDetails?.gender == "M"
-                                ? AssetImages.profileAvatarMale
-                                : AssetImages.profileAvatarFemale,
-                        image: bytes,
-                      ),
-                      decoration: BoxDecoration(
-                        color: appTheme.primaryColor,
-                      ),
-                      onDetailsPressed: (){
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) {
-                            return MyProfile(pospId: pospId!);
-                          }),
-                        );
+                    InkWell(
+                      onTap: (){
+                        if(showTraining) {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return MyProfile(pospId: pospId!);
+                            }),
+                          );
+                        }
                       },
+                      child: CustomUserAccountsDrawerHeader(
+                        accountName: Text(
+                          profileData?.personalDetails?.pospName ?? "",
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              fontFamily: "Poppins"),
+                        ),
+                        accountEmail: Text(
+                          profileData?.personalDetails?.pospCode ?? "",
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                              fontFamily: "Poppins"),
+                        ),
+                        currentAccountPicture: CustomNetworkImage(
+                          radius: 54, //as current picture size is 108
+                          placeholderImage:
+                              profileData?.personalDetails?.gender == "M"
+                                  ? AssetImages.profileAvatarMale
+                                  : AssetImages.profileAvatarFemale,
+                          image: bytes,
+                        ),
+                        decoration: BoxDecoration(
+                          color: appTheme.primaryColor,
+                        ),
+                      ),
                     ),
                     _buildPanel(ApiClient.siteUrl +
                         (profileData?.referralLink ??
@@ -323,26 +329,31 @@ class _NavBarState extends State<NavBar> {
       if (getDashboard.resultflag == ApiClient.resultflagSuccess &&
           getDashboard.data != null) {
         if(getDashboard.data?.data?.pospRegistrationStatus == "true") {
-          showTraining = true;
+          setState(() {showTraining = true;});
+
         }
-        //setState(() {});
         var profile = await AppComponentBase.getInstance()
             ?.getSharedPreference()
             .getUserDetail(key: SharedPreference().profile);
+        var sPPospId = await AppComponentBase.getInstance()
+            ?.getSharedPreference()
+            .getUserDetail(key: SharedPreference().pospId);
+        pospId = sPPospId;
         if(profile != null) {
           var getProfile = GetProfile.fromJson(json.decode(profile));
           if (getProfile.resultflag == ApiClient.resultflagSuccess &&
               getProfile.data != null) {
             bloc.profileStreamController.sink.add(getProfile.data?.data);
+            bloc.getProfile(sPPospId,isBackground:true);
           }
         }
+        else
+          {
+            bloc.getProfile(sPPospId);
+          }
       }
     }
-    var sPPospId = await AppComponentBase.getInstance()
-        ?.getSharedPreference()
-        .getUserDetail(key: SharedPreference().pospId);
-    pospId = sPPospId;
-    bloc.getProfile(sPPospId);
+
   }
 }
 

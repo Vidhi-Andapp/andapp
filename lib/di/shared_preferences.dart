@@ -42,6 +42,7 @@ class SharedPreference extends SharedPreferenceRepository {
     await storage!.delete(key: pospId ?? "");
     await storage!.delete(key: pospStatus ?? "");
     await storage!.delete(key: dashboard ?? "");
+    await storage!.delete(key: profile ?? "");
     return true;
   }
 // Delete value
